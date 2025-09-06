@@ -19,14 +19,79 @@ __author__ = "Vzoel Fox's"
 # Global variables for help navigation
 help_sessions = {}  # {user_id: {'page': int, 'message': message_obj}}
 help_active = {}    # {user_id: True/False}
+plugin_cache = {}   # Cache for plugin info
+cache_timestamp = 0 # Last cache update time
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
     signature = vzoel_emoji.get_vzoel_signature()
     print(f"{signature} Help Plugin loaded - Navigation system ready")
 
-def get_plugin_info():
-    """Get information about all loaded plugins"""
+def get_plugin_info(force_refresh=False):
+    """Get information about all loaded plugins from plugin manager"""
+    global plugin_cache, cache_timestamp
+    
+    # Check cache validity (refresh every 30 seconds or on force)
+    current_time = asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 0
+    cache_valid = (current_time - cache_timestamp) < 30 and plugin_cache and not force_refresh
+    
+    if cache_valid:
+        return plugin_cache
+    
+    try:
+        # Import client to access plugin manager
+        from client import vzoel_client
+        
+        # Get loaded plugins from plugin manager
+        if hasattr(vzoel_client, 'plugin_manager') and vzoel_client.plugin_manager:
+            plugins_info = vzoel_client.plugin_manager.get_plugin_list()
+            
+            # Process plugin info for help display
+            processed_plugins = []
+            for plugin in plugins_info:
+                # Clean up description
+                description = plugin.get('description', 'No description')
+                if description and isinstance(description, str):
+                    # Extract first meaningful line from docstring
+                    lines = description.strip().split('\n')
+                    for line in lines:
+                        line = line.strip()
+                        if line and not line.startswith('"""') and not line.startswith("'''"):
+                            description = line[:80] + '...' if len(line) > 80 else line
+                            break
+                    if not description or description.startswith('"""'):
+                        description = f"{plugin['name'].title()} plugin functionality"
+                
+                processed_plugin = {
+                    'name': plugin['name'].title(),
+                    'description': description,
+                    'commands': plugin.get('commands', [f".{plugin['name']}"]),
+                    'file': plugin.get('file', f"{plugin['name']}.py")
+                }
+                processed_plugins.append(processed_plugin)
+            
+            # Update cache
+            plugin_cache = processed_plugins
+            cache_timestamp = current_time
+            
+            return processed_plugins
+        else:
+            # Fallback: scan files if plugin manager not available
+            fallback_plugins = get_plugin_info_fallback()
+            plugin_cache = fallback_plugins
+            cache_timestamp = current_time
+            return fallback_plugins
+            
+    except Exception as e:
+        # Fallback: scan files manually
+        print(f"Error accessing plugin manager: {e}")
+        fallback_plugins = get_plugin_info_fallback()
+        plugin_cache = fallback_plugins
+        cache_timestamp = current_time
+        return fallback_plugins
+
+def get_plugin_info_fallback():
+    """Fallback method to scan plugin files manually"""
     plugins_info = []
     
     # Get plugin directory
@@ -40,16 +105,11 @@ def get_plugin_info():
             plugin_name = filename[:-3]  # Remove .py extension
             
             try:
-                # Try to import and get plugin info
-                plugin_path = f"plugins.{plugin_name}"
-                if plugin_path in globals():
-                    plugin_module = globals()[plugin_path]
-                else:
-                    # Try to load plugin info without full import
-                    plugin_info = get_plugin_metadata(f"{plugin_dir}/{filename}")
-                    if plugin_info:
-                        plugins_info.append(plugin_info)
-                        continue
+                # Try to load plugin info without full import
+                plugin_info = get_plugin_metadata(f"{plugin_dir}/{filename}")
+                if plugin_info:
+                    plugins_info.append(plugin_info)
+                    continue
                 
                 # Fallback: basic info from filename
                 plugins_info.append({
@@ -130,8 +190,8 @@ async def help_handler(event):
         help_sessions[user_id] = {'page': 0, 'message': None}
         help_active[user_id] = True
         
-        # Get plugin information
-        plugins_info = get_plugin_info()
+        # Get plugin information (force refresh to get latest plugins)
+        plugins_info = get_plugin_info(force_refresh=True)
         total_plugins = len(plugins_info)
         
         # Count total commands
@@ -406,3 +466,32 @@ help_back_handler.command = ".back"
 
 help_exit_handler.handler = help_exit_handler.handler
 help_exit_handler.command = ".exit"
+
+@events.register(events.NewMessage(pattern=r'\.helprefresh'))
+async def help_refresh_handler(event):
+    """Refresh help plugin cache to detect new plugins"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        from client import vzoel_client
+        from emoji_handler import vzoel_emoji
+        
+        # Force refresh plugin cache
+        plugins_info = get_plugin_info(force_refresh=True)
+        total_plugins = len(plugins_info)
+        total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
+        
+        refresh_msg = f"""**{vzoel_emoji.get_emoji('centang')} HELP CACHE REFRESHED**
+
+{vzoel_emoji.get_emoji('utama')} **Plugins Detected:** {total_plugins}
+{vzoel_emoji.get_emoji('telegram')} **Commands Found:** {total_commands}
+{vzoel_emoji.get_emoji('aktif')} **Cache Status:** Updated
+{vzoel_emoji.get_emoji('proses')} **Source:** Plugin Manager
+
+{vzoel_emoji.get_emoji('petir')} **Auto-refresh:** Help akan otomatis detect plugin baru setelah .update force atau restart
+
+**Use .help to view updated plugin list**"""
+        
+        await event.edit(refresh_msg)
+        vzoel_client.increment_command_count()
+
+help_refresh_handler.handler = help_refresh_handler.handler
+help_refresh_handler.command = ".helprefresh"
