@@ -127,6 +127,14 @@ python main.py --help
 | `.ponk` | PONGGGGGG + triggers .alive | `.ponk` |
 | `.pings` | Show all ping command info | `.pings` |
 
+### 🎚 ID Checker Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.id @username` | Check user ID by username | `.id @telegram` |
+| `.id` (reply) | Check user ID from reply | Reply then `.id` |
+| `.stopid` | Stop ID animation loop | `.stopid` |
+| `.idinfo` | Show ID checker information | `.idinfo` |
+
 ### ⛈ Gcast & Blacklist Commands (Plugin)
 | Command | Description | Example |
 |---------|-------------|---------|
