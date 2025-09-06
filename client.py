@@ -381,7 +381,10 @@ class VzoelFoxClient:
             await self.client.connect()
             
             if not await self.client.is_user_authorized():
-                logger.error("❌ Client not authorized")
+                logger.error("❌ Client not authorized!")
+                logger.error("🔑 STRING_SESSION tidak ditemukan atau tidak valid")
+                logger.error("📱 Jalankan generate_session.py untuk membuat session baru:")
+                logger.error("   python generate_session.py")
                 return False
             
             # Get user info
@@ -394,6 +397,10 @@ class VzoelFoxClient:
             
         except Exception as e:
             logger.error(f"❌ Failed to initialize client: {e}")
+            if "STRING_SESSION" in str(e) or "unauthorized" in str(e).lower():
+                logger.error("🔑 Session tidak valid atau tidak ditemukan")
+                logger.error("📱 Jalankan generate_session.py untuk membuat session baru:")
+                logger.error("   python generate_session.py")
             return False
     
     async def setup_components(self):

@@ -1,276 +1,230 @@
 # 🦊 VzoelFox's Assistant v2
 
-**Enhanced userbot with premium emoji support**
+**Advanced Telegram Userbot with Premium Emoji Support**
 
-Created by **Vzoel Fox's** • Enhanced by **Vzoel Fox's Ltpn**
-
----
-
-## ✨ Features
-
-🤩 **Premium Emoji Collection**
-- 12 exclusive VzoelFox premium emojis
-- Smart emoji mapping system  
-- Category-based organization
-- Quick access patterns
-
-⛈ **Advanced Integration**
-- Modern async/await syntax
-- Optimized performance
-- Robust error handling
-- Session management
-
-🎚 **VzoelFox Enhanced Features**
-- **Plugin System** - Dynamic plugin loading from `plugins/` directory
-- **Auto-Update** - Manual update system with `.update` and `.update force`
-- **Advanced Client** - Enhanced client with statistics and management
-- **Premium Emojis** - 12 exclusive VzoelFox emojis integrated throughout
-- **Gcast System** - Advanced broadcast with blacklist management and animations
-- **Blacklist Management** - Automatic config.py integration for persistent storage
+Created by: **Vzoel Fox's**  
+Enhanced by: **Vzoel Fox's Ltpn**
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Recommended)
 
-### 1. Clone Repository
+Cara termudah untuk memulai:
+
 ```bash
-git clone https://github.com/VanZoel112/vzl2.git
-cd vzl2
+python start.py
 ```
 
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+Script ini akan:
+- ✅ Mengecek apakah session sudah ada
+- 🔧 Otomatis menjalankan setup jika belum ada session
+- 🚀 Langsung menjalankan bot jika session sudah ada
 
-### 3. Generate Session String (First Time)
+---
+
+## 📱 Manual Setup
+
+### 1️⃣ Generate Session
+
+Jika ingin setup manual:
+
 ```bash
 python main.py --generate-session
 ```
-Follow the prompts:
-- Enter phone number with country code
-- Enter verification code
-- Enter 2FA password (if enabled)
-- Session will be automatically saved to `.env`
 
-### 4. Run Assistant
+Script akan meminta:
+- **API ID** dan **API Hash** (dari https://my.telegram.org/apps)
+- **Nomor telepon** (dengan kode negara, contoh: +628123456789)
+- **Kode verifikasi** (yang dikirim ke Telegram)
+- **Password 2FA** (jika diaktifkan)
+
+### 2️⃣ Jalankan Bot
+
+Setelah session dibuat:
+
 ```bash
 python main.py
 ```
 
----
+Atau gunakan:
 
-## 🚀 Usage
-
-### Session Generation
 ```bash
-# Generate new session (first time setup)
-python main.py --generate-session
-
-# Start assistant
-python main.py
-
-# Show help
-python main.py --help
+python start.py
 ```
 
-### 🤩 Features:
-- **Automatic API validation** - Checks credentials before proceeding
-- **Smart session management** - Automatically saves to `.env` file
-- **VzoelFox premium emojis** - Enhanced visual feedback
-- **Error handling** - Guides you through common issues
+---
+
+## 🔧 Konfigurasi
+
+### File `.env`
+
+Bot akan membuat file `.env` secara otomatis, tapi Anda bisa edit manual:
+
+```env
+# API Configuration (Required)
+API_ID=your_api_id
+API_HASH=your_api_hash
+
+# Session (Auto-generated)
+STRING_SESSION=your_generated_session_string
+
+# Optional Settings
+VZOEL_PREFIX=.
+VZOEL_OWNER_ID=your_telegram_user_id
+VZOEL_LOG_CHAT=your_log_chat_id
+
+# Premium Features
+PREMIUM_EMOJIS_ENABLED=true
+EMOJI_MAPPING_FILE=emoji_mapping.json
+
+# Advanced Settings
+WORKERS=4
+LOAD_UNOFFICIAL_PLUGINS=false
+
+# Database
+DATABASE_URL=sqlite:///vzl2.db
+```
 
 ---
 
 ## 🤖 Commands
 
-### 🤩 Core Commands
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.vzoel` | VzoelFox special domain mode | `.vzoel` |
-| `.help` | Show help menu | `.help` |
+### Basic Commands
 
-### 🦊 Alive Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.alive` | 12-phase animated alive display | `.alive` |
-| `.ainfo` | Show alive system information | `.ainfo` |
-| `.pizol` | 40-phase extended system display | `.pizol` |
-| `.pinfo` | Show pizol system information | `.pinfo` |
+- `.ping` - Cek kecepatan bot
+- `.alive` - Status bot
+- `.vzoel` - Special VzoelFox command
+- `.help` - Bantuan
 
-### 🎚 System Commands  
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.update` | Check and install updates | `.update` |
-| `.update force` | Force update (manual) | `.update force` |
-| `.stats` | Show assistant statistics | `.stats` |
-| `.plugins` | List loaded plugins | `.plugins` |
-| `.restart` | Restart the assistant | `.restart` |
+### Emoji Commands
 
-### 💟 Emoji Commands
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.emo <name>` | Get emoji information | `.emo utama` |
-| `.emojis` | List all premium emojis | `.emojis` |
+- `.emo <name>` - Info emoji spesifik
+- `.emojis` - List semua emoji
+- `.emoprev` - Preview emoji
 
-### 🦊 Fun Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.dice` | Roll a dice | `.dice` |
-| `.flip` | Flip a coin | `.flip` |
-| `.quote` | Random VzoelFox quote | `.quote` |
+### Plugin System
 
-### ⚙️ Ping Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.ping` | PONG!!!! Anti-delay message | `.ping` |
-| `.pink` | PONG!!!! with latency display | `.pink` |
-| `.pong` | PONG + @spambot trigger for limits | `.pong` |
-| `.ponk` | PONGGGGGG + triggers .alive | `.ponk` |
-| `.pings` | Show all ping command info | `.pings` |
+Bot secara otomatis memuat plugin dari folder `plugins/`:
 
-### 🎚 ID Checker Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.id @username` | Check user ID by username | `.id @telegram` |
-| `.id` (reply) | Check user ID from reply | Reply then `.id` |
-| `.stopid` | Stop ID animation loop | `.stopid` |
-| `.idinfo` | Show ID checker information | `.idinfo` |
-
-### 🎙️ Voice Chat Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.vcjoin` | Join group voice chat | `.vcjoin` |
-| `.vcleave` | Leave voice chat | `.vcleave` |
-| `.vcmute` | Mute microphone | `.vcmute` |
-| `.vcunmute` | Unmute microphone | `.vcunmute` |
-| `.vcstatus` | Show voice chat status | `.vcstatus` |
-| `.vcinstall` | Show installation guide | `.vcinstall` |
-
-### ⛈ Gcast & Blacklist Commands (Plugin)
-| Command | Description | Example |
-|---------|-------------|---------|
-| `.gcast <text>` | Broadcast message to all groups | `.gcast Hello!` |
-| `.gcast` (reply) | Broadcast replied message | Reply then `.gcast` |
-| `.ginfo` | Show gcast information | `.ginfo` |
-| `.addbl <id>` | Add chat to blacklist | `.addbl -1001234567` |
-| `.addbl` (reply) | Add forwarded chat to blacklist | Reply then `.addbl` |
-| `.rembl <id>` | Remove chat from blacklist | `.rembl -1001234567` |
-| `.listbl` | List all blacklisted chats | `.listbl` |
-
----
-
-## 🎭 Premium Emoji Collection
-
-### Primary Emojis
-- 🤩 `utama` - VzoelFox main emoji
-- 👍 `centang` - Approval emoji
-- ⛈ `petir` - Power emoji
-
-### System Emojis  
-- ⚙️ `loading` - Processing indicator
-- 👽 `proses` - Special operations
-- 🎚 `aktif` - Active status
-
-### Fun Emojis
-- 🍿 `kuning` - Entertainment
-- 🤪 `merah` - Playful mode
-- 🎅 `biru` - Special events
-
-### Special Emojis
-- 😈 `adder1` - Mischief mode
-- 💟 `adder2` - Premium features
-- ✉️ `telegram` - Messages
-
----
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `API_ID` | Auto | API ID (29919905) |
-| `API_HASH` | Auto | API Hash (pre-configured) |
-| `STRING_SESSION` | Auto | Generated automatically |
-| `VZOEL_PREFIX` | No | Command prefix (default: `.`) |
-| `PREMIUM_EMOJIS_ENABLED` | No | Enable emoji features |
-
-### Emoji Mapping
-
-The assistant uses `emoji_mapping.json` for premium emoji management:
-- Custom emoji IDs for premium features
-- Category-based organization
-- Usage patterns for smart responses
-- Quick access combinations
-
----
-
-## 🔧 Development
-
-### Project Structure
 ```
 vzl2/
-├── main.py              # Main assistant application
-├── config.py            # Configuration management
-├── emoji_handler.py     # Premium emoji handler
-├── emoji_mapping.json   # Emoji definitions
-├── requirements.txt     # Dependencies
-└── README.md           # This file
+├── plugins/
+│   ├── ping.py
+│   ├── alive.py
+│   └── your_custom_plugin.py
+└── main.py
 ```
 
-### Plugin Development
-1. Create `.py` files in `plugins/` directory
-2. Use `@events.register()` for command handlers
-3. Add `vzoel_init()` function for initialization
-4. Import `vzoel_emoji` for emoji integration
+---
 
-#### Example Plugin:
-```python
-from telethon import events
+## 🔐 Keamanan
 
-async def vzoel_init(client, vzoel_emoji):
-    print("Plugin loaded!")
+### ⚠️ PENTING:
 
-@events.register(events.NewMessage(pattern=r'\.test'))
-async def test_handler(event):
-    await event.edit("Test successful!")
+1. **Jangan share `STRING_SESSION`** dengan siapapun
+2. **Backup file `.env`** secara aman
+3. **Jangan commit `.env`** ke repository public
+4. **String session = password akun Anda**
 
-test_handler.handler = test_handler.handler
-test_handler.command = ".test"
+### Session Management:
+
+- Session tersimpan di `.env` sebagai `STRING_SESSION`
+- Jika session rusak, generate ulang dengan `python main.py --generate-session`
+- Bot juga mendukung file session (`.session`) sebagai backup
+
+---
+
+## 🎭 Premium Emoji Features
+
+VzoelFox's Assistant v2 mendukung:
+
+- ✨ Custom Premium Emoji dari Telegram
+- 🎨 Emoji mapping system
+- 🦊 VzoelFox signature emojis
+- 📱 Dynamic emoji responses
+
+### Emoji Categories:
+
+- **Main**: Emoji utama VzoelFox
+- **Status**: Status indicators
+- **Actions**: Action emojis
+- **UI**: Interface emojis
+
+---
+
+## 📁 Project Structure
+
+```
+vzl2/
+├── start.py              # Easy launcher (recommended)
+├── main.py               # Main bot file
+├── client.py             # Advanced client with plugins
+├── generate_session.py   # Standalone session generator
+├── config.py             # Configuration management
+├── emoji_handler.py      # Premium emoji system
+├── .env                  # Environment config (auto-generated)
+├── plugins/              # Plugin directory
+└── README.md             # This file
 ```
 
-### System Features
-- **Auto-reload** plugins on file changes
-- **Plugin management** with `.plugins` command  
-- **Update system** with git integration
-- **Statistics tracking** with `.stats` command
+---
+
+## 🔄 Update System
+
+Bot memiliki auto-update system:
+
+```bash
+# Manual update
+git pull origin main
+
+# Auto-update akan memberitahu di log
+# Gunakan command .update (jika tersedia di plugin)
+```
 
 ---
 
-## 🛡️ Security
+## 🛠️ Troubleshooting
 
-- Never share your API credentials
-- Use environment variables for sensitive data
-- Enable 2FA on your account
-- Monitor assistant activity regularly
+### Session Error:
+
+```bash
+# Regenerate session
+python main.py --generate-session
+
+# Atau hapus session lama
+rm vzl2_session.session
+rm .env
+python start.py
+```
+
+### API Errors:
+
+1. Pastikan API_ID dan API_HASH benar
+2. Cek https://my.telegram.org/apps
+3. API_ID harus angka, bukan string
+
+### Plugin Errors:
+
+1. Cek folder `plugins/` ada
+2. Plugin harus format Python valid
+3. Restart bot setelah update plugin
 
 ---
 
-## 📄 License
+## 📞 Support
 
-This project is licensed under the MIT License.
-
-**© 2025 Vzoel Fox's - All Rights Reserved**
-
-Enhanced by **Vzoel Fox's Ltpn**
+- **Repository**: https://github.com/VanZoel112/vzl2
+- **Creator**: Vzoel Fox's
+- **Enhanced by**: Vzoel Fox's Ltpn
 
 ---
 
-## 🤝 Support
+## 📜 License
 
-- **Creator:** Vzoel Fox's
-- **Version:** v2.0.0-vzoel
-- **Telegram:** [@YourTelegramHandle]
+This project is created for educational and personal use.
 
-**Made with 🦊 by VzoelFox Team**
+**© 2024 Vzoel Fox's - VzoelFox's Assistant v2**
+
+---
+
+*Selamat menggunakan VzoelFox's Assistant v2! 🦊*
