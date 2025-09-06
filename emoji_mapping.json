@@ -1,0 +1,223 @@
+{
+  "emoji_mapping": {
+    "description": "VzoelFox's Premium Emoji Collection - Enhanced mapping for Vzoel Fox's Assistant",
+    "version": "v1.0.0-vzoel",
+    "created_by": "Vzoel Fox's",
+    "last_updated": "2025-09-04",
+    "total_emojis": 12
+  },
+  "emojis": {
+    "utama": {
+      "emoji_char": "🤩",
+      "custom_emoji_id": "6156784006194009426",
+      "name": "Vzoel Fox's Main",
+      "category": "primary",
+      "description": "Emoji utama Vzoel Fox's - excited face",
+      "usage": "general, excitement, main reactions",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "yellow"
+    },
+    "centang": {
+      "emoji_char": "👍",
+      "custom_emoji_id": "4947455506382849110",
+      "name": "Vzoel Fox's Approve",
+      "category": "reaction", 
+      "description": "Emoji centang persetujuan Vzoel Fox's",
+      "usage": "approval, agreement, success",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "neutral"
+    },
+    "petir": {
+      "emoji_char": "⛈",
+      "custom_emoji_id": "5794407002566300853",
+      "name": "Vzoel Fox's Storm",
+      "category": "power",
+      "description": "Emoji petir kekuatan Vzoel Fox's",
+      "usage": "power, energy, force",
+      "offset": 0,
+      "length": 1,
+      "color_theme": "dark"
+    },
+    "loading": {
+      "emoji_char": "⚙️",
+      "custom_emoji_id": "5794353925360457382", 
+      "name": "Vzoel Fox's Loading",
+      "category": "system",
+      "description": "Emoji loading proses Vzoel Fox's",
+      "usage": "processing, working, system operations",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "gray"
+    },
+    "kuning": {
+      "emoji_char": "🍿",
+      "custom_emoji_id": "5260648752149970801",
+      "name": "Vzoel Fox's Yellow",
+      "category": "fun",
+      "description": "Emoji kuning Vzoel Fox's - popcorn",
+      "usage": "entertainment, fun, watching",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "yellow"
+    },
+    "biru": {
+      "emoji_char": "🎅",
+      "custom_emoji_id": "5260687265121712272",
+      "name": "Vzoel Fox's Blue",
+      "category": "special",
+      "description": "Emoji biru Vzoel Fox's - santa",
+      "usage": "special events, celebrations",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "blue"
+    },
+    "merah": {
+      "emoji_char": "🤪",
+      "custom_emoji_id": "5262927296725007707",
+      "name": "Vzoel Fox's Red",
+      "category": "fun",
+      "description": "Emoji merah Vzoel Fox's - crazy face",
+      "usage": "fun, crazy, playful",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "red"
+    },
+    "proses": {
+      "emoji_char": "👽",
+      "custom_emoji_id": "5321023901998801538",
+      "name": "Vzoel Fox's Process",
+      "category": "system",
+      "description": "Emoji proses khusus Vzoel Fox's - alien",
+      "usage": "processing, special operations, mysterious",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "green"
+    },
+    "aktif": {
+      "emoji_char": "🎚",
+      "custom_emoji_id": "5794128499706958658",
+      "name": "Vzoel Fox's Active",
+      "category": "status",
+      "description": "Emoji status aktif Vzoel Fox's - level slider",
+      "usage": "active status, controls, adjustments",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "blue"
+    },
+    "adder1": {
+      "emoji_char": "😈",
+      "custom_emoji_id": "5357404860566235955",
+      "name": "Vzoel Fox's Adder 1",
+      "category": "special",
+      "description": "Emoji tambahan 1 Vzoel Fox's - devil",
+      "usage": "mischief, playful evil, special commands",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "red"
+    },
+    "adder2": {
+      "emoji_char": "💟",
+      "custom_emoji_id": "5427157414375881061",
+      "name": "Vzoel Fox's Adder 2", 
+      "category": "special",
+      "description": "Emoji tambahan 2 Vzoel Fox's - heart decoration",
+      "usage": "love, special features, premium",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "purple"
+    },
+    "telegram": {
+      "emoji_char": "✉️",
+      "custom_emoji_id": "5350291836378307462",
+      "name": "Vzoel Fox's Telegram",
+      "category": "communication",
+      "description": "Emoji Telegram Vzoel Fox's - mail envelope",
+      "usage": "messages, communication, mail",
+      "offset": 0,
+      "length": 2,
+      "color_theme": "blue"
+    }
+  },
+  "categories": {
+    "primary": {
+      "description": "Emoji utama Vzoel Fox's",
+      "emojis": ["utama"]
+    },
+    "reaction": {
+      "description": "Emoji reaksi Vzoel Fox's",
+      "emojis": ["centang"]
+    },
+    "power": {
+      "description": "Emoji kekuatan Vzoel Fox's", 
+      "emojis": ["petir"]
+    },
+    "system": {
+      "description": "Emoji sistem Vzoel Fox's",
+      "emojis": ["loading", "proses"]
+    },
+    "fun": {
+      "description": "Emoji hiburan Vzoel Fox's",
+      "emojis": ["kuning", "merah"]
+    },
+    "special": {
+      "description": "Emoji khusus Vzoel Fox's",
+      "emojis": ["biru", "adder1", "adder2"]
+    },
+    "status": {
+      "description": "Emoji status Vzoel Fox's",
+      "emojis": ["aktif"]
+    },
+    "communication": {
+      "description": "Emoji komunikasi Vzoel Fox's",
+      "emojis": ["telegram"]
+    }
+  },
+  "usage_patterns": {
+    "command_responses": {
+      "ping": ["loading", "centang", "aktif"],
+      "alive": ["utama", "aktif", "petir"],
+      "vzoel": ["utama", "petir", "adder1"],
+      "gcast": ["telegram", "loading", "centang"],
+      "pizol": ["kuning", "merah", "adder2"]
+    },
+    "status_indicators": {
+      "success": ["centang", "utama"],
+      "loading": ["loading", "proses"], 
+      "error": ["merah", "petir"],
+      "active": ["aktif", "utama"],
+      "special": ["adder1", "adder2"]
+    },
+    "themes": {
+      "vzoel_primary": ["utama", "petir", "aktif"],
+      "vzoel_fun": ["kuning", "merah", "adder2"],
+      "vzoel_system": ["loading", "proses", "telegram"],
+      "vzoel_special": ["biru", "adder1", "adder2"]
+    }
+  },
+  "quick_access": {
+    "most_used": [
+      "6156784006194009426",
+      "4947455506382849110", 
+      "5794353925360457382",
+      "5794407002566300853"
+    ],
+    "vzoel_signature": [
+      "6156784006194009426",
+      "5357404860566235955",
+      "5794407002566300853"
+    ],
+    "system_emojis": [
+      "5794353925360457382",
+      "5321023901998801538", 
+      "5794128499706958658"
+    ]
+  },
+  "vzoel_fox_branding": {
+    "creator": "Vzoel Fox's",
+    "assistant": "Vzoel Fox's Assistant",
+    "collection_name": "Vzoel Fox's Premium Collection",
+    "trademark": "Enhanced by Vzoel Fox's Ltpn"
+  }
+}
