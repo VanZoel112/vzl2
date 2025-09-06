@@ -4,7 +4,7 @@ Environment variables and settings management
 """
 
 import os
-from typing import Optional
+from typing import Optional, List
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -41,6 +41,9 @@ class Config:
     WORKERS: int = int(os.getenv("WORKERS", "4"))
     LOAD_UNOFFICIAL_PLUGINS: bool = os.getenv("LOAD_UNOFFICIAL_PLUGINS", "false").lower() == "true"
     
+    # Gcast Blacklist Settings
+    GCAST_BLACKLIST: List[int] = []
+    
     # Heroku/Deploy Settings
     HEROKU_APP_NAME: Optional[str] = os.getenv("HEROKU_APP_NAME")
     HEROKU_API_KEY: Optional[str] = os.getenv("HEROKU_API_KEY")
@@ -64,6 +67,69 @@ class Config:
         return True
     
     @classmethod
+    def add_to_blacklist(cls, chat_id: int) -> bool:
+        """Add chat ID to gcast blacklist"""
+        if chat_id not in cls.GCAST_BLACKLIST:
+            cls.GCAST_BLACKLIST.append(chat_id)
+            cls._save_blacklist()
+            return True
+        return False
+    
+    @classmethod
+    def remove_from_blacklist(cls, chat_id: int) -> bool:
+        """Remove chat ID from gcast blacklist"""
+        if chat_id in cls.GCAST_BLACKLIST:
+            cls.GCAST_BLACKLIST.remove(chat_id)
+            cls._save_blacklist()
+            return True
+        return False
+    
+    @classmethod
+    def is_blacklisted(cls, chat_id: int) -> bool:
+        """Check if chat ID is blacklisted"""
+        return chat_id in cls.GCAST_BLACKLIST
+    
+    @classmethod
+    def _save_blacklist(cls):
+        """Save blacklist to config file"""
+        import json
+        try:
+            # Read current config file
+            config_file = "config.py"
+            with open(config_file, 'r') as f:
+                content = f.read()
+            
+            # Update GCAST_BLACKLIST line
+            blacklist_str = str(cls.GCAST_BLACKLIST).replace("'", '"')
+            if "GCAST_BLACKLIST: List[int] = []" in content:
+                content = content.replace(
+                    "GCAST_BLACKLIST: List[int] = []",
+                    f"GCAST_BLACKLIST: List[int] = {cls.GCAST_BLACKLIST}"
+                )
+            elif "GCAST_BLACKLIST: List[int] = [" in content:
+                import re
+                pattern = r"GCAST_BLACKLIST: List\[int\] = \[.*?\]"
+                content = re.sub(pattern, f"GCAST_BLACKLIST: List[int] = {cls.GCAST_BLACKLIST}", content)
+            
+            # Write back to file
+            with open(config_file, 'w') as f:
+                f.write(content)
+                
+        except Exception as e:
+            print(f"Failed to save blacklist: {e}")
+    
+    @classmethod
+    def load_blacklist(cls):
+        """Load blacklist from environment or config"""
+        try:
+            blacklist_env = os.getenv("GCAST_BLACKLIST", "")
+            if blacklist_env:
+                import json
+                cls.GCAST_BLACKLIST = json.loads(blacklist_env)
+        except Exception:
+            pass
+    
+    @classmethod
     def print_config(cls):
         """Print current configuration (hide sensitive data)"""
         print(f"""
@@ -77,6 +143,7 @@ class Config:
    Prefix: {cls.VZOEL_PREFIX}
    Premium Emojis: {'✅ Enabled' if cls.PREMIUM_EMOJIS_ENABLED else '❌ Disabled'}
    Workers: {cls.WORKERS}
+   Gcast Blacklist: {len(cls.GCAST_BLACKLIST)} chats
 
 🎭 VzoelFox Info:
    Version: {cls.VZOEL_VERSION}

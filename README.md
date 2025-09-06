@@ -25,6 +25,8 @@ Created by **Vzoel Fox's** • Enhanced by **Vzoel Fox's Ltpn**
 - **Auto-Update** - Manual update system with `.update` and `.update force`
 - **Advanced Client** - Enhanced client with statistics and management
 - **Premium Emojis** - 12 exclusive VzoelFox emojis integrated throughout
+- **Gcast System** - Advanced broadcast with blacklist management and animations
+- **Blacklist Management** - Automatic config.py integration for persistent storage
 
 ---
 
@@ -111,6 +113,17 @@ python main.py --help
 | `.dice` | Roll a dice | `.dice` |
 | `.flip` | Flip a coin | `.flip` |
 | `.quote` | Random VzoelFox quote | `.quote` |
+
+### ⛈ Gcast & Blacklist Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.gcast <text>` | Broadcast message to all groups | `.gcast Hello!` |
+| `.gcast` (reply) | Broadcast replied message | Reply then `.gcast` |
+| `.ginfo` | Show gcast information | `.ginfo` |
+| `.addbl <id>` | Add chat to blacklist | `.addbl -1001234567` |
+| `.addbl` (reply) | Add forwarded chat to blacklist | Reply then `.addbl` |
+| `.rembl <id>` | Remove chat from blacklist | `.rembl -1001234567` |
+| `.listbl` | List all blacklisted chats | `.listbl` |
 
 ---
 
