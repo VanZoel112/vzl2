@@ -1,6 +1,6 @@
 """
-VzoelFox Telegram Userbot v2
-Enhanced with Telethon and Premium Emoji Support
+VzoelFox's Assistant v2
+Enhanced userbot with Premium Emoji Support
 Created by: Vzoel Fox's
 """
 
@@ -30,7 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class VzoelFoxBot:
-    """VzoelFox Telegram Userbot v2"""
+    """VzoelFox's Assistant v2"""
     
     def __init__(self):
         self.client = None
@@ -61,13 +61,13 @@ class VzoelFoxBot:
                     await self.client.sign_in(password=password)
             
             self.is_running = True
-            logger.info("VzoelFox Bot v2 started successfully!")
+            logger.info("VzoelFox's Assistant v2 started successfully!")
             
             # Display startup message with signature emojis
             signature = vzoel_emoji.get_vzoel_signature()
             startup_msg = vzoel_emoji.format_emoji_response(
                 ['utama', 'petir', 'aktif'], 
-                "VzoelFox Userbot v2 is now ACTIVE!"
+                "VzoelFox's Assistant v2 is now ACTIVE!"
             )
             logger.info(f"{signature} {startup_msg}")
             
@@ -80,7 +80,7 @@ class VzoelFoxBot:
         if self.client:
             await self.client.disconnect()
             self.is_running = False
-            logger.info("VzoelFox Bot v2 stopped")
+            logger.info("VzoelFox's Assistant v2 stopped")
 
 # Event handlers
 bot = VzoelFoxBot()
@@ -113,11 +113,11 @@ async def alive_handler(event):
         alive_emojis = vzoel_emoji.get_command_emojis('alive')
         signature = vzoel_emoji.get_vzoel_signature()
         
-        alive_text = f"""**VzoelFox Userbot v2**
+        alive_text = f"""**VzoelFox's Assistant v2**
         
 {signature} **Status:** ALIVE & RUNNING
 {vzoel_emoji.get_emoji('aktif')} **Version:** v2.0.0-vzoel
-{vzoel_emoji.get_emoji('telegram')} **Engine:** Telethon
+{vzoel_emoji.get_emoji('telegram')} **Engine:** Enhanced
 {vzoel_emoji.get_emoji('centang')} **Premium Emojis:** Loaded
         
 **Created by:** Vzoel Fox's
@@ -140,7 +140,7 @@ async def vzoel_handler(event):
 {vzoel_emoji.get_emoji('adder1')} **Mode:** PREMIUM ACTIVATED
 {vzoel_emoji.get_emoji('aktif')} **Status:** DOMINATING
 
-**© Vzoel Fox's - Enhanced Userbot Experience**"""
+**© Vzoel Fox's - Enhanced Assistant Experience**"""
         
         await event.edit(vzoel_text)
 
@@ -195,11 +195,11 @@ async def list_emojis_handler(event):
 async def help_handler(event):
     """Help command"""
     if event.is_private or event.sender_id == (await bot.client.get_me()).id:
-        help_text = f"""**{vzoel_emoji.get_vzoel_signature()} VzoelFox Userbot v2 Commands**
+        help_text = f"""**{vzoel_emoji.get_vzoel_signature()} VzoelFox's Assistant v2 Commands**
 
 {vzoel_emoji.get_emoji('centang')} **Basic Commands:**
-`.ping` - Check bot speed
-`.alive` - Bot status
+`.ping` - Check assistant speed
+`.alive` - Assistant status
 `.vzoel` - Special VzoelFox command
 
 {vzoel_emoji.get_emoji('telegram')} **Emoji Commands:**
@@ -210,7 +210,7 @@ async def help_handler(event):
 {vzoel_emoji.get_emoji('utama')} **Premium Features:**
 • Custom premium emoji support
 • VzoelFox signature collection
-• Enhanced Telethon integration
+• Enhanced assistant integration
 
 **Created by Vzoel Fox's**
 **Enhanced by Vzoel Fox's Ltpn**"""
@@ -219,7 +219,7 @@ async def help_handler(event):
 
 async def main():
     """Main function"""
-    logger.info("Starting VzoelFox Userbot v2...")
+    logger.info("Starting VzoelFox's Assistant v2...")
     
     try:
         await bot.start_client()

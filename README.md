@@ -1,6 +1,6 @@
-# 🦊 VzoelFox Telegram Userbot v2
+# 🦊 VzoelFox's Assistant v2
 
-**Enhanced Telethon-based userbot with premium emoji support**
+**Enhanced userbot with premium emoji support**
 
 Created by **Vzoel Fox's** • Enhanced by **Vzoel Fox's Ltpn**
 
@@ -14,7 +14,7 @@ Created by **Vzoel Fox's** • Enhanced by **Vzoel Fox's Ltpn**
 - Category-based organization
 - Quick access patterns
 
-⛈ **Advanced Telethon Integration**
+⛈ **Advanced Integration**
 - Modern async/await syntax
 - Optimized performance
 - Robust error handling
@@ -90,7 +90,7 @@ python main.py
 ### Special Emojis
 - 😈 `adder1` - Mischief mode
 - 💟 `adder2` - Premium features
-- ✉️ `telegram` - Communication
+- ✉️ `telegram` - Messages
 
 ---
 
@@ -100,16 +100,16 @@ python main.py
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `API_ID` | Yes | Telegram API ID |
-| `API_HASH` | Yes | Telegram API Hash |
+| `API_ID` | Yes | API ID |
+| `API_HASH` | Yes | API Hash |
 | `VZOEL_PREFIX` | No | Command prefix (default: `.`) |
 | `PREMIUM_EMOJIS_ENABLED` | No | Enable emoji features |
 | `VZOEL_OWNER_ID` | No | Bot owner user ID |
 
 ### Emoji Mapping
 
-The bot uses `emoji_mapping.json` for premium emoji management:
-- Custom emoji IDs for Telegram premium
+The assistant uses `emoji_mapping.json` for premium emoji management:
+- Custom emoji IDs for premium features
 - Category-based organization
 - Usage patterns for smart responses
 - Quick access combinations
@@ -121,7 +121,7 @@ The bot uses `emoji_mapping.json` for premium emoji management:
 ### Project Structure
 ```
 vzl2/
-├── main.py              # Main userbot application
+├── main.py              # Main assistant application
 ├── config.py            # Configuration management
 ├── emoji_handler.py     # Premium emoji handler
 ├── emoji_mapping.json   # Emoji definitions
@@ -141,8 +141,8 @@ vzl2/
 
 - Never share your API credentials
 - Use environment variables for sensitive data
-- Enable 2FA on your Telegram account
-- Monitor bot activity regularly
+- Enable 2FA on your account
+- Monitor assistant activity regularly
 
 ---
 

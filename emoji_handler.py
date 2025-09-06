@@ -1,6 +1,6 @@
 """
 VzoelFox Premium Emoji Handler
-Enhanced emoji management for Vzoel Fox's Telegram Userbot v2
+Enhanced emoji management for VzoelFox's Assistant v2
 """
 
 import json
@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 from pathlib import Path
 
 class VzoelEmojiHandler:
-    """Premium emoji handler for VzoelFox userbot"""
+    """Premium emoji handler for VzoelFox's Assistant"""
     
     def __init__(self, mapping_file: str = "emoji_mapping.json"):
         self.mapping_file = Path(mapping_file)

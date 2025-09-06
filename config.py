@@ -1,5 +1,5 @@
 """
-VzoelFox Userbot v2 Configuration
+VzoelFox's Assistant v2 Configuration
 Environment variables and settings management
 """
 
@@ -7,7 +7,7 @@ import os
 from typing import Optional
 
 class Config:
-    """Configuration class for VzoelFox Userbot"""
+    """Configuration class for VzoelFox's Assistant"""
     
     # Telegram API Configuration
     API_ID: int = int(os.getenv("API_ID", "0"))
@@ -63,13 +63,13 @@ class Config:
     def print_config(cls):
         """Print current configuration (hide sensitive data)"""
         print(f"""
-🦊 VzoelFox Userbot v2 Configuration
+🦊 VzoelFox's Assistant v2 Configuration
 
-📱 Telegram API:
+📱 API Settings:
    API_ID: {'✅ Set' if cls.API_ID else '❌ Not Set'}
    API_HASH: {'✅ Set' if cls.API_HASH else '❌ Not Set'}
 
-🤖 Bot Settings:
+🤖 Assistant Settings:
    Prefix: {cls.VZOEL_PREFIX}
    Premium Emojis: {'✅ Enabled' if cls.PREMIUM_EMOJIS_ENABLED else '❌ Disabled'}
    Workers: {cls.WORKERS}
@@ -82,10 +82,10 @@ class Config:
 
 # Environment template for easy setup
 ENV_TEMPLATE = """
-# VzoelFox Userbot v2 Environment Configuration
+# VzoelFox's Assistant v2 Environment Configuration
 # Copy this to .env and fill in your values
 
-# Telegram API (Required)
+# API Configuration (Required)
 API_ID=your_api_id_here
 API_HASH=your_api_hash_here
 
