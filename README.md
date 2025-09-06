@@ -87,7 +87,6 @@ python main.py --help
 ### 🤩 Core Commands
 | Command | Description | Example |
 |---------|-------------|---------|
-| `.ping` | Check assistant response time | `.ping` |
 | `.alive` | Show assistant status | `.alive` |
 | `.vzoel` | VzoelFox special domain mode | `.vzoel` |
 | `.help` | Show help menu | `.help` |
@@ -113,6 +112,15 @@ python main.py --help
 | `.dice` | Roll a dice | `.dice` |
 | `.flip` | Flip a coin | `.flip` |
 | `.quote` | Random VzoelFox quote | `.quote` |
+
+### ⚙️ Ping Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.ping` | PONG!!!! Anti-delay message | `.ping` |
+| `.pink` | PONG!!!! with latency display | `.pink` |
+| `.pong` | PONG + @spambot trigger for limits | `.pong` |
+| `.ponk` | PONGGGGGG + triggers .alive | `.ponk` |
+| `.pings` | Show all ping command info | `.pings` |
 
 ### ⛈ Gcast & Blacklist Commands (Plugin)
 | Command | Description | Example |

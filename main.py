@@ -228,28 +228,6 @@ class VzoelFoxBot:
 # Event handlers
 bot = VzoelFoxBot()
 
-@events.register(events.NewMessage(pattern=r'\.ping'))
-async def ping_handler(event):
-    """Ping command with VzoelFox emojis"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        start_time = asyncio.get_event_loop().time()
-        
-        # Loading emoji
-        loading_msg = vzoel_emoji.format_emoji_response(['loading'], "Pinging...")
-        msg = await event.edit(loading_msg)
-        
-        end_time = asyncio.get_event_loop().time()
-        ping_time = (end_time - start_time) * 1000
-        
-        # Success emoji with ping result
-        ping_emojis = vzoel_emoji.get_command_emojis('ping')
-        response = vzoel_emoji.format_emoji_response(
-            ping_emojis, 
-            f"**VzoelFox Pong!**\n**Speed:** `{ping_time:.2f}ms`"
-        )
-        await msg.edit(response)
-        vzoel_client.increment_command_count()
-
 @events.register(events.NewMessage(pattern=r'\.alive'))
 async def alive_handler(event):
     """Alive command with VzoelFox signature"""
@@ -406,8 +384,7 @@ async def main():
             logger.error("Failed to start client - run with --generate-session first")
             return
         
-        # Register built-in event handlers to the client
-        vzoel_client.client.add_event_handler(ping_handler)
+        # Register built-in event handlers to the client (ping moved to plugin)
         vzoel_client.client.add_event_handler(alive_handler)
         vzoel_client.client.add_event_handler(vzoel_handler)
         vzoel_client.client.add_event_handler(emoji_info_handler)
