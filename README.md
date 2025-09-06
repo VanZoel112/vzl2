@@ -87,9 +87,14 @@ python main.py --help
 ### 🤩 Core Commands
 | Command | Description | Example |
 |---------|-------------|---------|
-| `.alive` | Show assistant status | `.alive` |
 | `.vzoel` | VzoelFox special domain mode | `.vzoel` |
 | `.help` | Show help menu | `.help` |
+
+### 🦊 Alive Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.alive` | 12-phase animated alive display | `.alive` |
+| `.ainfo` | Show alive system information | `.ainfo` |
 
 ### 🎚 System Commands  
 | Command | Description | Example |

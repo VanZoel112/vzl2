@@ -134,23 +134,34 @@ async def ponk_handler(event):
         ponk_msg = await event.edit("**PONGGGGGG!!!!**")
         await asyncio.sleep(1)
         
-        # Now trigger .alive command functionality
-        alive_emojis = vzoel_emoji.get_command_emojis('alive')
-        signature = vzoel_emoji.get_vzoel_signature()
-        
-        alive_text = f"""**VzoelFox's Assistant v2**
-        
+        # Trigger the alive plugin functionality by simulating .alive command
+        try:
+            # Import the alive plugin and call its handler
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("alive", "plugins/alive.py")
+            alive_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(alive_module)
+            
+            # Call the alive handler directly
+            await alive_module.alive_handler(event)
+            
+        except Exception as e:
+            # Fallback to simple alive display if plugin loading fails
+            alive_emojis = vzoel_emoji.get_command_emojis('alive')
+            signature = vzoel_emoji.get_vzoel_signature()
+            
+            alive_text = f"""**VzoelFox's Assistant v2**
+            
 {signature} **Status:** ALIVE & RUNNING
 {vzoel_emoji.get_emoji('aktif')} **Version:** v2.0.0-vzoel
 {vzoel_emoji.get_emoji('telegram')} **Engine:** Enhanced
 {vzoel_emoji.get_emoji('centang')} **Premium Emojis:** Loaded
-        
+            
 **Created by:** Vzoel Fox's
 **Enhanced by:** Vzoel Fox's Ltpn"""
-        
-        # Format with alive emojis and show
-        response = vzoel_emoji.format_emoji_response(alive_emojis, alive_text)
-        await ponk_msg.edit(response)
+            
+            response = vzoel_emoji.format_emoji_response(alive_emojis, alive_text)
+            await ponk_msg.edit(response)
         
         vzoel_client.increment_command_count()
 
