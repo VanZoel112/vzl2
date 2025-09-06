@@ -135,6 +135,16 @@ python main.py --help
 | `.stopid` | Stop ID animation loop | `.stopid` |
 | `.idinfo` | Show ID checker information | `.idinfo` |
 
+### 🎙️ Voice Chat Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.vcjoin` | Join group voice chat | `.vcjoin` |
+| `.vcleave` | Leave voice chat | `.vcleave` |
+| `.vcmute` | Mute microphone | `.vcmute` |
+| `.vcunmute` | Unmute microphone | `.vcunmute` |
+| `.vcstatus` | Show voice chat status | `.vcstatus` |
+| `.vcinstall` | Show installation guide | `.vcinstall` |
+
 ### ⛈ Gcast & Blacklist Commands (Plugin)
 | Command | Description | Example |
 |---------|-------------|---------|
