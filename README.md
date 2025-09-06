@@ -20,11 +20,11 @@ Created by **Vzoel Fox's** • Enhanced by **Vzoel Fox's Ltpn**
 - Robust error handling
 - Session management
 
-🎚 **VzoelFox Signature Commands**
-- `.ping` - Speed test with emojis
-- `.alive` - Status with signature
-- `.vzoel` - Special VzoelFox mode
-- `.emojis` - List all premium emojis
+🎚 **VzoelFox Enhanced Features**
+- **Plugin System** - Dynamic plugin loading from `plugins/` directory
+- **Auto-Update** - Manual update system with `.update` and `.update force`
+- **Advanced Client** - Enhanced client with statistics and management
+- **Premium Emojis** - 12 exclusive VzoelFox emojis integrated throughout
 
 ---
 
@@ -82,14 +82,35 @@ python main.py --help
 
 ## 🤖 Commands
 
+### 🤩 Core Commands
 | Command | Description | Example |
 |---------|-------------|---------|
-| `.ping` | 🤩 Check bot response time | `.ping` |
-| `.alive` | ⛈ Show bot status | `.alive` |
-| `.vzoel` | 😈 VzoelFox special mode | `.vzoel` |
-| `.emo <name>` | 🎚 Get emoji info | `.emo utama` |
-| `.emojis` | 📱 List all emojis | `.emojis` |
-| `.help` | 🤪 Show help menu | `.help` |
+| `.ping` | Check assistant response time | `.ping` |
+| `.alive` | Show assistant status | `.alive` |
+| `.vzoel` | VzoelFox special domain mode | `.vzoel` |
+| `.help` | Show help menu | `.help` |
+
+### 🎚 System Commands  
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.update` | Check and install updates | `.update` |
+| `.update force` | Force update (manual) | `.update force` |
+| `.stats` | Show assistant statistics | `.stats` |
+| `.plugins` | List loaded plugins | `.plugins` |
+| `.restart` | Restart the assistant | `.restart` |
+
+### 💟 Emoji Commands
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.emo <name>` | Get emoji information | `.emo utama` |
+| `.emojis` | List all premium emojis | `.emojis` |
+
+### 🦊 Fun Commands (Plugin)
+| Command | Description | Example |
+|---------|-------------|---------|
+| `.dice` | Roll a dice | `.dice` |
+| `.flip` | Flip a coin | `.flip` |
+| `.quote` | Random VzoelFox quote | `.quote` |
 
 ---
 
@@ -152,11 +173,32 @@ vzl2/
 └── README.md           # This file
 ```
 
-### Adding New Features
-1. Create new command handlers in `main.py`
-2. Use `vzoel_emoji.get_emoji()` for emoji integration
-3. Follow VzoelFox naming conventions
-4. Test with premium emoji responses
+### Plugin Development
+1. Create `.py` files in `plugins/` directory
+2. Use `@events.register()` for command handlers
+3. Add `vzoel_init()` function for initialization
+4. Import `vzoel_emoji` for emoji integration
+
+#### Example Plugin:
+```python
+from telethon import events
+
+async def vzoel_init(client, vzoel_emoji):
+    print("Plugin loaded!")
+
+@events.register(events.NewMessage(pattern=r'\.test'))
+async def test_handler(event):
+    await event.edit("Test successful!")
+
+test_handler.handler = test_handler.handler
+test_handler.command = ".test"
+```
+
+### System Features
+- **Auto-reload** plugins on file changes
+- **Plugin management** with `.plugins` command  
+- **Update system** with git integration
+- **Statistics tracking** with `.stats` command
 
 ---
 

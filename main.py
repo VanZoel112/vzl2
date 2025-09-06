@@ -18,6 +18,7 @@ from telethon.sessions import StringSession
 
 from emoji_handler import vzoel_emoji
 from config import Config
+from client import vzoel_client
 
 # Configure logging
 logging.basicConfig(
@@ -230,7 +231,7 @@ bot = VzoelFoxBot()
 @events.register(events.NewMessage(pattern=r'\.ping'))
 async def ping_handler(event):
     """Ping command with VzoelFox emojis"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         start_time = asyncio.get_event_loop().time()
         
         # Loading emoji
@@ -247,11 +248,12 @@ async def ping_handler(event):
             f"**VzoelFox Pong!**\n**Speed:** `{ping_time:.2f}ms`"
         )
         await msg.edit(response)
+        vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.alive'))
 async def alive_handler(event):
     """Alive command with VzoelFox signature"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         alive_emojis = vzoel_emoji.get_command_emojis('alive')
         signature = vzoel_emoji.get_vzoel_signature()
         
@@ -267,11 +269,12 @@ async def alive_handler(event):
         
         response = vzoel_emoji.format_emoji_response(alive_emojis, alive_text)
         await event.edit(response)
+        vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.vzoel'))
 async def vzoel_handler(event):
     """Special VzoelFox command"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         vzoel_emojis = vzoel_emoji.get_command_emojis('vzoel')
         signature = vzoel_emoji.get_vzoel_signature()
         
@@ -285,11 +288,12 @@ async def vzoel_handler(event):
 **© Vzoel Fox's - Enhanced Assistant Experience**"""
         
         await event.edit(vzoel_text)
+        vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.emo (\w+)'))
 async def emoji_info_handler(event):
     """Get emoji information"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         emoji_name = event.pattern_match.group(1)
         emoji_info = vzoel_emoji.get_emoji_info(emoji_name)
         
@@ -311,11 +315,12 @@ async def emoji_info_handler(event):
                 f"Emoji `{emoji_name}` not found in VzoelFox collection"
             )
             await event.edit(error_msg)
+        vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.emojis'))
 async def list_emojis_handler(event):
     """List all available emojis"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         all_emojis = vzoel_emoji.get_all_emojis()
         
         emoji_list = "**VzoelFox's Premium Emoji Collection**\n\n"
@@ -332,11 +337,12 @@ async def list_emojis_handler(event):
         emoji_list += f"\n{signature} **Total:** {len(all_emojis)} Premium Emojis"
         
         await event.edit(emoji_list)
+        vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.help'))
 async def help_handler(event):
     """Help command"""
-    if event.is_private or event.sender_id == (await bot.client.get_me()).id:
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
         help_text = f"""**{vzoel_emoji.get_vzoel_signature()} VzoelFox's Assistant v2 Commands**
 
 {vzoel_emoji.get_emoji('centang')} **Basic Commands:**
@@ -358,6 +364,7 @@ async def help_handler(event):
 **Enhanced by Vzoel Fox's Ltpn**"""
         
         await event.edit(help_text)
+        vzoel_client.increment_command_count()
 
 def show_usage():
     """Show usage instructions"""
@@ -392,34 +399,32 @@ async def main():
         await generator.generate_session_string()
         return
     
-    logger.info("Starting VzoelFox's Assistant v2...")
-    
     try:
-        # Start client
-        client_started = await bot.start_client()
+        # Start the advanced client
+        client_started = await vzoel_client.start()
         if not client_started:
             logger.error("Failed to start client - run with --generate-session first")
             return
         
-        # Register event handlers
-        bot.client.add_event_handler(ping_handler)
-        bot.client.add_event_handler(alive_handler)
-        bot.client.add_event_handler(vzoel_handler)
-        bot.client.add_event_handler(emoji_info_handler)
-        bot.client.add_event_handler(list_emojis_handler)
-        bot.client.add_event_handler(help_handler)
+        # Register built-in event handlers to the client
+        vzoel_client.client.add_event_handler(ping_handler)
+        vzoel_client.client.add_event_handler(alive_handler)
+        vzoel_client.client.add_event_handler(vzoel_handler)
+        vzoel_client.client.add_event_handler(emoji_info_handler)
+        vzoel_client.client.add_event_handler(list_emojis_handler)
+        vzoel_client.client.add_event_handler(help_handler)
         
-        logger.info("All event handlers registered successfully")
+        logger.info("🎚 Built-in event handlers registered")
         
         # Keep the assistant running
-        await bot.client.run_until_disconnected()
+        await vzoel_client.client.run_until_disconnected()
         
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt")
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
     finally:
-        await bot.stop_client()
+        await vzoel_client.stop()
 
 if __name__ == "__main__":
     try:
