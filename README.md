@@ -41,19 +41,42 @@ cd vzl2
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment
-Create `.env` file:
-```env
-API_ID=your_api_id
-API_HASH=your_api_hash
-VZOEL_PREFIX=.
-PREMIUM_EMOJIS_ENABLED=true
+### 3. Generate Session String (First Time)
+```bash
+python main.py --generate-session
 ```
+Follow the prompts:
+- Enter phone number with country code
+- Enter verification code
+- Enter 2FA password (if enabled)
+- Session will be automatically saved to `.env`
 
-### 4. Run Userbot
+### 4. Run Assistant
 ```bash
 python main.py
 ```
+
+---
+
+## 🚀 Usage
+
+### Session Generation
+```bash
+# Generate new session (first time setup)
+python main.py --generate-session
+
+# Start assistant
+python main.py
+
+# Show help
+python main.py --help
+```
+
+### 🤩 Features:
+- **Automatic API validation** - Checks credentials before proceeding
+- **Smart session management** - Automatically saves to `.env` file
+- **VzoelFox premium emojis** - Enhanced visual feedback
+- **Error handling** - Guides you through common issues
 
 ---
 
@@ -100,11 +123,11 @@ python main.py
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `API_ID` | Yes | API ID |
-| `API_HASH` | Yes | API Hash |
+| `API_ID` | Auto | API ID (29919905) |
+| `API_HASH` | Auto | API Hash (pre-configured) |
+| `STRING_SESSION` | Auto | Generated automatically |
 | `VZOEL_PREFIX` | No | Command prefix (default: `.`) |
 | `PREMIUM_EMOJIS_ENABLED` | No | Enable emoji features |
-| `VZOEL_OWNER_ID` | No | Bot owner user ID |
 
 ### Emoji Mapping
 

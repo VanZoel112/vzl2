@@ -5,13 +5,17 @@ Environment variables and settings management
 
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class Config:
     """Configuration class for VzoelFox's Assistant"""
     
-    # Telegram API Configuration
-    API_ID: int = int(os.getenv("API_ID", "0"))
-    API_HASH: str = os.getenv("API_HASH", "")
+    # API Configuration
+    API_ID: int = int(os.getenv("API_ID", "29919905"))
+    API_HASH: str = os.getenv("API_HASH", "717957f0e3ae20a7db004d08b66bfd30")
     
     # Bot Configuration
     BOT_TOKEN: Optional[str] = os.getenv("BOT_TOKEN")

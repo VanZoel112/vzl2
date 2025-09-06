@@ -9,10 +9,12 @@ import sys
 import asyncio
 import logging
 from pathlib import Path
+import json
 
 from telethon import TelegramClient, events
-from telethon.errors import SessionPasswordNeededError
+from telethon.errors import SessionPasswordNeededError, ApiIdInvalidError, PhoneCodeInvalidError, PhoneNumberInvalidError
 from telethon.tl.types import DocumentAttributeCustomEmoji
+from telethon.sessions import StringSession
 
 from emoji_handler import vzoel_emoji
 from config import Config
@@ -29,6 +31,140 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+class SessionGenerator:
+    """VzoelFox's Assistant Session String Generator"""
+    
+    def __init__(self):
+        self.config_file = ".env"
+        
+    def save_session_to_env(self, session_string: str):
+        """Save session string to .env file"""
+        env_content = []
+        
+        # Read existing .env file if it exists
+        if os.path.exists(self.config_file):
+            with open(self.config_file, 'r') as f:
+                env_content = f.readlines()
+        
+        # Update or add STRING_SESSION
+        session_found = False
+        for i, line in enumerate(env_content):
+            if line.startswith('STRING_SESSION='):
+                env_content[i] = f'STRING_SESSION={session_string}\n'
+                session_found = True
+                break
+        
+        if not session_found:
+            env_content.append(f'STRING_SESSION={session_string}\n')
+        
+        # Write back to file
+        with open(self.config_file, 'w') as f:
+            f.writelines(env_content)
+        
+        logger.info(f"🤩 Session string saved to {self.config_file}")
+    
+    async def validate_api_credentials(self, api_id: int, api_hash: str) -> bool:
+        """Validate API credentials"""
+        try:
+            client = TelegramClient(StringSession(), api_id, api_hash)
+            await client.connect()
+            
+            # Try to get updates to test API validity
+            if await client.is_user_authorized():
+                await client.disconnect()
+                return True
+            
+            await client.disconnect()
+            return True  # If we can connect, credentials are valid
+            
+        except ApiIdInvalidError:
+            logger.error("❌ Invalid API ID or API Hash")
+            return False
+        except Exception as e:
+            logger.error(f"❌ API validation error: {e}")
+            return False
+    
+    async def generate_session_string(self) -> str:
+        """Generate session string with VzoelFox branding"""
+        signature = vzoel_emoji.get_vzoel_signature()
+        print(f"\n{signature} VzoelFox's Assistant Session Generator {signature}\n")
+        
+        # Get API credentials
+        while True:
+            api_id_input = input("🤩 Enter API ID (or press Enter for default): ").strip()
+            api_hash_input = input("⛈ Enter API Hash (or press Enter for default): ").strip()
+            
+            # Use provided defaults if empty
+            api_id = int(api_id_input) if api_id_input else Config.API_ID
+            api_hash = api_hash_input if api_hash_input else Config.API_HASH
+            
+            print(f"\n{vzoel_emoji.get_emoji('loading')} Validating API credentials...")
+            
+            # Validate API credentials
+            if await self.validate_api_credentials(api_id, api_hash):
+                print(f"{vzoel_emoji.get_emoji('centang')} API credentials are valid!")
+                break
+            else:
+                print(f"{vzoel_emoji.get_emoji('merah')} Invalid API credentials, please try again.\n")
+                continue
+        
+        # Generate session string
+        client = TelegramClient(StringSession(), api_id, api_hash)
+        await client.connect()
+        
+        # Phone number input
+        while True:
+            try:
+                phone = input(f"\n{vzoel_emoji.get_emoji('telegram')} Enter phone number (with country code): ").strip()
+                
+                print(f"{vzoel_emoji.get_emoji('proses')} Sending verification code...")
+                await client.send_code_request(phone)
+                break
+                
+            except PhoneNumberInvalidError:
+                print(f"{vzoel_emoji.get_emoji('merah')} Invalid phone number format, please try again.")
+            except Exception as e:
+                print(f"{vzoel_emoji.get_emoji('merah')} Error: {e}")
+        
+        # Verification code input
+        while True:
+            try:
+                code = input(f"\n{vzoel_emoji.get_emoji('kuning')} Enter verification code: ").strip()
+                
+                print(f"{vzoel_emoji.get_emoji('loading')} Verifying code...")
+                await client.sign_in(phone, code)
+                break
+                
+            except PhoneCodeInvalidError:
+                print(f"{vzoel_emoji.get_emoji('merah')} Invalid verification code, please try again.")
+            except SessionPasswordNeededError:
+                # 2FA password required
+                while True:
+                    try:
+                        password = input(f"\n{vzoel_emoji.get_emoji('aktif')} Enter 2FA password: ").strip()
+                        await client.sign_in(password=password)
+                        break
+                    except Exception as e:
+                        print(f"{vzoel_emoji.get_emoji('merah')} Invalid password: {e}")
+                break
+            except Exception as e:
+                print(f"{vzoel_emoji.get_emoji('merah')} Error: {e}")
+        
+        # Get session string
+        session_string = client.session.save()
+        await client.disconnect()
+        
+        print(f"\n{vzoel_emoji.get_emoji('utama')} Session string generated successfully!")
+        print(f"{vzoel_emoji.get_emoji('biru')} Saving to environment file...")
+        
+        # Save to .env file
+        self.save_session_to_env(session_string)
+        
+        print(f"\n{signature} VzoelFox's Assistant Setup Complete! {signature}")
+        print(f"{vzoel_emoji.get_emoji('centang')} You can now run the assistant with: python main.py")
+        
+        return session_string
+
 class VzoelFoxBot:
     """VzoelFox's Assistant v2"""
     
@@ -38,27 +174,31 @@ class VzoelFoxBot:
         self.is_running = False
         
     async def start_client(self):
-        """Start Telegram client"""
+        """Start client with string session or generate new one"""
         try:
-            self.client = TelegramClient(
-                'vzl2_session', 
-                self.config.API_ID, 
-                self.config.API_HASH
-            )
+            # Check if string session exists
+            if self.config.STRING_SESSION:
+                logger.info("Using existing string session...")
+                self.client = TelegramClient(
+                    StringSession(self.config.STRING_SESSION),
+                    self.config.API_ID,
+                    self.config.API_HASH
+                )
+            else:
+                # Use file session as fallback
+                self.client = TelegramClient(
+                    'vzl2_session',
+                    self.config.API_ID,
+                    self.config.API_HASH
+                )
             
             await self.client.start()
             
-            if not await self.client.is_user_authorized():
-                logger.info("Client not authorized, please login")
-                phone = input("Enter phone number: ")
-                await self.client.send_code_request(phone)
-                code = input("Enter code: ")
-                
-                try:
-                    await self.client.sign_in(phone, code)
-                except SessionPasswordNeededError:
-                    password = input("Enter 2FA password: ")
-                    await self.client.sign_in(password=password)
+            # If not authorized and no string session, suggest generating one
+            if not await self.client.is_user_authorized() and not self.config.STRING_SESSION:
+                logger.info("🤩 Client not authorized and no string session found")
+                logger.info("⛈ Run: python main.py --generate-session to create a session")
+                return False
             
             self.is_running = True
             logger.info("VzoelFox's Assistant v2 started successfully!")
@@ -71,9 +211,11 @@ class VzoelFoxBot:
             )
             logger.info(f"{signature} {startup_msg}")
             
+            return True
+            
         except Exception as e:
             logger.error(f"Failed to start client: {e}")
-            sys.exit(1)
+            return False
     
     async def stop_client(self):
         """Stop Telegram client"""
@@ -217,12 +359,47 @@ async def help_handler(event):
         
         await event.edit(help_text)
 
+def show_usage():
+    """Show usage instructions"""
+    signature = vzoel_emoji.get_vzoel_signature()
+    print(f"""
+{signature} VzoelFox's Assistant v2 Usage {signature}
+
+🤩 Commands:
+  python main.py                    - Start the assistant
+  python main.py --generate-session - Generate new session string
+  python main.py --help            - Show this help
+
+⛈ First Time Setup:
+  1. Run: python main.py --generate-session
+  2. Follow the prompts to authenticate
+  3. Run: python main.py to start
+
+🎚 Created by Vzoel Fox's • Enhanced by Vzoel Fox's Ltpn
+    """)
+
 async def main():
     """Main function"""
+    # Check for help argument
+    if len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h", "help"]:
+        show_usage()
+        return
+    
+    # Check for session generation argument
+    if len(sys.argv) > 1 and sys.argv[1] == "--generate-session":
+        logger.info("🦊 VzoelFox's Assistant Session Generator")
+        generator = SessionGenerator()
+        await generator.generate_session_string()
+        return
+    
     logger.info("Starting VzoelFox's Assistant v2...")
     
     try:
-        await bot.start_client()
+        # Start client
+        client_started = await bot.start_client()
+        if not client_started:
+            logger.error("Failed to start client - run with --generate-session first")
+            return
         
         # Register event handlers
         bot.client.add_event_handler(ping_handler)
@@ -234,7 +411,7 @@ async def main():
         
         logger.info("All event handlers registered successfully")
         
-        # Keep the bot running
+        # Keep the assistant running
         await bot.client.run_until_disconnected()
         
     except KeyboardInterrupt:

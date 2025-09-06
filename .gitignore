@@ -9,6 +9,7 @@ vzl2_session*
 .env
 .env.local
 .env.prod
+.env.production
 
 # Python
 __pycache__/
