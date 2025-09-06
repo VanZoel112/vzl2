@@ -95,6 +95,8 @@ python main.py --help
 |---------|-------------|---------|
 | `.alive` | 12-phase animated alive display | `.alive` |
 | `.ainfo` | Show alive system information | `.ainfo` |
+| `.pizol` | 40-phase extended system display | `.pizol` |
+| `.pinfo` | Show pizol system information | `.pinfo` |
 
 ### 🎚 System Commands  
 | Command | Description | Example |
