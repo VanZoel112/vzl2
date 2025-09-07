@@ -20,7 +20,7 @@ limit_tasks = {}
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Limit Checker Plugin loaded - Anti-flood ready")
 
 @events.register(events.NewMessage(pattern=r'\.limit'))
@@ -28,7 +28,7 @@ async def limit_checker_handler(event):
     """Check account limits and restrictions via @spambot"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         chat_id = event.chat_id if not event.is_private else event.sender_id
         
@@ -63,7 +63,7 @@ async def limit_checker_handler(event):
 
 async def perform_limit_check(event, msg):
     """Perform the actual limit checking process"""
-    from emoji_handler import vzoel_emoji
+    from emoji_handler_premium import vzoel_emoji
     
     try:
         # Phase 1: Connecting to @spambot
@@ -121,14 +121,14 @@ async def perform_limit_check(event, msg):
         # Phase 4: Final result
         if account_status['restricted']:
             # Account is restricted - use red emoji
-            restriction_msg = f"""**{vzoel_emoji.get_emoji('merah')} AKUN DIBATASI**
+            restriction_msg = f"""**{vzoel_emoji.getemoji('merah', premium=True)} AKUN DIBATASI**
 
-{vzoel_emoji.get_emoji('merah')} **Status:** Account Restricted
-{vzoel_emoji.get_emoji('petir')} **Tipe:** {account_status['restriction_type']}
-{vzoel_emoji.get_emoji('telegram')} **Durasi:** {account_status['duration']}
-{vzoel_emoji.get_emoji('proses')} **Pesan Bot:** {account_status['bot_message']}
+{vzoel_emoji.getemoji('merah', premium=True)} **Status:** Account Restricted
+{vzoel_emoji.getemoji('petir', premium=True)} **Tipe:** {account_status['restriction_type']}
+{vzoel_emoji.getemoji('telegram', premium=True)} **Durasi:** {account_status['duration']}
+{vzoel_emoji.getemoji('proses', premium=True)} **Pesan Bot:** {account_status['bot_message']}
 
-{vzoel_emoji.get_emoji('kuning')} **Saran:**
+{vzoel_emoji.getemoji('kuning', premium=True)} **Saran:**
 • Tunggu hingga pembatasan berakhir
 • Kurangi aktivitas spam
 • Gunakan delay lebih lama antar pesan
@@ -140,20 +140,20 @@ async def perform_limit_check(event, msg):
             
         elif account_status['good_news']:
             # Good news from spambot - account is safe
-            safe_msg = f"""**{vzoel_emoji.get_emoji('centang')} VZOEL FOX'S AMAN**
+            safe_msg = f"""**{vzoel_emoji.getemoji('centang', premium=True)} VZOEL FOX'S AMAN**
 
-{vzoel_emoji.get_emoji('utama')} **Status:** Account Clear
-{vzoel_emoji.get_emoji('aktif')} **Anti-Flood:** Active
-{vzoel_emoji.get_emoji('telegram')} **Spam Protection:** Enabled
-{vzoel_emoji.get_emoji('petir')} **Limit Status:** No Restrictions
+{vzoel_emoji.getemoji('utama', premium=True)} **Status:** Account Clear
+{vzoel_emoji.getemoji('aktif', premium=True)} **Anti-Flood:** Active
+{vzoel_emoji.getemoji('telegram', premium=True)} **Spam Protection:** Enabled
+{vzoel_emoji.getemoji('petir', premium=True)} **Limit Status:** No Restrictions
 
-{vzoel_emoji.get_emoji('centang')} **VzoelFox Features:**
+{vzoel_emoji.getemoji('centang', premium=True)} **VzoelFox Features:**
 • Flood protection aktif
 • Spam detection enabled
 • Account dalam kondisi baik
 • Siap untuk broadcast/gcast
 
-{vzoel_emoji.get_emoji('proses')} **Bot Message:** {account_status['bot_message']}
+{vzoel_emoji.getemoji('proses', premium=True)} **Bot Message:** {account_status['bot_message']}
 
 **Vzoel Fox's Aman!**"""
             
@@ -161,13 +161,13 @@ async def perform_limit_check(event, msg):
             
         else:
             # Unclear response or other status
-            unclear_msg = f"""**{vzoel_emoji.get_emoji('kuning')} STATUS TIDAK JELAS**
+            unclear_msg = f"""**{vzoel_emoji.getemoji('kuning', premium=True)} STATUS TIDAK JELAS**
 
-{vzoel_emoji.get_emoji('loading')} **Status:** Unknown
-{vzoel_emoji.get_emoji('proses')} **Respons Bot:** {account_status['bot_message']}
-{vzoel_emoji.get_emoji('telegram')} **Saran:** Coba lagi dalam beberapa menit
+{vzoel_emoji.getemoji('loading', premium=True)} **Status:** Unknown
+{vzoel_emoji.getemoji('proses', premium=True)} **Respons Bot:** {account_status['bot_message']}
+{vzoel_emoji.getemoji('telegram', premium=True)} **Saran:** Coba lagi dalam beberapa menit
 
-{vzoel_emoji.get_emoji('utama')} **Kemungkinan:**
+{vzoel_emoji.getemoji('utama', premium=True)} **Kemungkinan:**
 • @spambot sedang maintenance
 • Koneksi tidak stabil
 • Respons bot tidak standar
@@ -248,39 +248,46 @@ async def limit_info_handler(event):
     """Show information about limit checker system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         limit_info = f"""**{signature} Limit Checker Information**
 
-{vzoel_emoji.get_emoji('utama')} **Apa itu Limit Checker?**
+{vzoel_emoji.getemoji('utama', premium=True)} **Apa itu Limit Checker?**
 Sistem untuk memeriksa status akun dan pembatasan melalui @spambot dengan mengirim perintah /start berulang.
 
-{vzoel_emoji.get_emoji('centang')} **Cara Kerja:**
+{vzoel_emoji.getemoji('centang', premium=True)} **Cara Kerja:**
 • Mengirim /start ke @spambot 3x berturut-turut
 • Menganalisis respons untuk deteksi pembatasan
 • Memberikan feedback dengan emoji sesuai status
 • Anti-flood protection dengan delay otomatis
 
-{vzoel_emoji.get_emoji('aktif')} **Status Response:**
-• {vzoel_emoji.get_emoji('merah')} **Merah** - Akun dibatasi/restricted
-• {vzoel_emoji.get_emoji('centang')} **Hijau** - "Vzoel Fox's Aman" (kabar baik)
-• {vzoel_emoji.get_emoji('kuning')} **Kuning** - Status tidak jelas
+{vzoel_emoji.getemoji('aktif', premium=True)} **Status Response:**
+• {vzoel_emoji.getemoji('merah', premium=True)} **Merah** - Akun dibatasi/restricted
+• {vzoel_emoji.getemoji('centang', premium=True)} **Hijau** - "Vzoel Fox's Aman" (kabar baik)
+• {vzoel_emoji.getemoji('kuning', premium=True)} **Kuning** - Status tidak jelas
 
-{vzoel_emoji.get_emoji('telegram')} **Deteksi Pembatasan:**
+{vzoel_emoji.getemoji('telegram', premium=True)} **Deteksi Pembatasan:**
 • Flood wait restrictions
 • Spam detection alerts  
 • Account temporary bans
 • General limitations
 
-{vzoel_emoji.get_emoji('proses')} **Anti-Flood Features:**
+{vzoel_emoji.getemoji('proses', premium=True)} **Anti-Flood Features:**
 • 2 detik delay antar perintah
 • Flood wait error handling
 • Privacy restriction handling
 • Multiple attempt system
 
-{vzoel_emoji.get_emoji('petir')} **Usage:**
+{vzoel_emoji.getemoji('petir', premium=True)} **Usage:**
 Simply type `.limit` to start comprehensive account restriction check via @spambot interaction.
 
 **By VzoelFox Assistant**"""

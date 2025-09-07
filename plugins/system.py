@@ -16,7 +16,7 @@ __author__ = "Vzoel Fox's"
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} System Plugin loaded - Update & Stats commands ready")
 
 @events.register(events.NewMessage(pattern=r'\.update(?: (.+))?'))
@@ -28,7 +28,7 @@ async def update_handler(event):
         args = event.pattern_match.group(1)
         force = args and args.strip().lower() == 'force'
         
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Show loading
         loading_msg = vzoel_emoji.format_emoji_response(
@@ -95,7 +95,7 @@ async def stats_handler(event):
         except:
             current_commit = "Unknown"
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         stats_text = f"""**{signature} VzoelFox's Assistant Stats**
 
@@ -127,7 +127,7 @@ async def plugins_handler(event):
             await event.edit(no_plugins_msg)
             return
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         plugins_text = f"**{signature} Loaded Plugins ({len(plugin_list)})**\n\n"
         
@@ -149,6 +149,13 @@ async def restart_handler(event):
     """Restart the assistant"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
         restart_msg = vzoel_emoji.format_emoji_response(
             ['loading'], "Restarting VzoelFox's Assistant..."

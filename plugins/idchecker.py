@@ -19,7 +19,7 @@ animation_tasks = {}
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} ID Checker Plugin loaded - Animated ID detection ready")
 
 @events.register(events.NewMessage(pattern=r'\.id(?: (.+))?'))
@@ -27,7 +27,7 @@ async def id_checker_handler(event):
     """ID checker with animated process and unlimited loop results"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Stop any existing animation for this chat
         chat_id = event.chat_id
@@ -199,7 +199,7 @@ async def stop_id_animation_handler(event):
     """Stop ID animation loop"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         chat_id = event.chat_id
         
@@ -225,18 +225,25 @@ async def id_info_handler(event):
     """Show information about ID checker system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         id_info = f"""**{signature} VzoelFox ID Checker**
 
-{vzoel_emoji.get_emoji('utama')} **Usage Methods:**
+{vzoel_emoji.getemoji('utama', premium=True)} **Usage Methods:**
 • `.id @username` - Check by username
 • `.id` (reply) - Check replied user
 • `.stopid` - Stop animation loop
 
-{vzoel_emoji.get_emoji('centang')} **Process Animation:**
+{vzoel_emoji.getemoji('centang', premium=True)} **Process Animation:**
 1. Connecting to VzoelFox servers
 2. Validating user credentials  
 3. Scanning user database
@@ -244,7 +251,7 @@ async def id_info_handler(event):
 5. Processing user data
 6. Finalizing ID lookup
 
-{vzoel_emoji.get_emoji('aktif')} **Display Features:**
+{vzoel_emoji.getemoji('aktif', premium=True)} **Display Features:**
 • Unlimited loop animation
 • Random emoji rotation
 • User ID display
@@ -252,7 +259,7 @@ async def id_info_handler(event):
 • Full name resolution
 • VzoelFox branding
 
-{vzoel_emoji.get_emoji('telegram')} **Information Shown:**
+{vzoel_emoji.getemoji('telegram', premium=True)} **Information Shown:**
 1. User ID (numeric)
 2. Username (@handle)
 3. Full name (first + last)

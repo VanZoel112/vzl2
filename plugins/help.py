@@ -11,6 +11,13 @@ import asyncio
 import math
 import importlib
 import os
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"
@@ -182,7 +189,7 @@ async def help_handler(event):
     """Show comprehensive help system with pagination"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         user_id = event.sender_id
         
@@ -276,7 +283,7 @@ async def help_next_callback(event):
         await event.answer("Help session expired", alert=True)
         return
     
-    from emoji_handler import vzoel_emoji
+    from emoji_handler_premium import vzoel_emoji
     
     # Get plugin info and update page
     plugins_info = get_plugin_info()
@@ -311,7 +318,7 @@ async def help_prev_callback(event):
         await event.answer("Help session expired", alert=True)
         return
     
-    from emoji_handler import vzoel_emoji
+    from emoji_handler_premium import vzoel_emoji
     
     # Get plugin info and update page
     plugins_info = get_plugin_info()
@@ -343,7 +350,7 @@ async def help_close_callback(event):
         help_active[user_id] = False
         del help_sessions[user_id]
     
-    from emoji_handler import vzoel_emoji
+    from emoji_handler_premium import vzoel_emoji
     
     close_msg = vzoel_emoji.format_emoji_response(
         ['centang'], "Help closed. Use .help to open again."
@@ -362,7 +369,7 @@ async def help_next_handler(event):
             return  # Help not active
         
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Same logic as callback
         plugins_info = get_plugin_info()
@@ -404,7 +411,7 @@ async def help_back_handler(event):
             return  # Help not active
         
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         plugins_info = get_plugin_info()
         total_plugins = len(plugins_info)
@@ -442,7 +449,7 @@ async def help_exit_handler(event):
             return  # Help not active
         
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Close help session
         help_active[user_id] = False
@@ -464,7 +471,7 @@ async def help_refresh_handler(event):
     """Refresh help plugin cache to detect new plugins"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Force refresh plugin cache
         plugins_info = get_plugin_info(force_refresh=True)

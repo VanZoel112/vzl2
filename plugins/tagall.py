@@ -21,7 +21,7 @@ tagall_active = {}
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Tagall Plugin loaded - Member tagging ready")
 
 @events.register(events.NewMessage(pattern=r'\.tagall( (.+))?'))
@@ -29,7 +29,7 @@ async def tagall_handler(event):
     """Tag all members in group with animated feedback"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Check if we're in a group
         if event.is_private:
@@ -128,7 +128,7 @@ async def tagall_handler(event):
 
 async def perform_tagall(event, participants, message_text, chat_title):
     """Perform the actual tagall with animated feedback"""
-    from emoji_handler import vzoel_emoji
+    from emoji_handler_premium import vzoel_emoji
     
     chat_id = event.chat_id
     user_count = 0
@@ -157,20 +157,20 @@ async def perform_tagall(event, participants, message_text, chat_title):
             
             # Random premium emoji for animation
             premium_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif']
-            random_emoji = vzoel_emoji.get_emoji(random.choice(premium_emojis))
+            random_emoji = vzoel_emoji.getemoji(random.choice(premium_emojis, premium=True))
             
             # Create animated status message
-            animation_text = f"""**{vzoel_emoji.get_emoji('telegram')} VZOEL TAGALL PROCESS**
+            animation_text = f"""**{vzoel_emoji.getemoji('telegram', premium=True)} VZOEL TAGALL PROCESS**
 
-{vzoel_emoji.get_emoji('aktif')} **Username:** {username}
-{vzoel_emoji.get_emoji('utama')} **Nama:** {full_name}
+{vzoel_emoji.getemoji('aktif', premium=True)} **Username:** {username}
+{vzoel_emoji.getemoji('utama', premium=True)} **Nama:** {full_name}
 {random_emoji} **Status:** {random.choice(animation_phases)}
-{vzoel_emoji.get_emoji('centang')} **Tagall by:** Vzoel Fox's Assistant
-{vzoel_emoji.get_emoji('proses')} **Progress:** {user_count}/{len(participants)}
+{vzoel_emoji.getemoji('centang', premium=True)} **Tagall by:** Vzoel Fox's Assistant
+{vzoel_emoji.getemoji('proses', premium=True)} **Progress:** {user_count}/{len(participants)}
 
 **Pesan:** {message_text}
 
-{vzoel_emoji.get_emoji('petir')} **Grup:** {chat_title}"""
+{vzoel_emoji.getemoji('petir', premium=True)} **Grup:** {chat_title}"""
             
             # Send tag message
             tag_message = f"[{full_name}](tg://user?id={participant.id}) {message_text}"
@@ -197,12 +197,12 @@ async def perform_tagall(event, participants, message_text, chat_title):
     
     # Final completion message
     if tagall_active.get(chat_id, False):
-        completion_msg = f"""**{vzoel_emoji.get_emoji('centang')} TAGALL SELESAI**
+        completion_msg = f"""**{vzoel_emoji.getemoji('centang', premium=True)} TAGALL SELESAI**
 
-{vzoel_emoji.get_emoji('utama')} **Total Member Tagged:** {user_count}
-{vzoel_emoji.get_emoji('telegram')} **Grup:** {chat_title}
-{vzoel_emoji.get_emoji('aktif')} **Pesan:** {message_text}
-{vzoel_emoji.get_emoji('petir')} **Status:** Completed Successfully
+{vzoel_emoji.getemoji('utama', premium=True)} **Total Member Tagged:** {user_count}
+{vzoel_emoji.getemoji('telegram', premium=True)} **Grup:** {chat_title}
+{vzoel_emoji.getemoji('aktif', premium=True)} **Pesan:** {message_text}
+{vzoel_emoji.getemoji('petir', premium=True)} **Status:** Completed Successfully
 
 **By VzoelFox Assistant**"""
         
@@ -214,7 +214,7 @@ async def stop_tagall_handler(event):
     """Stop ongoing tagall process"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         chat_id = event.chat_id
         
@@ -244,21 +244,28 @@ async def tagall_info_handler(event):
     """Show information about tagall system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         tagall_info = f"""**{signature} Tagall System Information**
 
-{vzoel_emoji.get_emoji('utama')} **Apa itu Tagall?**
+{vzoel_emoji.getemoji('utama', premium=True)} **Apa itu Tagall?**
 Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time dan kontrol penuh.
 
-{vzoel_emoji.get_emoji('centang')} **Cara Penggunaan:**
+{vzoel_emoji.getemoji('centang', premium=True)} **Cara Penggunaan:**
 • `.tagall <pesan>` - Tag semua member dengan pesan
 • `.tagall` (reply) - Tag semua member dengan pesan yang direply
 • `.stop` - Hentikan proses tagall yang sedang berjalan
 
-{vzoel_emoji.get_emoji('aktif')} **Fitur Tagall:**
+{vzoel_emoji.getemoji('aktif', premium=True)} **Fitur Tagall:**
 • Real-time animated feedback
 • Progress tracking per member
 • Username dan nama lengkap display
@@ -266,21 +273,21 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 • Flood protection dengan auto-delay
 • Cancellation support dengan .stop
 
-{vzoel_emoji.get_emoji('telegram')} **Animasi Display:**
+{vzoel_emoji.getemoji('telegram', premium=True)} **Animasi Display:**
 1. Username member di grup
 2. Nama lengkap member  
 3. Random premium emoji
 4. "Tagall by Vzoel Fox's Assistant"
 5. Isi pesan yang ditulis/direply
 
-{vzoel_emoji.get_emoji('proses')} **Safety Features:**
+{vzoel_emoji.getemoji('proses', premium=True)} **Safety Features:**
 • Skip bot accounts automatically
 • Handle deleted accounts
 • Flood wait protection
 • Admin permission checking
 • Error handling untuk user bermasalah
 
-{vzoel_emoji.get_emoji('petir')} **Performance:**
+{vzoel_emoji.getemoji('petir', premium=True)} **Performance:**
 • 2 detik delay per member (flood protection)
 • Async processing untuk efisiensi
 • Real-time progress display

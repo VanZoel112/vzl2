@@ -14,7 +14,7 @@ __author__ = "Vzoel Fox's"
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Fun Plugin loaded - Entertainment commands ready")
 
 @events.register(events.NewMessage(pattern=r'\.dice'))
@@ -23,7 +23,7 @@ async def dice_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Show rolling animation
         rolling_msg = vzoel_emoji.format_emoji_response(
@@ -51,7 +51,7 @@ async def flip_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         flipping_msg = vzoel_emoji.format_emoji_response(
             ['proses'], "Flipping coin..."
@@ -89,9 +89,16 @@ async def quote_handler(event):
         ]
         
         quote = random.choice(vzoel_quotes)
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         quote_msg = f"**{signature} VzoelFox Quote**\n\n*\"{quote}\"*\n\n— **Vzoel Fox's**"
         

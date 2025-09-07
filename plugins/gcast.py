@@ -20,7 +20,7 @@ async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
     from config import Config
     Config.load_blacklist()
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Gcast & Blacklist Plugin loaded - Broadcast system ready")
 
 @events.register(events.NewMessage(pattern=r'\.addbl(?: (.+))?'))
@@ -29,7 +29,7 @@ async def add_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         args = event.pattern_match.group(1)
         chat_id = None
@@ -106,7 +106,7 @@ async def remove_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         args = event.pattern_match.group(1)
         chat_id = None
@@ -146,7 +146,7 @@ async def list_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         if not Config.GCAST_BLACKLIST:
             empty_msg = vzoel_emoji.format_emoji_response(
@@ -176,7 +176,7 @@ async def gcast_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
         
         # Get message content
         message_text = event.pattern_match.group(1)
@@ -209,10 +209,8 @@ async def gcast_handler(event):
         start_time = time.time()
         
         # Animation phase 1: Process setup
-        process_msg = vzoel_emoji.format_emoji_response(
-            ['loading'], "Initializing broadcast process..."
-        )
-        msg = await event.edit(process_msg)
+        process_msg = vzoel_comments.get_command("gcast", "preparing")
+        msg = await event.edit(f"{vzoel_emoji.getemoji('loading', premium=True)} {process_msg}")
         await asyncio.sleep(1)
         
         # Get all dialogs (groups and channels)
@@ -306,15 +304,13 @@ async def gcast_handler(event):
         success_rate = (successful_sends / total_chats * 100) if total_chats > 0 else 0
         
         # Animation phase 3: Process completed
-        complete_msg = vzoel_emoji.format_emoji_response(
-            ['utama'], 
-            f"**1. Process Completed**\n"
-            f"**2. By VzoelFox Assistant**\n"
-            f"**3. Groups Sent: {successful_sends}**\n"
-            f"**4. Duration: {duration:.1f} seconds**\n"
-            f"**5. Success Rate: {success_rate:.1f}%**\n"
-            f"**6. Ready for next command...**"
-        )
+        complete_msg = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.get_success('completed')}**
+
+{vzoel_emoji.getemoji('centang', premium=True)} **By {vzoel_comments.get_vzoel('signature')}**
+{vzoel_emoji.getemoji('telegram', premium=True)} **Groups Sent:** {successful_sends}
+{vzoel_emoji.getemoji('aktif', premium=True)} **Duration:** {duration:.1f} seconds
+{vzoel_emoji.getemoji('proses', premium=True)} **Success Rate:** {success_rate:.1f}%
+{vzoel_emoji.getemoji('petir', premium=True)} **Ready for next command...**"""
         await msg.edit(complete_msg)
         
         vzoel_client.increment_command_count()
@@ -326,7 +322,14 @@ async def gcast_info_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler import vzoel_emoji
+        from emoji_handler_premium import vzoel_emoji
+import sys
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
         
         # Animation phase 1: Loading info
         loading_msg = vzoel_emoji.format_emoji_response(
@@ -349,24 +352,24 @@ async def gcast_info_handler(event):
         blacklisted_count = len(Config.GCAST_BLACKLIST)
         
         # Animation phase 2: Show complete info
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         info_text = f"""**{signature} Gcast Information**
 
 **Available Targets:**
-{vzoel_emoji.get_emoji('centang')} Groups: `{total_groups}`
-{vzoel_emoji.get_emoji('telegram')} Channels: `{total_channels}`
-{vzoel_emoji.get_emoji('utama')} Total Available: `{total_available}`
+{vzoel_emoji.getemoji('centang', premium=True)} Groups: `{total_groups}`
+{vzoel_emoji.getemoji('telegram', premium=True)} Channels: `{total_channels}`
+{vzoel_emoji.getemoji('utama', premium=True)} Total Available: `{total_available}`
 
 **Blacklist Status:**
-{vzoel_emoji.get_emoji('merah')} Blacklisted: `{blacklisted_count}`
-{vzoel_emoji.get_emoji('aktif')} Will Broadcast To: `{total_available}`
+{vzoel_emoji.getemoji('merah', premium=True)} Blacklisted: `{blacklisted_count}`
+{vzoel_emoji.getemoji('aktif', premium=True)} Will Broadcast To: `{total_available}`
 
 **Commands:**
-{vzoel_emoji.get_emoji('proses')} `.gcast <text>` - Broadcast text
-{vzoel_emoji.get_emoji('kuning')} `.gcast` (reply) - Broadcast reply
-{vzoel_emoji.get_emoji('adder1')} `.addbl <id>` - Add to blacklist
-{vzoel_emoji.get_emoji('adder2')} `.listbl` - Show blacklist
+{vzoel_emoji.getemoji('proses', premium=True)} `.gcast <text>` - Broadcast text
+{vzoel_emoji.getemoji('kuning', premium=True)} `.gcast` (reply) - Broadcast reply
+{vzoel_emoji.getemoji('adder1', premium=True)} `.addbl <id>` - Add to blacklist
+{vzoel_emoji.getemoji('adder2', premium=True)} `.listbl` - Show blacklist
 
 **By VzoelFox Assistant**"""
         
