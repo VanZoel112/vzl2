@@ -26,16 +26,28 @@ class Config:
     
     # VzoelFox Specific Settings
     VZOEL_PREFIX: str = os.getenv("VZOEL_PREFIX", ".")
-    VZOEL_OWNER_ID: Optional[int] = int(os.getenv("VZOEL_OWNER_ID", "0")) if os.getenv("VZOEL_OWNER_ID") else None
-    VZOEL_LOG_CHAT: Optional[int] = int(os.getenv("VZOEL_LOG_CHAT", "0")) if os.getenv("VZOEL_LOG_CHAT") else None
+    
+    @classmethod
+    def _safe_int_env(cls, env_var: str, default: int = 0) -> Optional[int]:
+        """Safely convert environment variable to integer"""
+        try:
+            value = os.getenv(env_var, str(default))
+            if not value or value in ['your_telegram_user_id', 'your_log_chat_id', '0']:
+                return None
+            return int(value)
+        except (ValueError, TypeError):
+            return None
+    
+    VZOEL_OWNER_ID: Optional[int] = None
+    VZOEL_LOG_CHAT: Optional[int] = None
     
     # Premium Emoji Settings
     PREMIUM_EMOJIS_ENABLED: bool = os.getenv("PREMIUM_EMOJIS_ENABLED", "true").lower() == "true"
     EMOJI_MAPPING_FILE: str = os.getenv("EMOJI_MAPPING_FILE", "emoji_mapping.json")
     
     # Security Settings
-    PRIVATE_GROUP_BOT_API_ID: Optional[int] = int(os.getenv("PRIVATE_GROUP_BOT_API_ID", "0")) if os.getenv("PRIVATE_GROUP_BOT_API_ID") else None
-    PRIVATE_GROUP_ID: Optional[int] = int(os.getenv("PRIVATE_GROUP_ID", "0")) if os.getenv("PRIVATE_GROUP_ID") else None
+    PRIVATE_GROUP_BOT_API_ID: Optional[int] = None
+    PRIVATE_GROUP_ID: Optional[int] = None
     
     # Advanced Settings
     WORKERS: int = int(os.getenv("WORKERS", "4"))
@@ -52,6 +64,13 @@ class Config:
     VZOEL_VERSION: str = "v2.0.0-vzoel"
     VZOEL_CREATOR: str = "Vzoel Fox's"
     VZOEL_ENHANCED_BY: str = "Vzoel Fox's Ltpn"
+    
+    def __init__(self):
+        """Initialize config values safely"""
+        Config.VZOEL_OWNER_ID = Config._safe_int_env("VZOEL_OWNER_ID")
+        Config.VZOEL_LOG_CHAT = Config._safe_int_env("VZOEL_LOG_CHAT")
+        Config.PRIVATE_GROUP_BOT_API_ID = Config._safe_int_env("PRIVATE_GROUP_BOT_API_ID")
+        Config.PRIVATE_GROUP_ID = Config._safe_int_env("PRIVATE_GROUP_ID")
     
     @classmethod
     def validate_config(cls) -> bool:
@@ -166,8 +185,8 @@ STRING_SESSION=your_string_session_if_available
 
 # VzoelFox Specific
 VZOEL_PREFIX=.
-VZOEL_OWNER_ID=your_telegram_user_id
-VZOEL_LOG_CHAT=your_log_chat_id
+# VZOEL_OWNER_ID=123456789
+# VZOEL_LOG_CHAT=-1001234567890
 
 # Premium Features
 PREMIUM_EMOJIS_ENABLED=true

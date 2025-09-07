@@ -178,8 +178,8 @@ STRING_SESSION={string_session}
 
 # Optional Settings
 VZOEL_PREFIX=.
-VZOEL_OWNER_ID=your_telegram_user_id
-VZOEL_LOG_CHAT=your_log_chat_id
+# VZOEL_OWNER_ID=123456789
+# VZOEL_LOG_CHAT=-1001234567890
 
 # Premium Features
 PREMIUM_EMOJIS_ENABLED=true
