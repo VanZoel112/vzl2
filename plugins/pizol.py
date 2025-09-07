@@ -94,9 +94,9 @@ async def pizol_handler(event):
         
         # Get random emojis for display (from premium mapping)
         available_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif', 'adder1', 'adder2', 'telegram']
-        random_emoji1 = vzoel_emoji.getemoji(random.choice(available_emojis, premium=True))
-        random_emoji2 = vzoel_emoji.getemoji(random.choice(available_emojis, premium=True))
-        random_emoji3 = vzoel_emoji.getemoji(random.choice(available_emojis, premium=True))
+        random_emoji1 = vzoel_emoji.getemoji(random.choice(available_emojis), premium=True)
+        random_emoji2 = vzoel_emoji.getemoji(random.choice(available_emojis), premium=True)
+        random_emoji3 = vzoel_emoji.getemoji(random.choice(available_emojis), premium=True)
         
         # Build final pizol display
         pizol_display = f"""{vzoel_emoji.getemoji('utama', premium=True)} **PIZOL VZOEL ASSISTANT**

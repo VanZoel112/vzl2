@@ -196,14 +196,21 @@ class VzoelEmojiHandler:
             # Use premium markdown format
             emoji_chars = []
             for name in emoji_names:
-                premium_emoji = self.get_emoji(name, premium=True)
-                emoji_chars.append(premium_emoji)
+                premium_emoji = self.get_premium_emoji_markdown(name)
+                if premium_emoji:
+                    emoji_chars.append(premium_emoji)
+                else:
+                    # Fallback to standard
+                    emoji = self.get_emoji(name)
+                    if emoji:
+                        emoji_chars.append(emoji)
         else:
             # Use standard emojis
             emoji_chars = []
             for name in emoji_names:
-                emoji = self.get_emoji(name, premium=False)
-                emoji_chars.append(emoji)
+                emoji = self.get_emoji(name)
+                if emoji:
+                    emoji_chars.append(emoji)
         
         if text:
             return f"{''.join(emoji_chars)} {text}"

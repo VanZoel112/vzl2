@@ -66,7 +66,10 @@ class VzoelWorkingComments:
                 "creator": "Created by: Vzoel Fox's",
                 "enhanced": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
-                "repo": "Vzoel Fox's Original Repository"
+                "repo": "Vzoel Fox's Original Repository",
+                "ig": "Instagram : vzoel.fox_s",
+                "zone": "Zone : Indonesia 🇮🇩",
+                "repo_notice": "Repository ini adalah Original dari VzoelFox Assistant. Dilarang keras melakukan recode, rename, atau distribusi ulang tanpa izin!"
             }
         }
     
@@ -132,6 +135,23 @@ class VzoelWorkingComments:
     def get_category_keys(self, category: str) -> list:
         """Get all keys in a category"""
         return list(self.comments.get(category, {}).keys())
+    
+    def get_alive_phases(self) -> list:
+        """Get 12-phase alive animation sequence"""
+        return [
+            "🚀 Initializing VzoelFox Assistant...",
+            "⚙️ Loading premium components...", 
+            "🌐 Connecting to VzoelFox servers...",
+            "✨ Validating premium emojis...",
+            "🔍 Scanning installed plugins...",
+            "🛡️ Checking system integrity...",
+            "🔐 Verifying VzoelFox credentials...",
+            "👤 Loading assistant profile...",
+            "🖥️ Preparing display interface...",
+            "⚡ Finalizing system status...",
+            "🎉 VzoelFox Assistant ready!",
+            "📊 Generating status display..."
+        ]
 
 # Global working comment instance
 vzoel_comments = VzoelWorkingComments()
