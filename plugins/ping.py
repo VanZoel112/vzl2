@@ -14,6 +14,9 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import comment system
+from plugins.comments import vzoel_comments
+
 # Plugin info
 __version__ = "2.0.0"
 __author__ = "Vzoel Fox's"
@@ -42,13 +45,14 @@ async def ping_handler(event):
         start_time = time.time()
         
         # Edit message to calculate ping
-        msg = await event.edit("Calculating...")
+        calculating_msg = vzoel_comments.get_process("calculating")
+        msg = await event.edit(calculating_msg)
         
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
         
-        # Show ping with anti-delay message
-        ping_response = f"**PONG!!!! VzoelFox Assistant Anti Delay**"
+        # Show ping with anti-delay message using comment system
+        ping_response = vzoel_comments.get_command("ping", "result")
         
         await msg.edit(ping_response)
         vzoel_client.increment_command_count()
@@ -66,13 +70,14 @@ async def pink_handler(event):
         start_time = time.time()
         
         # Edit message to calculate latency
-        msg = await event.edit("Testing latency...")
+        testing_msg = vzoel_comments.get_command("ping", "testing")
+        msg = await event.edit(testing_msg)
         
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
-        # Show pink response with latency
-        pink_response = f"**PONG!!!! Latency {latency:.2f}ms**"
+        # Show pink response with latency using comment system
+        pink_response = vzoel_comments.get_command("ping", "with_latency", latency=f"{latency:.2f}")
         
         await msg.edit(pink_response)
         vzoel_client.increment_command_count()
@@ -90,20 +95,21 @@ async def pong_handler(event):
         start_time = time.time()
         
         # Calculate latency first
-        test_msg = await event.edit("Testing...")
+        testing_msg = vzoel_comments.get_process("testing")
+        test_msg = await event.edit(testing_msg)
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
-        # Determine emoji based on latency (using mapped emojis)
+        # Determine emoji based on latency (using premium mapped emojis)
         if latency < 100:
-            # Good latency - use green/positive emoji
-            latency_emoji = vzoel_emoji.get_emoji('centang')  # Green checkmark
+            # Good latency - use green/positive emoji (premium)
+            latency_emoji = vzoel_emoji.getemoji('centang', premium=True)
         elif latency < 300:
-            # Medium latency - use yellow emoji  
-            latency_emoji = vzoel_emoji.get_emoji('kuning')   # Yellow popcorn
+            # Medium latency - use yellow emoji (premium)
+            latency_emoji = vzoel_emoji.getemoji('kuning', premium=True)
         else:
-            # High latency - use red emoji
-            latency_emoji = vzoel_emoji.get_emoji('merah')    # Red crazy face
+            # High latency - use red emoji (premium)
+            latency_emoji = vzoel_emoji.getemoji('merah', premium=True)
         
         try:
             # Try to send message to @spambot to reduce floodwait

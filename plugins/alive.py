@@ -14,6 +14,9 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Import comment system
+from plugins.comments import vzoel_comments
+
 # Plugin info
 __version__ = "2.0.0"
 __author__ = "Vzoel Fox's"
@@ -44,21 +47,8 @@ async def alive_handler(event):
         # Get plugin count for features display
         plugin_count = len(vzoel_client.plugin_manager.plugins) if vzoel_client.plugin_manager else 0
         
-        # 12-phase animation sequence
-        animation_phases = [
-            "Initializing VzoelFox Assistant...",
-            "Loading premium components...", 
-            "Connecting to VzoelFox servers...",
-            "Validating premium emojis...",
-            "Scanning installed plugins...",
-            "Checking system integrity...",
-            "Verifying VzoelFox credentials...",
-            "Loading assistant profile...",
-            "Preparing display interface...",
-            "Finalizing system status...",
-            "VzoelFox Assistant ready!",
-            "Generating status display..."
-        ]
+        # Get 12-phase animation from comment system
+        animation_phases = vzoel_comments.get_alive_phases()
         
         # Start animation with first phase
         msg = await event.edit(animation_phases[0])
@@ -76,21 +66,19 @@ async def alive_handler(event):
         random_emoji1 = vzoel_emoji.get_emoji(random.choice(available_emojis))
         random_emoji2 = vzoel_emoji.get_emoji(random.choice(available_emojis))
         
-        # Build final alive display exactly as requested
-        alive_display = f"""{vzoel_emoji.get_emoji('utama')} **Vzoel Assistant**
+        # Build final alive display with premium emojis and comment system
+        alive_display = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.get_vzoel('signature')}**
 
-{vzoel_emoji.get_emoji('centang')} **Founder Userbot** : Vzoel Fox's (Lutpan) {vzoel_emoji.get_emoji('utama')}
-{vzoel_emoji.get_emoji('centang')} **Code** : python3,python2
-{vzoel_emoji.get_emoji('centang')} **Fitur** : {plugin_count}
-{vzoel_emoji.get_emoji('centang')} **IG** : vzoel.fox_s
-{vzoel_emoji.get_emoji('centang')} **Zone** : ID 🇮🇩
+{vzoel_emoji.getemoji('centang', premium=True)} **Founder Userbot** : Vzoel Fox's (Lutpan) {vzoel_emoji.getemoji('utama', premium=True)}
+{vzoel_emoji.getemoji('centang', premium=True)} **Code** : python3,python2
+{vzoel_emoji.getemoji('centang', premium=True)} **Fitur** : {plugin_count}
+{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.get_vzoel('ig')}**
+{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.get_vzoel('zone')}**
 
 {random_emoji1} **NOTE !!!** :
-Userbot ini dibuat dengan repo murni oleh Vzoel Fox's..
-Bukan hasil fork maupun beli dari seller manapun!!!
-Hak cipta sepenuhnya milik Vzoel..
+{vzoel_comments.get_vzoel('repo_notice')}
 
-{random_emoji2} **©2025 ~ Vzoel Fox's (LTPN)**"""
+{random_emoji2} **{vzoel_comments.get_vzoel('copyright')}**"""
         
         # Display final result
         await msg.edit(alive_display)
