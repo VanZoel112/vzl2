@@ -77,8 +77,6 @@ async def update_handler(event):
             )
             await msg.edit(error_msg)
 
-update_handler.handler = update_handler.handler
-update_handler.command = ".update"
 
 @events.register(events.NewMessage(pattern=r'\.stats'))
 async def stats_handler(event):
@@ -113,8 +111,6 @@ async def stats_handler(event):
         
         await event.edit(stats_text)
 
-stats_handler.handler = stats_handler.handler
-stats_handler.command = ".stats"
 
 @events.register(events.NewMessage(pattern=r'\.plugins'))
 async def plugins_handler(event):
@@ -147,8 +143,6 @@ async def plugins_handler(event):
         
         await event.edit(plugins_text)
 
-plugins_handler.handler = plugins_handler.handler
-plugins_handler.command = ".plugins"
 
 @events.register(events.NewMessage(pattern=r'\.restart'))
 async def restart_handler(event):
@@ -167,5 +161,3 @@ async def restart_handler(event):
         # Restart process
         os.execv(sys.executable, ['python'] + sys.argv)
 
-restart_handler.handler = restart_handler.handler
-restart_handler.command = ".restart"

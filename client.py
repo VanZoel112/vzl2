@@ -107,30 +107,51 @@ class PluginManager:
             handlers_registered = 0
             for name, obj in inspect.getmembers(module):
                 if hasattr(obj, '__call__') and callable(obj):
-                    # Check if it's a telethon event handler (has handler attribute or registered decorator)
-                    if hasattr(obj, 'handler') and obj.handler is not None:
-                        # Register event handler with telethon handler
-                        self.client.add_event_handler(obj, obj.handler)
-                        handlers_registered += 1
-                        
-                        # Track commands
-                        if hasattr(obj, 'command'):
-                            self.plugin_commands[obj.command] = plugin_name
-                    elif hasattr(obj, '_handler'):
-                        # Alternative handler attribute
-                        self.client.add_event_handler(obj, obj._handler)
-                        handlers_registered += 1
-                    elif name.endswith('_handler') or name.endswith('handler'):
-                        # Try to register function directly (for @events.register decorated functions)
+                    # Skip built-in functions and non-handler functions
+                    if name.startswith('_') or name in ['vzoel_init']:
+                        continue
+                    
+                    handler_registered = False
+                    
+                    # Method 1: Try to register as @events.register decorated function first
+                    if name.endswith('_handler') or name.endswith('handler'):
                         try:
                             self.client.add_event_handler(obj)
                             handlers_registered += 1
+                            handler_registered = True
                             
                             # Track commands if available
                             if hasattr(obj, 'command'):
                                 self.plugin_commands[obj.command] = plugin_name
+                                
+                            logger.debug(f"Registered {name} via decorator method")
                         except Exception as e:
-                            logger.debug(f"Could not register {name} as handler: {e}")
+                            logger.debug(f"Could not register {name} as decorated handler: {e}")
+                    
+                    # Method 2: Check for explicit handler attribute (fallback)
+                    if not handler_registered and hasattr(obj, 'handler') and obj.handler is not None:
+                        try:
+                            self.client.add_event_handler(obj, obj.handler)
+                            handlers_registered += 1
+                            handler_registered = True
+                            
+                            # Track commands
+                            if hasattr(obj, 'command'):
+                                self.plugin_commands[obj.command] = plugin_name
+                                
+                            logger.debug(f"Registered {name} via handler attribute")
+                        except Exception as e:
+                            logger.debug(f"Could not register {name} with handler attribute: {e}")
+                    
+                    # Method 3: Check for alternative _handler attribute
+                    if not handler_registered and hasattr(obj, '_handler'):
+                        try:
+                            self.client.add_event_handler(obj, obj._handler)
+                            handlers_registered += 1
+                            handler_registered = True
+                            logger.debug(f"Registered {name} via _handler attribute")
+                        except Exception as e:
+                            logger.debug(f"Could not register {name} with _handler: {e}")
             
             # Call plugin initialization if available
             if hasattr(module, 'vzoel_init'):

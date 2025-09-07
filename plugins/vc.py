@@ -109,8 +109,6 @@ async def vc_join_handler(event):
         
         vzoel_client.increment_command_count()
 
-vc_join_handler.handler = vc_join_handler.handler
-vc_join_handler.command = ".vcjoin"
 
 @events.register(events.NewMessage(pattern=r'\.vcleave'))
 async def vc_leave_handler(event):
@@ -165,8 +163,6 @@ async def vc_leave_handler(event):
         
         vzoel_client.increment_command_count()
 
-vc_leave_handler.handler = vc_leave_handler.handler
-vc_leave_handler.command = ".vcleave"
 
 @events.register(events.NewMessage(pattern=r'\.vcmute'))
 async def vc_mute_handler(event):
@@ -212,8 +208,6 @@ async def vc_mute_handler(event):
         
         vzoel_client.increment_command_count()
 
-vc_mute_handler.handler = vc_mute_handler.handler
-vc_mute_handler.command = ".vcmute"
 
 @events.register(events.NewMessage(pattern=r'\.vcunmute'))
 async def vc_unmute_handler(event):
@@ -259,8 +253,6 @@ async def vc_unmute_handler(event):
         
         vzoel_client.increment_command_count()
 
-vc_unmute_handler.handler = vc_unmute_handler.handler
-vc_unmute_handler.command = ".vcunmute"
 
 @events.register(events.NewMessage(pattern=r'\.vcstatus'))
 async def vc_status_handler(event):
@@ -311,8 +303,6 @@ async def vc_status_handler(event):
         await event.edit(status_text)
         vzoel_client.increment_command_count()
 
-vc_status_handler.handler = vc_status_handler.handler
-vc_status_handler.command = ".vcstatus"
 
 @events.register(events.NewMessage(pattern=r'\.vcinstall'))
 async def vc_install_handler(event):
@@ -359,5 +349,3 @@ pkg install ffmpeg
         await event.edit(install_text)
         vzoel_client.increment_command_count()
 
-vc_install_handler.handler = vc_install_handler.handler
-vc_install_handler.command = ".vcinstall"

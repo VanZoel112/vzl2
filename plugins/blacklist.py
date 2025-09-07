@@ -135,8 +135,6 @@ async def add_blacklist_handler(event):
         await event.edit(success_msg)
         vzoel_client.increment_command_count()
 
-add_blacklist_handler.handler = add_blacklist_handler.handler
-add_blacklist_handler.command = ".bl"
 
 @events.register(events.NewMessage(pattern=r'\.wl( (.+))?'))
 async def remove_blacklist_handler(event):
@@ -229,8 +227,6 @@ async def remove_blacklist_handler(event):
         await event.edit(success_msg)
         vzoel_client.increment_command_count()
 
-remove_blacklist_handler.handler = remove_blacklist_handler.handler
-remove_blacklist_handler.command = ".wl"
 
 @events.register(events.NewMessage(pattern=r'\.lock( (.+))?'))
 async def lock_user_handler(event):
@@ -311,8 +307,6 @@ async def lock_user_handler(event):
         
         vzoel_client.increment_command_count()
 
-lock_user_handler.handler = lock_user_handler.handler
-lock_user_handler.command = ".lock"
 
 @events.register(events.NewMessage(pattern=r'\.unlock( (.+))?'))
 async def unlock_user_handler(event):
@@ -401,8 +395,6 @@ async def unlock_user_handler(event):
         
         vzoel_client.increment_command_count()
 
-unlock_user_handler.handler = unlock_user_handler.handler
-unlock_user_handler.command = ".unlock"
 
 @events.register(events.NewMessage(incoming=True))
 async def auto_delete_handler(event):
@@ -441,7 +433,6 @@ async def auto_delete_handler(event):
         # Log error but don't break
         print(f"Auto-delete error: {e}")
 
-auto_delete_handler.handler = auto_delete_handler.handler
 
 @events.register(events.NewMessage(pattern=r'\.blinfo'))
 async def blacklist_info_handler(event):
@@ -484,5 +475,3 @@ Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari us
         await event.edit(blacklist_info)
         vzoel_client.increment_command_count()
 
-blacklist_info_handler.handler = blacklist_info_handler.handler
-blacklist_info_handler.command = ".blinfo"

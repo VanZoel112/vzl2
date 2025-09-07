@@ -135,8 +135,6 @@ async def id_checker_handler(event):
         
         vzoel_client.increment_command_count()
 
-id_checker_handler.handler = id_checker_handler.handler
-id_checker_handler.command = ".id"
 
 async def animate_id_display(msg, user_id, username, full_name, vzoel_emoji):
     """Unlimited loop animation for ID display"""
@@ -221,8 +219,6 @@ async def stop_id_animation_handler(event):
         
         vzoel_client.increment_command_count()
 
-stop_id_animation_handler.handler = stop_id_animation_handler.handler
-stop_id_animation_handler.command = ".stopid"
 
 @events.register(events.NewMessage(pattern=r'\.idinfo'))
 async def id_info_handler(event):
@@ -267,5 +263,3 @@ async def id_info_handler(event):
         await event.edit(id_info)
         vzoel_client.increment_command_count()
 
-id_info_handler.handler = id_info_handler.handler
-id_info_handler.command = ".idinfo"

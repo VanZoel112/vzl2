@@ -44,8 +44,6 @@ async def dice_handler(event):
         await msg.edit(result_msg)
         vzoel_client.increment_command_count()
 
-dice_handler.handler = dice_handler.handler
-dice_handler.command = ".dice"
 
 @events.register(events.NewMessage(pattern=r'\.flip'))
 async def flip_handler(event):
@@ -72,8 +70,6 @@ async def flip_handler(event):
         await msg.edit(result_msg)
         vzoel_client.increment_command_count()
 
-flip_handler.handler = flip_handler.handler
-flip_handler.command = ".flip"
 
 @events.register(events.NewMessage(pattern=r'\.quote'))
 async def quote_handler(event):
@@ -102,5 +98,3 @@ async def quote_handler(event):
         await event.edit(quote_msg)
         vzoel_client.increment_command_count()
 
-quote_handler.handler = quote_handler.handler
-quote_handler.command = ".quote"

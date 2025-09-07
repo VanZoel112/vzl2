@@ -99,8 +99,6 @@ async def add_blacklist_handler(event):
         
         vzoel_client.increment_command_count()
 
-add_blacklist_handler.handler = add_blacklist_handler.handler
-add_blacklist_handler.command = ".addbl"
 
 @events.register(events.NewMessage(pattern=r'\.rembl(?: (.+))?'))
 async def remove_blacklist_handler(event):
@@ -141,8 +139,6 @@ async def remove_blacklist_handler(event):
         
         vzoel_client.increment_command_count()
 
-remove_blacklist_handler.handler = remove_blacklist_handler.handler
-remove_blacklist_handler.command = ".rembl"
 
 @events.register(events.NewMessage(pattern=r'\.listbl'))
 async def list_blacklist_handler(event):
@@ -173,8 +169,6 @@ async def list_blacklist_handler(event):
         await event.edit(blacklist_text)
         vzoel_client.increment_command_count()
 
-list_blacklist_handler.handler = list_blacklist_handler.handler
-list_blacklist_handler.command = ".listbl"
 
 @events.register(events.NewMessage(pattern=r'\.gcast(?: (.+))?'))
 async def gcast_handler(event):
@@ -325,8 +319,6 @@ async def gcast_handler(event):
         
         vzoel_client.increment_command_count()
 
-gcast_handler.handler = gcast_handler.handler  
-gcast_handler.command = ".gcast"
 
 @events.register(events.NewMessage(pattern=r'\.ginfo'))
 async def gcast_info_handler(event):
@@ -381,5 +373,3 @@ async def gcast_info_handler(event):
         await msg.edit(info_text)
         vzoel_client.increment_command_count()
 
-gcast_info_handler.handler = gcast_info_handler.handler
-gcast_info_handler.command = ".ginfo"

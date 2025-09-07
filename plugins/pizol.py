@@ -122,8 +122,6 @@ Ready untuk menjalankan semua perintah premium!
         await msg.edit(pizol_display)
         vzoel_client.increment_command_count()
 
-pizol_handler.handler = pizol_handler.handler
-pizol_handler.command = ".pizol"
 
 @events.register(events.NewMessage(pattern=r'\.pinfo'))
 async def pizol_info_handler(event):
@@ -172,5 +170,3 @@ Simply type `.pizol` to activate the full 40-phase animation sequence and view c
         await event.edit(pizol_info)
         vzoel_client.increment_command_count()
 
-pinfo_handler.handler = pizol_info_handler.handler
-pinfo_handler.command = ".pinfo"

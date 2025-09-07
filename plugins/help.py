@@ -455,17 +455,9 @@ async def help_exit_handler(event):
         vzoel_client.increment_command_count()
 
 # Register handlers
-help_handler.handler = help_handler.handler
-help_handler.command = ".help"
 
-help_next_handler.handler = help_next_handler.handler
-help_next_handler.command = ".next"
 
-help_back_handler.handler = help_back_handler.handler  
-help_back_handler.command = ".back"
 
-help_exit_handler.handler = help_exit_handler.handler
-help_exit_handler.command = ".exit"
 
 @events.register(events.NewMessage(pattern=r'\.helprefresh'))
 async def help_refresh_handler(event):
@@ -493,5 +485,3 @@ async def help_refresh_handler(event):
         await event.edit(refresh_msg)
         vzoel_client.increment_command_count()
 
-help_refresh_handler.handler = help_refresh_handler.handler
-help_refresh_handler.command = ".helprefresh"

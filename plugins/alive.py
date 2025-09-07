@@ -80,8 +80,7 @@ Hak cipta sepenuhnya milik Vzoel..
         await msg.edit(alive_display)
         vzoel_client.increment_command_count()
 
-alive_handler.handler = alive_handler.handler
-alive_handler.command = ".alive"
+# Handler automatically registered via @events.register decorator
 
 @events.register(events.NewMessage(pattern=r'\.ainfo'))
 async def alive_info_handler(event):
@@ -127,5 +126,3 @@ async def alive_info_handler(event):
         await event.edit(alive_info)
         vzoel_client.increment_command_count()
 
-alive_info_handler.handler = alive_info_handler.handler
-alive_info_handler.command = ".ainfo"
