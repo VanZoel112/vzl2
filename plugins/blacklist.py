@@ -135,7 +135,6 @@ async def add_blacklist_handler(event):
         await event.edit(success_msg)
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.wl( (.+))?'))
 async def remove_blacklist_handler(event):
     """Remove words from blacklist (whitelist)"""
@@ -227,7 +226,6 @@ async def remove_blacklist_handler(event):
         await event.edit(success_msg)
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.lock( (.+))?'))
 async def lock_user_handler(event):
     """Lock user to delete all their messages"""
@@ -306,7 +304,6 @@ async def lock_user_handler(event):
             await event.edit(already_msg)
         
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.unlock( (.+))?'))
 async def unlock_user_handler(event):
@@ -395,7 +392,6 @@ async def unlock_user_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(incoming=True))
 async def auto_delete_handler(event):
     """Automatically delete messages based on blacklist and locked users"""
@@ -432,7 +428,6 @@ async def auto_delete_handler(event):
     except Exception as e:
         # Log error but don't break
         print(f"Auto-delete error: {e}")
-
 
 @events.register(events.NewMessage(pattern=r'\.blinfo'))
 async def blacklist_info_handler(event):
@@ -481,4 +476,3 @@ Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari us
         
         await event.edit(blacklist_info)
         vzoel_client.increment_command_count()
-

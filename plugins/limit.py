@@ -242,7 +242,6 @@ def analyze_spambot_responses(responses):
     
     return result
 
-
 @events.register(events.NewMessage(pattern=r'\.limitinfo'))
 async def limit_info_handler(event):
     """Show information about limit checker system"""
@@ -294,4 +293,3 @@ Simply type `.limit` to start comprehensive account restriction check via @spamb
         
         await event.edit(limit_info)
         vzoel_client.increment_command_count()
-

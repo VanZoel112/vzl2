@@ -135,7 +135,6 @@ async def id_checker_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 async def animate_id_display(msg, user_id, username, full_name, vzoel_emoji):
     """Unlimited loop animation for ID display"""
     display_states = [
@@ -219,7 +218,6 @@ async def stop_id_animation_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.idinfo'))
 async def id_info_handler(event):
     """Show information about ID checker system"""
@@ -269,4 +267,3 @@ from plugins.comments import vzoel_comments
         
         await event.edit(id_info)
         vzoel_client.increment_command_count()
-

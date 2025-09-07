@@ -208,7 +208,6 @@ async def perform_tagall(event, participants, message_text, chat_title):
         
         await event.edit(completion_msg)
 
-
 @events.register(events.NewMessage(pattern=r'\.stop'))
 async def stop_tagall_handler(event):
     """Stop ongoing tagall process"""
@@ -237,7 +236,6 @@ async def stop_tagall_handler(event):
             await event.edit(no_tagall_msg)
         
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.taginfo'))
 async def tagall_info_handler(event):
@@ -297,4 +295,3 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
         
         await event.edit(tagall_info)
         vzoel_client.increment_command_count()
-

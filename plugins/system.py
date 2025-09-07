@@ -77,7 +77,6 @@ async def update_handler(event):
             )
             await msg.edit(error_msg)
 
-
 @events.register(events.NewMessage(pattern=r'\.stats'))
 async def stats_handler(event):
     """Show assistant statistics"""
@@ -111,7 +110,6 @@ async def stats_handler(event):
         
         await event.edit(stats_text)
 
-
 @events.register(events.NewMessage(pattern=r'\.plugins'))
 async def plugins_handler(event):
     """List loaded plugins"""
@@ -143,7 +141,6 @@ async def plugins_handler(event):
         
         await event.edit(plugins_text)
 
-
 @events.register(events.NewMessage(pattern=r'\.restart'))
 async def restart_handler(event):
     """Restart the assistant"""
@@ -167,4 +164,3 @@ from plugins.comments import vzoel_comments
         
         # Restart process
         os.execv(sys.executable, ['python'] + sys.argv)
-

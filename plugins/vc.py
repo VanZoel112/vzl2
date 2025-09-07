@@ -109,7 +109,6 @@ async def vc_join_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.vcleave'))
 async def vc_leave_handler(event):
     """Leave voice chat"""
@@ -163,7 +162,6 @@ async def vc_leave_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.vcmute'))
 async def vc_mute_handler(event):
     """Mute in voice chat"""
@@ -208,7 +206,6 @@ async def vc_mute_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.vcunmute'))
 async def vc_unmute_handler(event):
     """Unmute in voice chat"""
@@ -252,7 +249,6 @@ async def vc_unmute_handler(event):
             await event.edit(error_msg)
         
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.vcstatus'))
 async def vc_status_handler(event):
@@ -302,7 +298,6 @@ async def vc_status_handler(event):
         
         await event.edit(status_text)
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.vcinstall'))
 async def vc_install_handler(event):
@@ -355,4 +350,3 @@ pkg install ffmpeg
         
         await event.edit(install_text)
         vzoel_client.increment_command_count()
-

@@ -99,7 +99,6 @@ async def add_blacklist_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.rembl(?: (.+))?'))
 async def remove_blacklist_handler(event):
     """Remove chat from gcast blacklist"""
@@ -139,7 +138,6 @@ async def remove_blacklist_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.listbl'))
 async def list_blacklist_handler(event):
     """List all blacklisted chats"""
@@ -168,7 +166,6 @@ async def list_blacklist_handler(event):
         blacklist_text += f"**By VzoelFox Assistant**"
         await event.edit(blacklist_text)
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.gcast(?: (.+))?'))
 async def gcast_handler(event):
@@ -315,7 +312,6 @@ async def gcast_handler(event):
         
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.ginfo'))
 async def gcast_info_handler(event):
     """Show gcast information with animation"""
@@ -375,4 +371,3 @@ from plugins.comments import vzoel_comments
         
         await msg.edit(info_text)
         vzoel_client.increment_command_count()
-

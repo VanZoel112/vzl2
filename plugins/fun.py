@@ -44,7 +44,6 @@ async def dice_handler(event):
         await msg.edit(result_msg)
         vzoel_client.increment_command_count()
 
-
 @events.register(events.NewMessage(pattern=r'\.flip'))
 async def flip_handler(event):
     """Flip a coin"""
@@ -69,7 +68,6 @@ async def flip_handler(event):
         
         await msg.edit(result_msg)
         vzoel_client.increment_command_count()
-
 
 @events.register(events.NewMessage(pattern=r'\.quote'))
 async def quote_handler(event):
@@ -104,4 +102,3 @@ from plugins.comments import vzoel_comments
         
         await event.edit(quote_msg)
         vzoel_client.increment_command_count()
-
