@@ -10,6 +10,14 @@ from telethon.tl.types import ChannelParticipantsSearch
 from telethon.errors import FloodWaitError, ChatAdminRequiredError
 import asyncio
 import random
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"
@@ -243,13 +251,6 @@ async def tagall_info_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from emoji_handler_premium import vzoel_emoji
-import sys
-
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Import comment system
-from plugins.comments import vzoel_comments
         
         signature = vzoel_emoji.get_vzoel_signature(premium=True)
         

@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
+
 """
 VzoelFox's Assistant Gcast & Blacklist Plugin
 Advanced broadcast system with blacklist management
@@ -319,13 +328,7 @@ async def gcast_info_handler(event):
         from client import vzoel_client
         from config import Config
         from emoji_handler_premium import vzoel_emoji
-import sys
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Import comment system
-from plugins.comments import vzoel_comments
         
         # Animation phase 1: Loading info
         loading_msg = vzoel_emoji.format_emoji_response(

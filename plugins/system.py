@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import comment system
+from plugins.comments import vzoel_comments
+
 """
 VzoelFox's Assistant System Plugin
 Core system commands and update functionality
@@ -146,13 +155,7 @@ async def restart_handler(event):
     """Restart the assistant"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-import sys
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Import comment system
-from plugins.comments import vzoel_comments
         
         restart_msg = vzoel_emoji.format_emoji_response(
             ['loading'], "Restarting VzoelFox's Assistant..."
