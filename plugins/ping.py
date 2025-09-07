@@ -39,8 +39,7 @@ async def ping_handler(event):
         await msg.edit(ping_response)
         vzoel_client.increment_command_count()
 
-ping_handler.handler = ping_handler.handler
-ping_handler.command = ".ping"
+# Handler automatically registered via @events.register decorator
 
 @events.register(events.NewMessage(pattern=r'\.pink'))
 async def pink_handler(event):
@@ -63,8 +62,7 @@ async def pink_handler(event):
         await msg.edit(pink_response)
         vzoel_client.increment_command_count()
 
-pink_handler.handler = pink_handler.handler
-pink_handler.command = ".pink"
+# Handler automatically registered via @events.register decorator
 
 @events.register(events.NewMessage(pattern=r'\.pong'))
 async def pong_handler(event):
@@ -120,8 +118,7 @@ async def pong_handler(event):
         await test_msg.edit(pong_response)
         vzoel_client.increment_command_count()
 
-pong_handler.handler = pong_handler.handler
-pong_handler.command = ".pong"
+# Handler automatically registered via @events.register decorator
 
 @events.register(events.NewMessage(pattern=r'\.ponk'))
 async def ponk_handler(event):
@@ -165,8 +162,7 @@ async def ponk_handler(event):
         
         vzoel_client.increment_command_count()
 
-ponk_handler.handler = ponk_handler.handler
-ponk_handler.command = ".ponk"
+# Handler automatically registered via @events.register decorator
 
 @events.register(events.NewMessage(pattern=r'\.pings'))
 async def pings_info_handler(event):
@@ -197,5 +193,4 @@ async def pings_info_handler(event):
         await event.edit(pings_info)
         vzoel_client.increment_command_count()
 
-pings_info_handler.handler = pings_info_handler.handler
-pings_info_handler.command = ".pings"
+# Handler automatically registered via @events.register decorator

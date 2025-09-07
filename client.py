@@ -106,14 +106,31 @@ class PluginManager:
             # Register event handlers if available
             handlers_registered = 0
             for name, obj in inspect.getmembers(module):
-                if hasattr(obj, '__call__') and hasattr(obj, 'handler'):
-                    # Register event handler
-                    self.client.add_event_handler(obj, obj.handler)
-                    handlers_registered += 1
-                    
-                    # Track commands
-                    if hasattr(obj, 'command'):
-                        self.plugin_commands[obj.command] = plugin_name
+                if hasattr(obj, '__call__') and callable(obj):
+                    # Check if it's a telethon event handler (has handler attribute or registered decorator)
+                    if hasattr(obj, 'handler') and obj.handler is not None:
+                        # Register event handler with telethon handler
+                        self.client.add_event_handler(obj, obj.handler)
+                        handlers_registered += 1
+                        
+                        # Track commands
+                        if hasattr(obj, 'command'):
+                            self.plugin_commands[obj.command] = plugin_name
+                    elif hasattr(obj, '_handler'):
+                        # Alternative handler attribute
+                        self.client.add_event_handler(obj, obj._handler)
+                        handlers_registered += 1
+                    elif name.endswith('_handler') or name.endswith('handler'):
+                        # Try to register function directly (for @events.register decorated functions)
+                        try:
+                            self.client.add_event_handler(obj)
+                            handlers_registered += 1
+                            
+                            # Track commands if available
+                            if hasattr(obj, 'command'):
+                                self.plugin_commands[obj.command] = plugin_name
+                        except Exception as e:
+                            logger.debug(f"Could not register {name} as handler: {e}")
             
             # Call plugin initialization if available
             if hasattr(module, 'vzoel_init'):
