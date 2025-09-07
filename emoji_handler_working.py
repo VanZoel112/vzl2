@@ -189,6 +189,37 @@ class VzoelEmojiHandler:
     def format_premium_message(self, text: str, emoji_replacements: Dict[str, str]) -> str:
         """Format message with premium emoji replacements"""
         return self.format_message_with_premium(text, emoji_replacements)
+    
+    def format_emoji_response(self, emoji_names: List[str], text: str = "", use_premium: bool = True) -> str:
+        """Format response with emojis (premium or standard) - compatibility method"""
+        if use_premium:
+            # Use premium markdown format
+            emoji_chars = []
+            for name in emoji_names:
+                premium_emoji = self.get_emoji(name, premium=True)
+                emoji_chars.append(premium_emoji)
+        else:
+            # Use standard emojis
+            emoji_chars = []
+            for name in emoji_names:
+                emoji = self.get_emoji(name, premium=False)
+                emoji_chars.append(emoji)
+        
+        if text:
+            return f"{''.join(emoji_chars)} {text}"
+        return ''.join(emoji_chars)
+    
+    def get_command_emojis(self, command: str) -> List[str]:
+        """Get recommended emojis for a command - compatibility method"""
+        # Return emojis based on command
+        command_mappings = {
+            'alive': ['utama', 'aktif', 'petir'],
+            'ping': ['loading', 'centang', 'aktif'],
+            'vzoel': ['utama', 'petir', 'adder1'],
+            'gcast': ['telegram', 'loading', 'centang'],
+            'pizol': ['kuning', 'merah', 'adder2']
+        }
+        return command_mappings.get(command, ['utama'])
 
 # Global emoji handler instance using working implementation
 vzoel_emoji = VzoelEmojiHandler()
