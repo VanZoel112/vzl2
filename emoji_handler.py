@@ -83,6 +83,11 @@ class VzoelEmojiHandler:
             return f"{''.join(emoji_chars)} {text}"
         return ''.join(emoji_chars)
     
+    def getemoji(self, name: str) -> str:
+        """Get emoji with fallback - alternative method name"""
+        emoji = self.get_emoji(name)
+        return emoji if emoji else "🔸"  # Fallback emoji
+    
     def get_vzoel_signature(self) -> str:
         """Get Vzoel Fox's signature emoji combination"""
         signature_ids = self.quick_access.get('vzoel_signature', [])

@@ -32,8 +32,9 @@ logger = logging.getLogger(__name__)
 class PluginManager:
     """VzoelFox's Advanced Plugin Manager"""
     
-    def __init__(self, client):
+    def __init__(self, client, vzoel_client_instance=None):
         self.client = client
+        self.vzoel_client = vzoel_client_instance
         self.plugins: Dict[str, Any] = {}
         self.plugin_commands: Dict[str, str] = {}
         self.plugins_dir = Path("plugins")
@@ -84,6 +85,9 @@ class PluginManager:
     async def load_plugin(self, plugin_file: Path) -> bool:
         """Load a single plugin"""
         try:
+            # Import vzoel_client here to avoid circular import
+            global vzoel_client
+            
             plugin_name = plugin_file.stem
             
             # Skip if already loaded and not changed
@@ -153,9 +157,9 @@ class PluginManager:
                         except Exception as e:
                             logger.debug(f"Could not register {name} with _handler: {e}")
             
-            # Call plugin initialization if available
+            # Call plugin initialization if available  
             if hasattr(module, 'vzoel_init'):
-                await module.vzoel_init(self.client, vzoel_emoji)
+                await module.vzoel_init(self.vzoel_client, vzoel_emoji)
             
             logger.info(f"🤩 Loaded plugin: {plugin_name} ({handlers_registered} handlers)")
             return True
@@ -446,7 +450,7 @@ class VzoelFoxClient:
         """Setup plugin manager and auto-updater"""
         try:
             # Initialize plugin manager
-            self.plugin_manager = PluginManager(self.client)
+            self.plugin_manager = PluginManager(self.client, self)
             
             # Initialize auto-updater
             self.auto_updater = AutoUpdater(self.client)
