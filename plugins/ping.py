@@ -14,8 +14,8 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import working systems
-from vzoel_comments_working import vzoel_comments
+# Import simple systems
+from vzoel_simple import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"

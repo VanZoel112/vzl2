@@ -92,9 +92,28 @@ class VzoelWorkingComments:
         """Get error comment"""
         return self.get("error", key)
     
-    def response(self, key: str, **kwargs) -> str:
-        """Get response comment"""
-        return self.get("response", key, **kwargs)
+    def response(self, key: str, subkey: str = None, **kwargs) -> str:
+        """Get response comment with optional subkey"""
+        if subkey:
+            # Handle nested response like response("ping", "result")
+            try:
+                if key == "ping":
+                    ping_responses = {
+                        "result": "🏓 PONG!!!! VzoelFox Assistant Active",
+                        "testing": "📡 Testing latency...",
+                        "with_latency": "🏓 PONG!!!! Latency {latency}ms"
+                    }
+                    comment = ping_responses.get(subkey, f"❓ Subkey not found: {key}.{subkey}")
+                else:
+                    comment = f"❓ Nested response not found: {key}.{subkey}"
+                
+                if kwargs:
+                    return comment.format(**kwargs)
+                return comment
+            except:
+                return f"❓ Response error: {key}.{subkey}"
+        else:
+            return self.get("response", key, **kwargs)
     
     def vzoel(self, key: str) -> str:
         """Get vzoel branding comment"""

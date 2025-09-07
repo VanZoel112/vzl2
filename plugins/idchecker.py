@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import comment system
-from vzoel_comments_working import vzoel_comments
+from vzoel_simple import vzoel_comments
 
 """
 VzoelFox's Assistant ID Checker Plugin
