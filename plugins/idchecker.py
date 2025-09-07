@@ -4,8 +4,7 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from vzoel_simple import vzoel_comments
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
 VzoelFox's Assistant ID Checker Plugin
@@ -26,9 +25,9 @@ __author__ = "Vzoel Fox's"
 # Global variable to control animation loops
 animation_tasks = {}
 
-async def vzoel_init(client, vzoel_emoji):
+async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature(premium=True)
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} ID Checker Plugin loaded - Animated ID detection ready")
 
 @events.register(events.NewMessage(pattern=r'\.id(?: (.+))?'))
@@ -36,7 +35,6 @@ async def id_checker_handler(event):
     """ID checker with animated process and unlimited loop results"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler_premium import vzoel_emoji
         
         # Stop any existing animation for this chat
         chat_id = event.chat_id
@@ -50,10 +48,8 @@ async def id_checker_handler(event):
         # Phase 1: Determine target from arguments or reply
         if event.reply_to_msg_id:
             # Get user from reply
-            process_msg = vzoel_emoji.format_emoji_response(
-                ['loading'], "Analyzing replied message..."
-            )
-            msg = await event.edit(process_msg)
+            process_msg = f"{get_emoji('loading')} Analyzing replied message..."
+            msg = await safe_edit_premium(event, process_msg)
             await asyncio.sleep(0.8)
             
             try:
@@ -61,48 +57,36 @@ async def id_checker_handler(event):
                 if reply_msg.sender:
                     target_user = reply_msg.sender
                 else:
-                    error_msg = vzoel_emoji.format_emoji_response(
-                        ['merah'], "Cannot get user from reply"
-                    )
-                    await msg.edit(error_msg)
+                    error_msg = f"{get_emoji('merah')} Cannot get user from reply"
+                    await safe_edit_premium(msg, error_msg)
                     return
             except Exception as e:
-                error_msg = vzoel_emoji.format_emoji_response(
-                    ['merah'], f"Error getting reply: {str(e)}"
-                )
-                await msg.edit(error_msg)
+                error_msg = f"{get_emoji('merah')} Error getting reply: {str(e)}"
+                await safe_edit_premium(msg, error_msg)
                 return
                 
         elif args:
             # Get user from username/mention
             username = args.strip().replace('@', '')
             
-            process_msg = vzoel_emoji.format_emoji_response(
-                ['proses'], f"Searching for user: @{username}..."
-            )
-            msg = await event.edit(process_msg)
+            process_msg = f"{get_emoji('proses')} Searching for user: @{username}..."
+            msg = await safe_edit_premium(event, process_msg)
             await asyncio.sleep(0.8)
             
             try:
                 target_user = await event.client.get_entity(username)
             except (UsernameNotOccupiedError, UsernameInvalidError):
-                error_msg = vzoel_emoji.format_emoji_response(
-                    ['merah'], f"Username @{username} not found"
-                )
-                await msg.edit(error_msg)
+                error_msg = f"{get_emoji('merah')} Username @{username} not found"
+                await safe_edit_premium(msg, error_msg)
                 return
             except Exception as e:
-                error_msg = vzoel_emoji.format_emoji_response(
-                    ['merah'], f"Error finding user: {str(e)}"
-                )
-                await msg.edit(error_msg)
+                error_msg = f"{get_emoji('merah')} Error finding user: {str(e)}"
+                await safe_edit_premium(msg, error_msg)
                 return
         else:
             # No target specified
-            help_msg = vzoel_emoji.format_emoji_response(
-                ['kuning'], "Usage: .id @username or .id (reply to message)"
-            )
-            await event.edit(help_msg)
+            help_msg = f"{get_emoji('kuning')} Usage: .id @username or .id (reply to message)"
+            await safe_edit_premium(event, help_msg)
             return
         
         # Phase 2: Processing animation sequence
@@ -116,17 +100,13 @@ async def id_checker_handler(event):
         ]
         
         for phase in processing_phases:
-            process_msg = vzoel_emoji.format_emoji_response(
-                ['aktif'], phase
-            )
-            await msg.edit(process_msg)
+            process_msg = f"{get_emoji('aktif')} {phase}"
+            await safe_edit_premium(msg, process_msg)
             await asyncio.sleep(0.7)
         
         # Final processing message
-        final_process = vzoel_emoji.format_emoji_response(
-            ['centang'], "User found! Generating display..."
-        )
-        await msg.edit(final_process)
+        final_process = f"{get_emoji('centang')} User found! Generating display..."
+        await safe_edit_premium(msg, final_process)
         await asyncio.sleep(1)
         
         # Extract user information
@@ -138,13 +118,13 @@ async def id_checker_handler(event):
         
         # Start unlimited loop animation
         animation_task = asyncio.create_task(
-            animate_id_display(msg, user_id, username, full_name, vzoel_emoji)
+            animate_id_display(msg, user_id, username, full_name)
         )
         animation_tasks[chat_id] = animation_task
         
         vzoel_client.increment_command_count()
 
-async def animate_id_display(msg, user_id, username, full_name, vzoel_emoji):
+async def animate_id_display(msg, user_id, username, full_name):
     """Unlimited loop animation for ID display"""
     display_states = [
         f"""**1. ID:** `{user_id}`
@@ -181,10 +161,10 @@ async def animate_id_display(msg, user_id, username, full_name, vzoel_emoji):
                 random_emoji = random.choice(available_emojis)
                 
                 # Format with random emoji
-                formatted_display = vzoel_emoji.format_emoji_response([random_emoji], state)
+                formatted_display = f"{get_emoji(random_emoji)} {state}"
                 
                 # Edit message
-                await msg.edit(formatted_display)
+                await safe_edit_premium(msg, formatted_display)
                 
                 # Wait before next animation frame
                 await asyncio.sleep(1.5)
@@ -195,10 +175,8 @@ async def animate_id_display(msg, user_id, username, full_name, vzoel_emoji):
     except Exception as e:
         # Handle any errors during animation
         try:
-            error_msg = vzoel_emoji.format_emoji_response(
-                ['merah'], f"Animation error: {str(e)}"
-            )
-            await msg.edit(error_msg)
+            error_msg = f"{get_emoji('merah')} Animation error: {str(e)}"
+            await safe_edit_premium(msg, error_msg)
         except:
             pass
 
@@ -207,7 +185,6 @@ async def stop_id_animation_handler(event):
     """Stop ID animation loop"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler_premium import vzoel_emoji
         
         chat_id = event.chat_id
         
@@ -215,15 +192,11 @@ async def stop_id_animation_handler(event):
             animation_tasks[chat_id].cancel()
             del animation_tasks[chat_id]
             
-            stop_msg = vzoel_emoji.format_emoji_response(
-                ['centang'], "ID animation stopped"
-            )
-            await event.edit(stop_msg)
+            stop_msg = f"{get_emoji('centang')} ID animation stopped"
+            await safe_edit_premium(event, stop_msg)
         else:
-            no_animation_msg = vzoel_emoji.format_emoji_response(
-                ['kuning'], "No ID animation running"
-            )
-            await event.edit(no_animation_msg)
+            no_animation_msg = f"{get_emoji('kuning')} No ID animation running"
+            await safe_edit_premium(event, no_animation_msg)
         
         vzoel_client.increment_command_count()
 
@@ -232,19 +205,18 @@ async def id_info_handler(event):
     """Show information about ID checker system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
-        from emoji_handler_premium import vzoel_emoji
 
         
-        signature = vzoel_emoji.get_vzoel_signature(premium=True)
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         id_info = f"""**{signature} VzoelFox ID Checker**
 
-{vzoel_emoji.getemoji('utama', premium=True)} **Usage Methods:**
+{get_emoji('utama')} **Usage Methods:**
 • `.id @username` - Check by username
 • `.id` (reply) - Check replied user
 • `.stopid` - Stop animation loop
 
-{vzoel_emoji.getemoji('centang', premium=True)} **Process Animation:**
+{get_emoji('centang')} **Process Animation:**
 1. Connecting to VzoelFox servers
 2. Validating user credentials  
 3. Scanning user database
@@ -252,7 +224,7 @@ async def id_info_handler(event):
 5. Processing user data
 6. Finalizing ID lookup
 
-{vzoel_emoji.getemoji('aktif', premium=True)} **Display Features:**
+{get_emoji('aktif')} **Display Features:**
 • Unlimited loop animation
 • Random emoji rotation
 • User ID display
@@ -260,7 +232,7 @@ async def id_info_handler(event):
 • Full name resolution
 • VzoelFox branding
 
-{vzoel_emoji.getemoji('telegram', premium=True)} **Information Shown:**
+{get_emoji('telegram')} **Information Shown:**
 1. User ID (numeric)
 2. Username (@handle)
 3. Full name (first + last)
@@ -268,5 +240,5 @@ async def id_info_handler(event):
 
 **By VzoelFox Assistant**"""
         
-        await event.edit(id_info)
+        await safe_edit_premium(event, id_info)
         vzoel_client.increment_command_count()

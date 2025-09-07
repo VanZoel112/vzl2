@@ -4,8 +4,7 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from vzoel_simple import vzoel_comments
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
 VzoelFox's Assistant Gcast & Blacklist Plugin
@@ -25,11 +24,11 @@ import re
 __version__ = "2.0.0"
 __author__ = "Vzoel Fox's"
 
-async def vzoel_init(client, vzoel_emoji):
+async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
     from config import Config
     Config.load_blacklist()
-    signature = vzoel_emoji.get_vzoel_signature(premium=True)
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Gcast & Blacklist Plugin loaded - Broadcast system ready")
 
 @events.register(events.NewMessage(pattern=r'\.addbl(?: (.+))?'))
@@ -38,7 +37,6 @@ async def add_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler_premium import vzoel_emoji
         
         args = event.pattern_match.group(1)
         chat_id = None
@@ -66,10 +64,8 @@ async def add_blacklist_handler(event):
                 except:
                     chat_title = str(chat_id)
             except ValueError:
-                error_msg = vzoel_emoji.format_emoji_response(
-                    ['merah'], "Invalid chat ID format"
-                )
-                await event.edit(error_msg)
+                error_msg = f"{get_emoji('merah')} Invalid chat ID format"
+                await safe_edit_premium(event, error_msg)
                 return
         
         # Use current chat if nothing specified
@@ -84,27 +80,19 @@ async def add_blacklist_handler(event):
         if chat_id:
             # Add to blacklist
             if Config.add_to_blacklist(chat_id):
-                success_msg = vzoel_emoji.format_emoji_response(
-                    ['centang'], 
-                    f"**Blacklist Added**\n"
-                    f"Chat: `{chat_title}`\n"
-                    f"ID: `{chat_id}`\n"
+                success_msg = f"{get_emoji('centang')} **Blacklist Added**\n" + \
+                    f"Chat: `{chat_title}`\n" + \
+                    f"ID: `{chat_id}`\n" + \
                     f"Total Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
-                )
-                await event.edit(success_msg)
+                await safe_edit_premium(event, success_msg)
             else:
-                already_msg = vzoel_emoji.format_emoji_response(
-                    ['kuning'], 
-                    f"**Already Blacklisted**\n"
-                    f"Chat: `{chat_title}`\n"
+                already_msg = f"{get_emoji('kuning')} **Already Blacklisted**\n" + \
+                    f"Chat: `{chat_title}`\n" + \
                     f"ID: `{chat_id}`"
-                )
-                await event.edit(already_msg)
+                await safe_edit_premium(event, already_msg)
         else:
-            error_msg = vzoel_emoji.format_emoji_response(
-                ['merah'], "Could not determine chat ID"
-            )
-            await event.edit(error_msg)
+            error_msg = f"{get_emoji('merah')} Could not determine chat ID"
+            await safe_edit_premium(event, error_msg)
         
         vzoel_client.increment_command_count()
 
@@ -114,7 +102,6 @@ async def remove_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler_premium import vzoel_emoji
         
         args = event.pattern_match.group(1)
         chat_id = None
@@ -123,27 +110,20 @@ async def remove_blacklist_handler(event):
             try:
                 chat_id = int(args.strip())
             except ValueError:
-                error_msg = vzoel_emoji.format_emoji_response(
-                    ['merah'], "Invalid chat ID format"
-                )
-                await event.edit(error_msg)
+                error_msg = f"{get_emoji('merah')} Invalid chat ID format"
+                await safe_edit_premium(event, error_msg)
                 return
         else:
             chat_id = event.chat_id
         
         if Config.remove_from_blacklist(chat_id):
-            success_msg = vzoel_emoji.format_emoji_response(
-                ['centang'], 
-                f"**Blacklist Removed**\n"
-                f"ID: `{chat_id}`\n"
+            success_msg = f"{get_emoji('centang')} **Blacklist Removed**\n" + \
+                f"ID: `{chat_id}`\n" + \
                 f"Total Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
-            )
-            await event.edit(success_msg)
+            await safe_edit_premium(event, success_msg)
         else:
-            not_found_msg = vzoel_emoji.format_emoji_response(
-                ['kuning'], f"ID `{chat_id}` not in blacklist"
-            )
-            await event.edit(not_found_msg)
+            not_found_msg = f"{get_emoji('kuning')} ID `{chat_id}` not in blacklist"
+            await safe_edit_premium(event, not_found_msg)
         
         vzoel_client.increment_command_count()
 
@@ -153,13 +133,10 @@ async def list_blacklist_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler_premium import vzoel_emoji
         
         if not Config.GCAST_BLACKLIST:
-            empty_msg = vzoel_emoji.format_emoji_response(
-                ['kuning'], "Blacklist is empty"
-            )
-            await event.edit(empty_msg)
+            empty_msg = f"{get_emoji('kuning')} Blacklist is empty"
+            await safe_edit_premium(event, empty_msg)
             return
         
         blacklist_text = f"**VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n"
@@ -173,7 +150,7 @@ async def list_blacklist_handler(event):
                 blacklist_text += f"`{i}.` **Unknown Chat**\n   ID: `{chat_id}`\n\n"
         
         blacklist_text += f"**By VzoelFox Assistant**"
-        await event.edit(blacklist_text)
+        await safe_edit_premium(event, blacklist_text)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.gcast(?: (.+))?'))
@@ -182,7 +159,6 @@ async def gcast_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler_premium import vzoel_emoji
         
         # Get message content
         message_text = event.pattern_match.group(1)
@@ -198,25 +174,21 @@ async def gcast_handler(event):
                     # Keep media message as is
                     pass
                 else:
-                    error_msg = vzoel_emoji.format_emoji_response(
-                        ['merah'], "Cannot broadcast empty message"
-                    )
-                    await event.edit(error_msg)
+                    error_msg = f"{get_emoji('merah')} Cannot broadcast empty message"
+                    await safe_edit_premium(event, error_msg)
                     return
         
         if not message_text and not reply_message:
-            error_msg = vzoel_emoji.format_emoji_response(
-                ['merah'], "Please provide message text or reply to a message"
-            )
-            await event.edit(error_msg)
+            error_msg = f"{get_emoji('merah')} Please provide message text or reply to a message"
+            await safe_edit_premium(event, error_msg)
             return
         
         # Start gcast process with animation
         start_time = time.time()
         
         # Animation phase 1: Process setup
-        process_msg = vzoel_comments.response("gcast", "preparing")
-        msg = await event.edit(f"{vzoel_emoji.getemoji('loading', premium=True)} {process_msg}")
+        process_msg = "📢 Mempersiapkan global cast..."
+        msg = await safe_edit_premium(event, f"{get_emoji('loading')} {process_msg}")
         await asyncio.sleep(1)
         
         # Get all dialogs (groups and channels)
@@ -230,21 +202,16 @@ async def gcast_handler(event):
         blacklisted_count = len(Config.GCAST_BLACKLIST)
         
         if total_chats == 0:
-            no_chats_msg = vzoel_emoji.format_emoji_response(
-                ['kuning'], "No groups/channels available for broadcast"
-            )
-            await msg.edit(no_chats_msg)
+            no_chats_msg = f"{get_emoji('kuning')} No groups/channels available for broadcast"
+            await safe_edit_premium(msg, no_chats_msg)
             return
         
         # Animation phase 2: Starting broadcast
-        start_msg = vzoel_emoji.format_emoji_response(
-            ['proses'], 
-            f"**Broadcasting Started**\n"
-            f"Target Chats: `{total_chats}`\n"
-            f"Blacklisted: `{blacklisted_count}`\n"
+        start_msg = f"{get_emoji('proses')} **Broadcasting Started**\n" + \
+            f"Target Chats: `{total_chats}`\n" + \
+            f"Blacklisted: `{blacklisted_count}`\n" + \
             f"Status: Processing..."
-        )
-        await msg.edit(start_msg)
+        await safe_edit_premium(msg, start_msg)
         await asyncio.sleep(1)
         
         # Broadcast loop
@@ -255,15 +222,12 @@ async def gcast_handler(event):
             try:
                 # Update progress every 5 chats or on last chat
                 if i % 5 == 0 or i == total_chats:
-                    progress_msg = vzoel_emoji.format_emoji_response(
-                        ['aktif'],
-                        f"**Broadcasting in Progress**\n"
-                        f"Progress: `{i}/{total_chats}`\n"
-                        f"Success: `{successful_sends}`\n"
-                        f"Failed: `{failed_sends}`\n"
+                    progress_msg = f"{get_emoji('aktif')} **Broadcasting in Progress**\n" + \
+                        f"Progress: `{i}/{total_chats}`\n" + \
+                        f"Success: `{successful_sends}`\n" + \
+                        f"Failed: `{failed_sends}`\n" + \
                         f"Current: `{dialog.title or 'Unknown'}`"
-                    )
-                    await msg.edit(progress_msg)
+                    await safe_edit_premium(msg, progress_msg)
                 
                 # Send message
                 if reply_message and reply_message.media:
@@ -310,14 +274,14 @@ async def gcast_handler(event):
         success_rate = (successful_sends / total_chats * 100) if total_chats > 0 else 0
         
         # Animation phase 3: Process completed
-        complete_msg = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.result('completed')}**
+        complete_msg = f"""{get_emoji('utama')} **✅ Berhasil diselesaikan!**
 
-{vzoel_emoji.getemoji('centang', premium=True)} **By {vzoel_comments.vzoel('signature')}**
-{vzoel_emoji.getemoji('telegram', premium=True)} **Groups Sent:** {successful_sends}
-{vzoel_emoji.getemoji('aktif', premium=True)} **Duration:** {duration:.1f} seconds
-{vzoel_emoji.getemoji('proses', premium=True)} **Success Rate:** {success_rate:.1f}%
-{vzoel_emoji.getemoji('petir', premium=True)} **Ready for next command...**"""
-        await msg.edit(complete_msg)
+{get_emoji('centang')} **By 🦊 VzoelFox's Assistant**
+{get_emoji('telegram')} **Groups Sent:** {successful_sends}
+{get_emoji('aktif')} **Duration:** {duration:.1f} seconds
+{get_emoji('proses')} **Success Rate:** {success_rate:.1f}%
+{get_emoji('petir')} **Ready for next command...**"""
+        await safe_edit_premium(msg, complete_msg)
         
         vzoel_client.increment_command_count()
 
@@ -327,14 +291,11 @@ async def gcast_info_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         from config import Config
-        from emoji_handler_premium import vzoel_emoji
 
         
         # Animation phase 1: Loading info
-        loading_msg = vzoel_emoji.format_emoji_response(
-            ['loading'], "Loading gcast information..."
-        )
-        msg = await event.edit(loading_msg)
+        loading_msg = f"{get_emoji('loading')} Loading gcast information..."
+        msg = await safe_edit_premium(event, loading_msg)
         await asyncio.sleep(1)
         
         # Count available chats
@@ -351,26 +312,26 @@ async def gcast_info_handler(event):
         blacklisted_count = len(Config.GCAST_BLACKLIST)
         
         # Animation phase 2: Show complete info
-        signature = vzoel_emoji.get_vzoel_signature(premium=True)
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         info_text = f"""**{signature} Gcast Information**
 
 **Available Targets:**
-{vzoel_emoji.getemoji('centang', premium=True)} Groups: `{total_groups}`
-{vzoel_emoji.getemoji('telegram', premium=True)} Channels: `{total_channels}`
-{vzoel_emoji.getemoji('utama', premium=True)} Total Available: `{total_available}`
+{get_emoji('centang')} Groups: `{total_groups}`
+{get_emoji('telegram')} Channels: `{total_channels}`
+{get_emoji('utama')} Total Available: `{total_available}`
 
 **Blacklist Status:**
-{vzoel_emoji.getemoji('merah', premium=True)} Blacklisted: `{blacklisted_count}`
-{vzoel_emoji.getemoji('aktif', premium=True)} Will Broadcast To: `{total_available}`
+{get_emoji('merah')} Blacklisted: `{blacklisted_count}`
+{get_emoji('aktif')} Will Broadcast To: `{total_available}`
 
 **Commands:**
-{vzoel_emoji.getemoji('proses', premium=True)} `.gcast <text>` - Broadcast text
-{vzoel_emoji.getemoji('kuning', premium=True)} `.gcast` (reply) - Broadcast reply
-{vzoel_emoji.getemoji('adder1', premium=True)} `.addbl <id>` - Add to blacklist
-{vzoel_emoji.getemoji('adder2', premium=True)} `.listbl` - Show blacklist
+{get_emoji('proses')} `.gcast <text>` - Broadcast text
+{get_emoji('kuning')} `.gcast` (reply) - Broadcast reply
+{get_emoji('adder1')} `.addbl <id>` - Add to blacklist
+{get_emoji('adder2')} `.listbl` - Show blacklist
 
 **By VzoelFox Assistant**"""
         
-        await msg.edit(info_text)
+        await safe_edit_premium(msg, info_text)
         vzoel_client.increment_command_count()

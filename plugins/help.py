@@ -16,8 +16,8 @@ import sys
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from vzoel_simple import vzoel_comments
+# Import from central emoji template (VzoelFox style)
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin info
 __version__ = "2.0.0"
@@ -31,7 +31,7 @@ cache_timestamp = 0 # Last cache update time
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature(premium=True)
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Help Plugin loaded - Navigation system ready")
 
 def get_plugin_info(force_refresh=False):

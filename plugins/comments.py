@@ -12,13 +12,14 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+
 # Plugin info
 __version__ = "1.0.0"
 __author__ = "Vzoel Fox's"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
-vzoel_emoji = None
 
 class VzoelComments:
     """Centralized comment system untuk VzoelFox Assistant"""
@@ -196,52 +197,51 @@ class VzoelComments:
 # Global comment instance
 vzoel_comments = VzoelComments()
 
-async def vzoel_init(client, emoji_handler):
+async def vzoel_init(client, emoji_handler=None):
     """Plugin initialization"""
-    global vzoel_client, vzoel_emoji
+    global vzoel_client
     
     # Set global references
     vzoel_client = client
-    vzoel_emoji = emoji_handler
     
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Comments Plugin loaded - Centralized comment system ready")
 
 @events.register(events.NewMessage(pattern=r'\.comments'))
 async def comments_info_handler(event):
     """Show available comment categories"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client, vzoel_emoji
+        global vzoel_client
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         comments_info = f"""**{signature} VzoelFox Comments System**
 
-{vzoel_emoji.get_emoji('utama')} **Available Categories:**
+{get_emoji('utama')} **Available Categories:**
 
-{vzoel_emoji.get_emoji('loading')} **process** - Loading, calculating, connecting
-{vzoel_emoji.get_emoji('centang')} **success** - Completed, done, sent
-{vzoel_emoji.get_emoji('merah')} **error** - Failed, timeout, connection errors
-{vzoel_emoji.get_emoji('telegram')} **commands** - Command-specific responses
-{vzoel_emoji.get_emoji('aktif')} **status** - Online, offline, busy indicators
-{vzoel_emoji.get_emoji('petir')} **vzoel** - VzoelFox branded messages
-{vzoel_emoji.get_emoji('proses')} **system** - System maintenance messages
+{get_emoji('loading')} **process** - Loading, calculating, connecting
+{get_emoji('centang')} **success** - Completed, done, sent
+{get_emoji('merah')} **error** - Failed, timeout, connection errors
+{get_emoji('telegram')} **commands** - Command-specific responses
+{get_emoji('aktif')} **status** - Online, offline, busy indicators
+{get_emoji('petir')} **vzoel** - VzoelFox branded messages
+{get_emoji('proses')} **system** - System maintenance messages
 
-{vzoel_emoji.get_emoji('adder1')} **Usage Examples:**
+{get_emoji('adder1')} **Usage Examples:**
 • `vzoel_comments.get_process("loading")` 
 • `vzoel_comments.get_success("completed")`
 • `vzoel_comments.get_vzoel("signature")`
 
 **Easy Customization Available!**"""
         
-        await event.edit(comments_info)
+        await safe_edit_premium(event, comments_info)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.customize (\w+) (\w+) (.+)'))
 async def customize_comment_handler(event):
     """Customize a comment: .customize category key new_message"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client, vzoel_emoji
+        global vzoel_client
         
         category = event.pattern_match.group(1)
         key = event.pattern_match.group(2)
@@ -250,35 +250,35 @@ async def customize_comment_handler(event):
         # Customize the comment
         vzoel_comments.customize_comment(category, key, new_comment)
         
-        success_msg = f"""{vzoel_emoji.get_emoji('centang')} **Comment Updated!**
+        success_msg = f"""{get_emoji('centang')} **Comment Updated!**
 
 **Category:** {category}
 **Key:** {key}
 **New Message:** {new_comment}
 
-{vzoel_emoji.get_emoji('proses')} Comment berhasil di-customize untuk session ini."""
+{get_emoji('proses')} Comment berhasil di-customize untuk session ini."""
         
-        await event.edit(success_msg)
+        await safe_edit_premium(event, success_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.showcomment (\w+) (\w+)'))
 async def show_comment_handler(event):
     """Show specific comment: .showcomment category key"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client, vzoel_emoji
+        global vzoel_client
         
         category = event.pattern_match.group(1)
         key = event.pattern_match.group(2)
         
         comment = vzoel_comments.get(category, key)
         
-        display_msg = f"""{vzoel_emoji.get_emoji('utama')} **Comment Display**
+        display_msg = f"""{get_emoji('utama')} **Comment Display**
 
 **Category:** {category}
 **Key:** {key}
 **Message:** {comment}
 
-{vzoel_emoji.get_emoji('telegram')} Use `.customize {category} {key} new_message` to change"""
+{get_emoji('telegram')} Use `.customize {category} {key} new_message` to change"""
         
-        await event.edit(display_msg)
+        await safe_edit_premium(event, display_msg)
         vzoel_client.increment_command_count()

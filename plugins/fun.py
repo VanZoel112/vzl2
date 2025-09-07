@@ -4,8 +4,7 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from vzoel_simple import vzoel_comments
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
 VzoelFox's Assistant Fun Plugin
@@ -21,9 +20,9 @@ import asyncio
 __version__ = "1.0.0"
 __author__ = "Vzoel Fox's"
 
-async def vzoel_init(client, vzoel_emoji):
+async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature(premium=True)
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Fun Plugin loaded - Entertainment commands ready")
 
 @events.register(events.NewMessage(pattern=r'\.dice'))
@@ -32,13 +31,10 @@ async def dice_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        from emoji_handler_premium import vzoel_emoji
         
         # Show rolling animation
-        rolling_msg = vzoel_emoji.format_emoji_response(
-            ['loading'], "Rolling dice..."
-        )
-        msg = await event.edit(rolling_msg)
+        rolling_msg = f"{get_emoji('loading')} Rolling dice..."
+        msg = await safe_edit_premium(event, rolling_msg)
         
         await asyncio.sleep(1)
         
@@ -46,11 +42,9 @@ async def dice_handler(event):
         result = random.randint(1, 6)
         dice_emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
         
-        result_msg = vzoel_emoji.format_emoji_response(
-            ['utama'], f"**VzoelFox Dice Roll**\n\n{dice_emojis[result-1]} You rolled: **{result}**"
-        )
+        result_msg = f"{get_emoji('utama')} **VzoelFox Dice Roll**\n\n{dice_emojis[result-1]} You rolled: **{result}**"
         
-        await msg.edit(result_msg)
+        await safe_edit_premium(msg, result_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.flip'))
@@ -59,23 +53,18 @@ async def flip_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        from emoji_handler_premium import vzoel_emoji
         
-        flipping_msg = vzoel_emoji.format_emoji_response(
-            ['proses'], "Flipping coin..."
-        )
-        msg = await event.edit(flipping_msg)
+        flipping_msg = f"{get_emoji('proses')} Flipping coin..."
+        msg = await safe_edit_premium(event, flipping_msg)
         
         await asyncio.sleep(1)
         
         result = random.choice(['Heads', 'Tails'])
         emoji = '👑' if result == 'Heads' else '🪙'
         
-        result_msg = vzoel_emoji.format_emoji_response(
-            ['kuning'], f"**VzoelFox Coin Flip**\n\n{emoji} Result: **{result}**"
-        )
+        result_msg = f"{get_emoji('kuning')} **VzoelFox Coin Flip**\\n\\n{emoji} Result: **{result}**"
         
-        await msg.edit(result_msg)
+        await safe_edit_premium(msg, result_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.quote'))
@@ -96,12 +85,11 @@ async def quote_handler(event):
         ]
         
         quote = random.choice(vzoel_quotes)
-        from emoji_handler_premium import vzoel_emoji
 
         
-        signature = vzoel_emoji.get_vzoel_signature(premium=True)
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         quote_msg = f"**{signature} VzoelFox Quote**\n\n*\"{quote}\"*\n\n— **Vzoel Fox's**"
         
-        await event.edit(quote_msg)
+        await safe_edit_premium(event, quote_msg)
         vzoel_client.increment_command_count()

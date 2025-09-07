@@ -14,8 +14,8 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import simple systems
-from vzoel_simple import vzoel_comments
+# Import from central emoji template (VzoelFox style)
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin info
 __version__ = "2.0.0"
@@ -33,7 +33,7 @@ async def vzoel_init(client, emoji_handler):
     vzoel_client = client
     vzoel_emoji = emoji_handler
     
-    signature = vzoel_emoji.get_vzoel_signature(premium=True)
+    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Alive Plugin loaded - 12-phase animation ready")
 
 @events.register(events.NewMessage(pattern=r'\.alive'))
@@ -94,18 +94,18 @@ async def alive_info_handler(event):
         
         
         
-        signature = vzoel_emoji.get_vzoel_signature(premium=True)
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         alive_info = f"""**{signature} VzoelFox Alive System**
 
-{vzoel_emoji.get_emoji('utama', premium=True)} **Features:**
+{get_emoji('utama')} **Features:**
 • 12-phase animated loading sequence
 • Premium emoji integration throughout
 • Dynamic plugin count display
 • Indonesian flag zone indicator
 • Random emoji selection for notices
 
-{vzoel_emoji.get_emoji('centang', premium=True)} **Animation Phases:**
+{get_emoji('centang')} **Animation Phases:**
 1. Initializing VzoelFox Assistant
 2. Loading premium components
 3. Connecting to VzoelFox servers
@@ -119,7 +119,7 @@ async def alive_info_handler(event):
 11. VzoelFox Assistant ready
 12. Generating status display
 
-{vzoel_emoji.get_emoji('telegram', premium=True)} **Display Info:**
+{get_emoji('telegram')} **Display Info:**
 • Founder: Vzoel Fox's (Lutpan)
 • Programming: Python3, Python2
 • Features: Dynamic plugin count
@@ -128,6 +128,6 @@ async def alive_info_handler(event):
 
 **By VzoelFox Assistant**"""
         
-        await event.edit(alive_info)
+        await safe_edit_premium(event, alive_info)
         vzoel_client.increment_command_count()
 
