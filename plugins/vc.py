@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import comment system
-from plugins.comments import vzoel_comments
+from vzoel_comments_working import vzoel_comments
 
 """
 VzoelFox's Assistant Voice Chat Plugin

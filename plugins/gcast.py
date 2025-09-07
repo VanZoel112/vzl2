@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import comment system
-from plugins.comments import vzoel_comments
+from vzoel_comments_working import vzoel_comments
 
 """
 VzoelFox's Assistant Gcast & Blacklist Plugin
@@ -215,7 +215,7 @@ async def gcast_handler(event):
         start_time = time.time()
         
         # Animation phase 1: Process setup
-        process_msg = vzoel_comments.get_command("gcast", "preparing")
+        process_msg = vzoel_comments.response("gcast", "preparing")
         msg = await event.edit(f"{vzoel_emoji.getemoji('loading', premium=True)} {process_msg}")
         await asyncio.sleep(1)
         
@@ -310,9 +310,9 @@ async def gcast_handler(event):
         success_rate = (successful_sends / total_chats * 100) if total_chats > 0 else 0
         
         # Animation phase 3: Process completed
-        complete_msg = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.get_success('completed')}**
+        complete_msg = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.result('completed')}**
 
-{vzoel_emoji.getemoji('centang', premium=True)} **By {vzoel_comments.get_vzoel('signature')}**
+{vzoel_emoji.getemoji('centang', premium=True)} **By {vzoel_comments.vzoel('signature')}**
 {vzoel_emoji.getemoji('telegram', premium=True)} **Groups Sent:** {successful_sends}
 {vzoel_emoji.getemoji('aktif', premium=True)} **Duration:** {duration:.1f} seconds
 {vzoel_emoji.getemoji('proses', premium=True)} **Success Rate:** {success_rate:.1f}%

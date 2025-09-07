@@ -14,8 +14,8 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from plugins.comments import vzoel_comments
+# Import working systems
+from vzoel_comments_working import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"
@@ -33,7 +33,7 @@ async def vzoel_init(client, emoji_handler):
     vzoel_client = client
     vzoel_emoji = emoji_handler
     
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Ping Plugin loaded - 4 ping variants ready")
 
 @events.register(events.NewMessage(pattern=r'\.ping'))
@@ -45,14 +45,14 @@ async def ping_handler(event):
         start_time = time.time()
         
         # Edit message to calculate ping
-        calculating_msg = vzoel_comments.get_process("calculating")
+        calculating_msg = vzoel_comments.process("calculating")
         msg = await event.edit(calculating_msg)
         
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
         
         # Show ping with anti-delay message using comment system
-        ping_response = vzoel_comments.get_command("ping", "result")
+        ping_response = vzoel_comments.response("ping", "result")
         
         await msg.edit(ping_response)
         vzoel_client.increment_command_count()
@@ -70,14 +70,14 @@ async def pink_handler(event):
         start_time = time.time()
         
         # Edit message to calculate latency
-        testing_msg = vzoel_comments.get_command("ping", "testing")
+        testing_msg = vzoel_comments.response("ping", "testing")
         msg = await event.edit(testing_msg)
         
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
         # Show pink response with latency using comment system
-        pink_response = vzoel_comments.get_command("ping", "with_latency", latency=f"{latency:.2f}")
+        pink_response = vzoel_comments.response("ping", "with_latency", latency=f"{latency:.2f}")
         
         await msg.edit(pink_response)
         vzoel_client.increment_command_count()
@@ -95,7 +95,7 @@ async def pong_handler(event):
         start_time = time.time()
         
         # Calculate latency first
-        testing_msg = vzoel_comments.get_process("testing")
+        testing_msg = vzoel_comments.process("testing")
         test_msg = await event.edit(testing_msg)
         end_time = time.time()
         latency = (end_time - start_time) * 1000
@@ -168,14 +168,14 @@ async def ponk_handler(event):
         except Exception as e:
             # Fallback to simple alive display if plugin loading fails
             alive_emojis = vzoel_emoji.get_command_emojis('alive')
-            signature = vzoel_emoji.get_vzoel_signature()
+            signature = vzoel_emoji.get_vzoel_signature(premium=True)
             
             alive_text = f"""**VzoelFox's Assistant v2**
             
 {signature} **Status:** ALIVE & RUNNING
-{vzoel_emoji.get_emoji('aktif')} **Version:** v2.0.0-vzoel
-{vzoel_emoji.get_emoji('telegram')} **Engine:** Enhanced
-{vzoel_emoji.get_emoji('centang')} **Premium Emojis:** Loaded
+{vzoel_emoji.get_emoji('aktif', premium=True)} **Version:** v2.0.0-vzoel
+{vzoel_emoji.get_emoji('telegram', premium=True)} **Engine:** Enhanced
+{vzoel_emoji.get_emoji('centang', premium=True)} **Premium Emojis:** Loaded
             
 **Created by:** Vzoel Fox's
 **Enhanced by:** Vzoel Fox's Ltpn"""
@@ -195,18 +195,18 @@ async def pings_info_handler(event):
         
         
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         pings_info = f"""**{signature} VzoelFox Ping Commands**
 
-{vzoel_emoji.get_emoji('utama')} **Available Commands:**
+{vzoel_emoji.get_emoji('utama', premium=True)} **Available Commands:**
 
-{vzoel_emoji.get_emoji('centang')} `.ping` - PONG!!!! Anti Delay
-{vzoel_emoji.get_emoji('aktif')} `.pink` - PONG!!!! with Latency
-{vzoel_emoji.get_emoji('proses')} `.pong` - PONG + @spambot trigger
-{vzoel_emoji.get_emoji('petir')} `.ponk` - PONGGGGGG + .alive trigger
+{vzoel_emoji.get_emoji('centang', premium=True)} `.ping` - PONG!!!! Anti Delay
+{vzoel_emoji.get_emoji('aktif', premium=True)} `.pink` - PONG!!!! with Latency
+{vzoel_emoji.get_emoji('proses', premium=True)} `.pong` - PONG + @spambot trigger
+{vzoel_emoji.get_emoji('petir', premium=True)} `.ponk` - PONGGGGGG + .alive trigger
 
-{vzoel_emoji.get_emoji('telegram')} **Features:**
+{vzoel_emoji.get_emoji('telegram', premium=True)} **Features:**
 • Anti-delay messaging system
 • Latency-based emoji responses  
 • @spambot integration for limit reduction

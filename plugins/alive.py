@@ -14,8 +14,8 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import comment system
-from plugins.comments import vzoel_comments
+# Import working systems
+from vzoel_comments_working import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"
@@ -33,7 +33,7 @@ async def vzoel_init(client, emoji_handler):
     vzoel_client = client
     vzoel_emoji = emoji_handler
     
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Alive Plugin loaded - 12-phase animation ready")
 
 @events.register(events.NewMessage(pattern=r'\.alive'))
@@ -67,18 +67,18 @@ async def alive_handler(event):
         random_emoji2 = vzoel_emoji.get_emoji(random.choice(available_emojis))
         
         # Build final alive display with premium emojis and comment system
-        alive_display = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.get_vzoel('signature')}**
+        alive_display = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.vzoel('signature')}**
 
 {vzoel_emoji.getemoji('centang', premium=True)} **Founder Userbot** : Vzoel Fox's (Lutpan) {vzoel_emoji.getemoji('utama', premium=True)}
 {vzoel_emoji.getemoji('centang', premium=True)} **Code** : python3,python2
 {vzoel_emoji.getemoji('centang', premium=True)} **Fitur** : {plugin_count}
-{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.get_vzoel('ig')}**
-{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.get_vzoel('zone')}**
+{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.vzoel('ig')}**
+{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.vzoel('zone')}**
 
 {random_emoji1} **NOTE !!!** :
-{vzoel_comments.get_vzoel('repo_notice')}
+{vzoel_comments.vzoel('repo_notice')}
 
-{random_emoji2} **{vzoel_comments.get_vzoel('copyright')}**"""
+{random_emoji2} **{vzoel_comments.vzoel('copyright')}**"""
         
         # Display final result
         await msg.edit(alive_display)
@@ -94,18 +94,18 @@ async def alive_info_handler(event):
         
         
         
-        signature = vzoel_emoji.get_vzoel_signature()
+        signature = vzoel_emoji.get_vzoel_signature(premium=True)
         
         alive_info = f"""**{signature} VzoelFox Alive System**
 
-{vzoel_emoji.get_emoji('utama')} **Features:**
+{vzoel_emoji.get_emoji('utama', premium=True)} **Features:**
 • 12-phase animated loading sequence
 • Premium emoji integration throughout
 • Dynamic plugin count display
 • Indonesian flag zone indicator
 • Random emoji selection for notices
 
-{vzoel_emoji.get_emoji('centang')} **Animation Phases:**
+{vzoel_emoji.get_emoji('centang', premium=True)} **Animation Phases:**
 1. Initializing VzoelFox Assistant
 2. Loading premium components
 3. Connecting to VzoelFox servers
@@ -119,7 +119,7 @@ async def alive_info_handler(event):
 11. VzoelFox Assistant ready
 12. Generating status display
 
-{vzoel_emoji.get_emoji('telegram')} **Display Info:**
+{vzoel_emoji.get_emoji('telegram', premium=True)} **Display Info:**
 • Founder: Vzoel Fox's (Lutpan)
 • Programming: Python3, Python2
 • Features: Dynamic plugin count

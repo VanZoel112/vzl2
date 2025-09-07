@@ -17,7 +17,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import comment system
-from plugins.comments import vzoel_comments
+from vzoel_comments_working import vzoel_comments
 
 # Plugin info
 __version__ = "2.0.0"
@@ -31,7 +31,7 @@ cache_timestamp = 0 # Last cache update time
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     print(f"{signature} Help Plugin loaded - Navigation system ready")
 
 def get_plugin_info(force_refresh=False):
@@ -221,7 +221,7 @@ async def help_handler(event):
             # Fallback: Use alternative commands
             alternative_help = f"""{help_msg}
 
-{vzoel_emoji.get_emoji('centang')} **Navigation Commands:**
+{vzoel_emoji.get_emoji('centang', premium=True)} **Navigation Commands:**
 • `.next` - Next page
 • `.back` - Previous page  
 • `.exit` - Close help
@@ -247,12 +247,12 @@ async def create_help_page(page, plugins_info, total_plugins, total_commands, vz
     page_plugins = plugins_info[start_idx:end_idx]
     
     # Build help header
-    signature = vzoel_emoji.get_vzoel_signature()
+    signature = vzoel_emoji.get_vzoel_signature(premium=True)
     help_content = f"""**{signature} VZOEL ASSISTANT HELP**
 
-{vzoel_emoji.get_emoji('utama')} **Total Plugins:** {total_plugins}
-{vzoel_emoji.get_emoji('telegram')} **Total Commands:** {total_commands}
-{vzoel_emoji.get_emoji('aktif')} **Page:** {page + 1}/{total_pages}
+{vzoel_emoji.get_emoji('utama', premium=True)} **Total Plugins:** {total_plugins}
+{vzoel_emoji.get_emoji('telegram', premium=True)} **Total Commands:** {total_commands}
+{vzoel_emoji.get_emoji('aktif', premium=True)} **Page:** {page + 1}/{total_pages}
 
 """
     
@@ -262,13 +262,13 @@ async def create_help_page(page, plugins_info, total_plugins, total_commands, vz
         commands_str = ", ".join(plugin.get('commands', []))
         
         help_content += f"""**{plugin_num}. {plugin['name']}**
-{vzoel_emoji.get_emoji('proses')} {plugin['description']}
-{vzoel_emoji.get_emoji('centang')} Commands: {commands_str}
+{vzoel_emoji.get_emoji('proses', premium=True)} {plugin['description']}
+{vzoel_emoji.get_emoji('centang', premium=True)} Commands: {commands_str}
 
 """
     
     # Add footer
-    help_content += f"""{vzoel_emoji.get_emoji('petir')} **Navigation:**
+    help_content += f"""{vzoel_emoji.get_emoji('petir', premium=True)} **Navigation:**
 Page {page + 1} of {total_pages} • Use buttons or commands to navigate
 
 **©2025 ~ VzoelFox Assistant Help System**"""
@@ -388,7 +388,7 @@ async def help_next_handler(event):
             
             alternative_help = f"""{help_msg}
 
-{vzoel_emoji.get_emoji('centang')} **Navigation Commands:**
+{vzoel_emoji.get_emoji('centang', premium=True)} **Navigation Commands:**
 • `.next` - Next page
 • `.back` - Previous page  
 • `.exit` - Close help"""
@@ -426,7 +426,7 @@ async def help_back_handler(event):
             
             alternative_help = f"""{help_msg}
 
-{vzoel_emoji.get_emoji('centang')} **Navigation Commands:**
+{vzoel_emoji.get_emoji('centang', premium=True)} **Navigation Commands:**
 • `.next` - Next page
 • `.back` - Previous page  
 • `.exit` - Close help"""
@@ -478,14 +478,14 @@ async def help_refresh_handler(event):
         total_plugins = len(plugins_info)
         total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
         
-        refresh_msg = f"""**{vzoel_emoji.get_emoji('centang')} HELP CACHE REFRESHED**
+        refresh_msg = f"""**{vzoel_emoji.get_emoji('centang', premium=True)} HELP CACHE REFRESHED**
 
-{vzoel_emoji.get_emoji('utama')} **Plugins Detected:** {total_plugins}
-{vzoel_emoji.get_emoji('telegram')} **Commands Found:** {total_commands}
-{vzoel_emoji.get_emoji('aktif')} **Cache Status:** Updated
-{vzoel_emoji.get_emoji('proses')} **Source:** Plugin Manager
+{vzoel_emoji.get_emoji('utama', premium=True)} **Plugins Detected:** {total_plugins}
+{vzoel_emoji.get_emoji('telegram', premium=True)} **Commands Found:** {total_commands}
+{vzoel_emoji.get_emoji('aktif', premium=True)} **Cache Status:** Updated
+{vzoel_emoji.get_emoji('proses', premium=True)} **Source:** Plugin Manager
 
-{vzoel_emoji.get_emoji('petir')} **Auto-refresh:** Help akan otomatis detect plugin baru setelah .update force atau restart
+{vzoel_emoji.get_emoji('petir', premium=True)} **Auto-refresh:** Help akan otomatis detect plugin baru setelah .update force atau restart
 
 **Use .help to view updated plugin list**"""
         

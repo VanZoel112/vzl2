@@ -24,7 +24,7 @@ from telethon.errors import SessionPasswordNeededError, ApiIdInvalidError
 from telethon.tl.types import User
 from telethon.sessions import StringSession
 
-from emoji_handler_premium import vzoel_emoji
+from emoji_handler_working import vzoel_emoji
 from config import Config
 
 logger = logging.getLogger(__name__)
