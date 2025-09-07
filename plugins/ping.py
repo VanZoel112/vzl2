@@ -8,13 +8,28 @@ Enhanced by: Vzoel Fox's Ltpn
 from telethon import events
 import asyncio
 import time
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Plugin info
 __version__ = "2.0.0"
 __author__ = "Vzoel Fox's"
 
-async def vzoel_init(client, vzoel_emoji):
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+    
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+    
     signature = vzoel_emoji.get_vzoel_signature()
     print(f"{signature} Ping Plugin loaded - 4 ping variants ready")
 
@@ -22,8 +37,7 @@ async def vzoel_init(client, vzoel_emoji):
 async def ping_handler(event):
     """Standard ping with anti-delay message"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        global vzoel_client, vzoel_emoji
         
         start_time = time.time()
         
@@ -43,10 +57,11 @@ async def ping_handler(event):
 
 @events.register(events.NewMessage(pattern=r'\.pink'))
 async def pink_handler(event):
+    global vzoel_client, vzoel_emoji
     """Pink command with latency display"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        
+        
         
         start_time = time.time()
         
@@ -66,10 +81,11 @@ async def pink_handler(event):
 
 @events.register(events.NewMessage(pattern=r'\.pong'))
 async def pong_handler(event):
+    global vzoel_client, vzoel_emoji
     """Pong command that triggers @spambot to reduce floodwait"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        
+        
         
         start_time = time.time()
         
@@ -122,10 +138,11 @@ async def pong_handler(event):
 
 @events.register(events.NewMessage(pattern=r'\.ponk'))
 async def ponk_handler(event):
+    global vzoel_client, vzoel_emoji
     """Ponk command that shows PONGGGGGG and triggers .alive"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        
+        
         
         # Show PONGGGGGG message first
         ponk_msg = await event.edit("**PONGGGGGG!!!!**")
@@ -166,10 +183,11 @@ async def ponk_handler(event):
 
 @events.register(events.NewMessage(pattern=r'\.pings'))
 async def pings_info_handler(event):
+    global vzoel_client, vzoel_emoji
     """Show information about all ping commands"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        
+        
         
         signature = vzoel_emoji.get_vzoel_signature()
         

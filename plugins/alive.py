@@ -8,13 +8,28 @@ Enhanced by: Vzoel Fox's Ltpn
 from telethon import events
 import asyncio
 import random
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Plugin info
 __version__ = "2.0.0"
 __author__ = "Vzoel Fox's"
 
-async def vzoel_init(client, vzoel_emoji):
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+    
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+    
     signature = vzoel_emoji.get_vzoel_signature()
     print(f"{signature} Alive Plugin loaded - 12-phase animation ready")
 
@@ -22,8 +37,9 @@ async def vzoel_init(client, vzoel_emoji):
 async def alive_handler(event):
     """Advanced alive command with 12-phase animation"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        global vzoel_client, vzoel_emoji
+        
+        
         
         # Get plugin count for features display
         plugin_count = len(vzoel_client.plugin_manager.plugins) if vzoel_client.plugin_manager else 0
@@ -86,8 +102,9 @@ Hak cipta sepenuhnya milik Vzoel..
 async def alive_info_handler(event):
     """Show information about alive command"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        from emoji_handler import vzoel_emoji
+        global vzoel_client, vzoel_emoji
+        
+        
         
         signature = vzoel_emoji.get_vzoel_signature()
         
