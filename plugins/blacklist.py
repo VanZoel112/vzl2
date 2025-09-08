@@ -260,7 +260,7 @@ Commands: .lock @user, .unlock @user, .locked
 • `.unlock @username` - Unlock user
 • `.locked` - List locked users
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"""
+{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"""
             msg = await event.edit(help_msg)
             return
         

@@ -64,7 +64,7 @@ async def ping_handler(event):
         
         # Show VzoelFox ping result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms\n\n**VzoelFox Anti-Delay System**"
+        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms\n\nVzoelFox Anti-Delay System"
         await safe_edit_premium(event, ping_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -91,7 +91,7 @@ async def pink_handler(event):
         
         # Show VzoelFox pink result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        pink_response = f"{signature} PINK: {latency:.2f}ms\n\n**VzoelFox Latency Test**"
+        pink_response = f"{signature} PINK: {latency:.2f}ms\n\nVzoelFox Latency Test"
         await safe_edit_premium(event, pink_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -135,7 +135,7 @@ async def pong_handler(event):
                 pass  # Ignore if spambot interaction fails
             # Send the PONG message with latency emoji
             signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**"
+            pong_response = f"{signature} VZOEL PONG {latency_emoji}"
 
             # If we can forward from spambot, do it, otherwise just show response
             try:
@@ -143,14 +143,14 @@ async def pong_handler(event):
                 async for message in event.client.iter_messages('@spambot', limit=1):
                     if message.text:
                         # Forward the message content style
-                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Forwarded from @spambot to reduce limits`"
+                        pong_response = f"{signature} VZOEL PONG {latency_emoji}\n\nForwarded from @spambot to reduce limits"
                         break
             except:
                 pass
                 
         except Exception as e:
             # Fallback response if spambot interaction fails
-            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Failed to contact @spambot`"
+            pong_response = f"{signature} VZOEL PONG {latency_emoji}\n\nFailed to contact @spambot"
         await safe_edit_premium(event, pong_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -166,7 +166,7 @@ async def ponk_handler(event):
         
         
         # Show PONGGGGGG message first with premium emoji
-        await safe_edit_premium(event, "**PONGGGGGG!!!!**")
+        await safe_edit_premium(event, "PONGGGGGG!!!!")
         await asyncio.sleep(1)
         
         # Trigger the alive plugin functionality by simulating .alive command
@@ -181,12 +181,12 @@ async def ponk_handler(event):
         except Exception as e:
             # Fallback to simple alive display if plugin loading fails
             signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-            alive_text = f"""**VzoelFox's Assistant v2**
-{signature} **Status:** ALIVE & RUNNING
-{get_emoji('aktif')} **Version:** v2.0.0-vzoel
-{get_emoji('centang')} **Premium Emojis:** Loaded
-**Created by:** Vzoel Fox's
-**Enhanced by:** Vzoel Fox's Ltpn"""
+            alive_text = f"""VzoelFox's Assistant v2
+{signature} Status: ALIVE & RUNNING
+{get_emoji('aktif')} Version: v2.0.0-vzoel
+{get_emoji('centang')} Premium Emojis: Loaded
+Created by: Vzoel Fox's
+Enhanced by: Vzoel Fox's Ltpn"""
             await safe_edit_premium(event, alive_text)
         
         if vzoel_client:
@@ -204,21 +204,21 @@ async def pings_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        pings_info = f"""**{signature} VzoelFox Ping Commands**
+        pings_info = f"""{signature} VzoelFox Ping Commands
 
-{get_emoji('utama')} **Available Commands:**
+{get_emoji('utama')} Available Commands:
 
-{get_emoji('centang')} `.ping` - PONG!!!! Anti Delay
-{get_emoji('aktif')} `.pink` - PONG!!!! with Latency
-{get_emoji('proses')} `.pong` - PONG + @spambot trigger
-{get_emoji('petir')} `.ponk` - PONGGGGGG + .alive trigger
+{get_emoji('centang')} .ping - PONG!!!! Anti Delay
+{get_emoji('aktif')} .pink - PONG!!!! with Latency
+{get_emoji('proses')} .pong - PONG + @spambot trigger
+{get_emoji('petir')} .ponk - PONGGGGGG + .alive trigger
 
 • Anti-delay messaging system
 • Latency-based emoji responses  
 • @spambot integration for limit reduction
 • Automatic .alive command triggering
 
-**By VzoelFox Assistant**"""
+By VzoelFox Assistant"""
         await safe_edit_premium(event, pings_info)
         if vzoel_client:
             vzoel_client.increment_command_count()

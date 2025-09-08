@@ -93,11 +93,11 @@ def create_help_page(page=0):
     # Build help header with premium emojis
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     
-    help_content = f"""{signature} **VZOEL ASSISTANT HELP**
+    help_content = f"""{signature} VZOEL ASSISTANT HELP
 
-{get_emoji('utama')} **Total Plugins:** {total_plugins}
-{get_emoji('telegram')} **Page:** {page + 1}/{total_pages}
-{get_emoji('aktif')} **Navigation:** .next for next page
+{get_emoji('utama')} Total Plugins: {total_plugins}
+{get_emoji('telegram')} Page: {page + 1}/{total_pages}
+{get_emoji('aktif')} Navigation: .next for next page
 
 """
     
@@ -106,18 +106,18 @@ def create_help_page(page=0):
         plugin_num = start_idx + i
         commands_str = ', '.join(plugin['commands']) if plugin['commands'] else 'No commands'
         
-        help_content += f"{get_emoji('centang')} **{plugin_num}. {plugin['name'].title()}**\\n"
+        help_content += f"{get_emoji('centang')} {plugin_num}. {plugin['name'].title()}\\n"
         help_content += f"{get_emoji('proses')} Version: {plugin['version']}\\n"  
         help_content += f"{get_emoji('kuning')} Commands: {commands_str}\\n\\n"
     
     # Add footer
     help_content += f"""
-{get_emoji('telegram')} **Navigation Commands:**
+{get_emoji('telegram')} Navigation Commands:
 {get_emoji('petir')} .next - Next page
 {get_emoji('loading')} .help - Refresh help
 
-{get_emoji('adder1')} **Created by VzoelFox's Assistant**
-{get_emoji('adder2')} **Enhanced by Vzoel Fox's Ltpn**"""
+{get_emoji('adder1')} Created by VzoelFox's Assistant
+{get_emoji('adder2')} Enhanced by Vzoel Fox's Ltpn"""
 
     return help_content, page, total_pages
 
@@ -185,27 +185,27 @@ async def help_info_handler(event):
         plugins = get_all_plugins()
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        help_info = f"""{signature} **VzoelFox Help System**
+        help_info = f"""{signature} VzoelFox Help System
 
-{get_emoji('utama')} **System Status:**
+{get_emoji('utama')} System Status:
 {get_emoji('centang')} Loaded Plugins: {len(plugins)}
 {get_emoji('aktif')} Navigation: Simple (.next only)
 {get_emoji('proses')} Auto-refresh: Every .help call
 {get_emoji('telegram')} Premium Emojis: Enabled
 
-{get_emoji('kuning')} **Commands:**
+{get_emoji('kuning')} Commands:
 {get_emoji('petir')} .help - Show plugin list
 {get_emoji('loading')} .next - Next page (loops)
 {get_emoji('adder1')} .helpinfo - This information
 
-{get_emoji('biru')} **Features:**
+{get_emoji('biru')} Features:
 • Simple navigation without buttons
 • Auto-discovery of all plugins
 • Real-time command detection
 • Premium emoji integration
 • Auto-updating plugin list
 
-{get_emoji('adder2')} **By VzoelFox Assistant**"""
+{get_emoji('adder2')} By VzoelFox Assistant"""
         
         await safe_edit_premium(event, help_info)
         

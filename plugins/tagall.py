@@ -138,15 +138,15 @@ async def perform_tagall(event, participants, message_text, chat_title):
             premium_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif']
             random_emoji = get_emoji(random.choice(premium_emojis))
             # Create animated status message
-            status_msg = f"""{get_emoji('aktif')} **Username:** {username}
-{get_emoji('utama')} **Nama:** {full_name}
-{random_emoji} **Status:** {random.choice(animation_phases)}
-{get_emoji('centang')} **Tagall by:** Vzoel Fox's Assistant
-{get_emoji('proses')} **Progress:** {user_count}/{len(participants)}
+            status_msg = f"""{get_emoji('aktif')} Username: {username}
+{get_emoji('utama')} Nama: {full_name}
+{random_emoji} Status: {random.choice(animation_phases)}
+{get_emoji('centang')} Tagall by: Vzoel Fox's Assistant
+{get_emoji('proses')} Progress: {user_count}/{len(participants)}
 
-**Pesan:** {message_text}
+Pesan: {message_text}
 
-{get_emoji('petir')} **Grup:** {chat_title}"""
+{get_emoji('petir')} Grup: {chat_title}"""
             # Send tag message
             tag_message = f"[{full_name}](tg://user?id={participant.id}) {message_text}"
             # Send the actual tag

@@ -54,7 +54,7 @@ async def dice_handler(event):
         dice_emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        result_msg = f"{signature} **DICE ROLLED!**\n\n{dice_emojis[result-1]} **Result: {result}**\n\nBy VzoelFox Assistant"
+        result_msg = f"{signature} DICE ROLLED!\n\n{dice_emojis[result-1]} Result: {result}\n\nBy VzoelFox Assistant"
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -76,7 +76,7 @@ async def flip_handler(event):
         result = random.choice(['Heads', 'Tails'])
         emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
-        result_msg = f"{emoji} **Coin Result: {result}**\n\nBy VzoelFox Assistant"
+        result_msg = f"{emoji} Coin Result: {result}\n\nBy VzoelFox Assistant"
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -104,7 +104,7 @@ async def quote_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        quote_msg = f"**{signature} VzoelFox Quote**\n\n*\"{quote}\"*\n\n— **Vzoel Fox's**"
+        quote_msg = f"{signature} VzoelFox Quote\n\n\"{quote}\"\n\n— Vzoel Fox's"
         
         
         msg = await event.edit(quote_msg)

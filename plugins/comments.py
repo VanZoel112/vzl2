@@ -210,24 +210,24 @@ async def comments_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        comments_info = f"""**{signature} VzoelFox Comments System**
+        comments_info = f"""{signature} VzoelFox Comments System
 
-{get_emoji('utama')} **Available Categories:**
+{get_emoji('utama')} Available Categories:
 
-{get_emoji('loading')} **process** - Loading, calculating, connecting
-{get_emoji('centang')} **success** - Completed, done, sent
-{get_emoji('merah')} **error** - Failed, timeout, connection errors
-{get_emoji('telegram')} **commands** - Command-specific responses
-{get_emoji('aktif')} **status** - Online, offline, busy indicators
-{get_emoji('petir')} **vzoel** - VzoelFox branded messages
-{get_emoji('proses')} **system** - System maintenance messages
+{get_emoji('loading')} process - Loading, calculating, connecting
+{get_emoji('centang')} success - Completed, done, sent
+{get_emoji('merah')} error - Failed, timeout, connection errors
+{get_emoji('telegram')} commands - Command-specific responses
+{get_emoji('aktif')} status - Online, offline, busy indicators
+{get_emoji('petir')} vzoel - VzoelFox branded messages
+{get_emoji('proses')} system - System maintenance messages
 
-{get_emoji('adder1')} **Usage Examples:**
-• `vzoel_comments.get_process("loading")` 
-• `vzoel_comments.get_success("completed")`
-• `vzoel_comments.get_vzoel("signature")`
+{get_emoji('adder1')} Usage Examples:
+• vzoel_comments.get_process("loading")
+• vzoel_comments.get_success("completed")
+• vzoel_comments.get_vzoel("signature")
 
-**Easy Customization Available!**"""
+Easy Customization Available!"""
         
         
         msg = await event.edit(comments_info)
@@ -246,11 +246,11 @@ async def customize_comment_handler(event):
         # Customize the comment
         vzoel_comments.customize_comment(category, key, new_comment)
         
-        success_msg = f"""{get_emoji('centang')} **Comment Updated!**
+        success_msg = f"""{get_emoji('centang')} Comment Updated!
 
-**Category:** {category}
-**Key:** {key}
-**New Message:** {new_comment}
+Category: {category}
+Key: {key}
+New Message: {new_comment}
 
 {get_emoji('proses')} Comment berhasil di-customize untuk session ini."""
         
@@ -269,13 +269,13 @@ async def show_comment_handler(event):
         
         comment = vzoel_comments.get(category, key)
         
-        display_msg = f"""{get_emoji('utama')} **Comment Display**
+        display_msg = f"""{get_emoji('utama')} Comment Display
 
-**Category:** {category}
-**Key:** {key}
-**Message:** {comment}
+Category: {category}
+Key: {key}
+Message: {comment}
 
-{get_emoji('telegram')} Use `.customize {category} {key} new_message` to change"""
+{get_emoji('telegram')} Use .customize {category} {key} new_message to change"""
         
         
         msg = await event.edit(display_msg)

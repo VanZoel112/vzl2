@@ -139,20 +139,20 @@ async def list_blacklist_handler(event):
             return
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        blacklist_text = f"{signature} **VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n"
+        blacklist_text = f"{signature} VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})\n\n"
         
         for i, chat_id in enumerate(Config.GCAST_BLACKLIST, 1):
             try:
                 chat = await event.client.get_entity(chat_id)
                 chat_title = chat.title if hasattr(chat, 'title') else f"Private {chat_id}"
-                blacklist_text += f"`{i}.` **{chat_title}**\n   ID: `{chat_id}`\n\n"
+                blacklist_text += f"{i}. {chat_title}\n   ID: {chat_id}\n\n"
 
             except:
-                blacklist_text += f"`{i}.` **Unknown Chat**\n   ID: `{chat_id}`\n\n"
+                blacklist_text += f"{i}. Unknown Chat\n   ID: {chat_id}\n\n"
 
 
         
-        blacklist_text += "\n**By VzoelFox Assistant**"
+        blacklist_text += "\nBy VzoelFox Assistant"
 
         
         await safe_edit_premium(event, blacklist_text)
@@ -273,12 +273,12 @@ async def gcast_handler(event):
         success_rate = (successful_sends / total_chats * 100) if total_chats > 0 else 0
         
         # Animation phase 3: Process completed
-        complete_msg = f"""{get_emoji('utama')} **{get_emoji('centang')} Berhasil diselesaikan!**
+        complete_msg = f"""{get_emoji('utama')} {get_emoji('centang')} Berhasil diselesaikan!
 
-{get_emoji('centang')} **By {get_emoji('adder1')} VzoelFox's Assistant**
-{get_emoji('aktif')} **Duration:** {duration:.1f} seconds
-{get_emoji('proses')} **Success Rate:** {success_rate:.1f}%
-{get_emoji('petir')} **Ready for next command...**"""
+{get_emoji('centang')} By {get_emoji('adder1')} VzoelFox's Assistant
+{get_emoji('aktif')} Duration: {duration:.1f} seconds
+{get_emoji('proses')} Success Rate: {success_rate:.1f}%
+{get_emoji('petir')} Ready for next command..."""
         await safe_edit_premium(event, complete_msg)
         
         if vzoel_client:
@@ -314,23 +314,23 @@ async def gcast_info_handler(event):
         # Animation phase 2: Show complete info
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        info_text = f"""**{signature} Gcast Information**
+        info_text = f"""{signature} Gcast Information
 
-**Available Targets:**
-{get_emoji('centang')} Groups: `{total_groups}`
-{get_emoji('utama')} Total Available: `{total_available}`
+Available Targets:
+{get_emoji('centang')} Groups: {total_groups}
+{get_emoji('utama')} Total Available: {total_available}
 
-**Blacklist Status:**
-{get_emoji('merah')} Blacklisted: `{blacklisted_count}`
-{get_emoji('aktif')} Will Broadcast To: `{total_available}`
+Blacklist Status:
+{get_emoji('merah')} Blacklisted: {blacklisted_count}
+{get_emoji('aktif')} Will Broadcast To: {total_available}
 
-**Commands:**
-{get_emoji('proses')} `.gcast <text>` - Broadcast text
-{get_emoji('kuning')} `.gcast` (reply) - Broadcast reply
-{get_emoji('adder1')} `.addbl <id>` - Add to blacklist
-{get_emoji('adder2')} `.listbl` - Show blacklist
+Commands:
+{get_emoji('proses')} .gcast <text> - Broadcast text
+{get_emoji('kuning')} .gcast (reply) - Broadcast reply
+{get_emoji('adder1')} .addbl <id> - Add to blacklist
+{get_emoji('adder2')} .listbl - Show blacklist
 
-**By VzoelFox Assistant**"""
+By VzoelFox Assistant"""
         
         await safe_edit_premium(event, info_text)
         if vzoel_client:

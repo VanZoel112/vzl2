@@ -126,25 +126,25 @@ async def id_checker_handler(event):
 async def animate_id_display(msg, user_id, username, full_name):
     """Unlimited loop animation for ID display"""
     display_states = [
-        f"""**1. ID:** `{user_id}`
-**2. Username:** @{username}  
-**3. Nama User:** {full_name}
-**4. By VzoelFox Assistant**""",
+        f"""1. ID: {user_id}
+2. Username: @{username}  
+3. Nama User: {full_name}
+4. By VzoelFox Assistant""",
         
-        f"""**1. ID:** `{user_id}`
-**2. Username:** @{username}
-**3. Nama User:** {full_name}
-**4. By VzoelFox Assistant**""",
+        f"""1. ID: {user_id}
+2. Username: @{username}
+3. Nama User: {full_name}
+4. By VzoelFox Assistant""",
         
-        f"""**1. ID:** `{user_id}`
-**2. Username:** @{username}
-**3. Nama User:** {full_name}
-**4. By VzoelFox Assistant**""",
+        f"""1. ID: {user_id}
+2. Username: @{username}
+3. Nama User: {full_name}
+4. By VzoelFox Assistant""",
         
-        f"""**1. ID:** `{user_id}`
-**2. Username:** @{username}
-**3. Nama User:** {full_name}
-**4. By VzoelFox Assistant**"""
+        f"""1. ID: {user_id}
+2. Username: @{username}
+3. Nama User: {full_name}
+4. By VzoelFox Assistant"""
     ]
     
     # Available emojis for rotation (only mapped ones)

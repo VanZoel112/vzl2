@@ -65,10 +65,10 @@ async def update_handler(event):
         result = await vzoel_client.auto_updater.perform_update(force=force)
         
         if result.get("status") == "success":
-            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} **VZOEL Update Successful!**\n{result['message']}\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
+            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} VZOEL Update Successful!\n{result['message']}\n\n{get_emoji('adder2')} Powered by VzoelFox Technology\n{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"
             await safe_edit_premium(msg, success_msg)
         else:
-            error_msg = f"{get_emoji('merah')} {signature} **VZOEL Update Failed**\n{result.get('message', 'Unknown error')}\n\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
+            error_msg = f"{get_emoji('merah')} {signature} VZOEL Update Failed\n{result.get('message', 'Unknown error')}\n\n{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"
             await safe_edit_premium(msg, error_msg)
 
 @events.register(events.NewMessage(pattern=r'\.stats'))
@@ -90,17 +90,17 @@ async def stats_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        stats_text = f"""**{signature} VzoelFox's Assistant Stats**
+        stats_text = f"""{signature} VzoelFox's Assistant Stats
 
-{get_emoji('utama')} **User:** {me.first_name}
-{get_emoji('aktif')} **ID:** `{me.id}`
-{get_emoji('loading')} **Uptime:** {stats['uptime_formatted']}
-{get_emoji('aktif')} **Commands:** {stats['commands_executed']}
-{get_emoji('telegram')} **Plugins:** {stats['plugins_loaded']}
-{get_emoji('kuning')} **Version:** {current_commit}
-{get_emoji('aktif')} **Status:** {f'{get_emoji("centang")} Running' if stats['is_running'] else f'{get_emoji("merah")} Stopped'}
+{get_emoji('utama')} User: {me.first_name}
+{get_emoji('aktif')} ID: {me.id}
+{get_emoji('loading')} Uptime: {stats['uptime_formatted']}
+{get_emoji('aktif')} Commands: {stats['commands_executed']}
+{get_emoji('telegram')} Plugins: {stats['plugins_loaded']}
+{get_emoji('kuning')} Version: {current_commit}
+{get_emoji('aktif')} Status: {f'{get_emoji("centang")} Running' if stats['is_running'] else f'{get_emoji("merah")} Stopped'}
 
-**© Vzoel Fox's - Enhanced Assistant**"""
+© Vzoel Fox's - Enhanced Assistant"""
         
         
         msg = await event.edit(stats_text)
@@ -120,16 +120,16 @@ async def plugins_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        plugins_text = f"**{signature} Loaded Plugins ({len(plugin_list)})**\n\n"
+        plugins_text = f"{signature} Loaded Plugins ({len(plugin_list)})\n\n"
         
         for plugin in plugin_list:
             description = plugin['description'].split('\n')[0] if plugin['description'] else 'No description'
-            commands = ', '.join([f"`{cmd}`" for cmd in plugin['commands']]) if plugin['commands'] else 'No commands'
-            plugins_text += f"{get_emoji('telegram')} **{plugin['name']}**\n"
+            commands = ', '.join([f"{cmd}" for cmd in plugin['commands']]) if plugin['commands'] else 'No commands'
+            plugins_text += f"{get_emoji('telegram')} {plugin['name']}\n"
             plugins_text += f"{get_emoji('kuning')} {description[:50]}{'...' if len(description) > 50 else ''}\n"
             plugins_text += f"{get_emoji('petir')} {commands}\n\n"
         
-        plugins_text += "**© VzoelFox's Plugin System**"
+        plugins_text += "© VzoelFox's Plugin System"
         
         await safe_edit_premium(event, plugins_text)
         if vzoel_client:
