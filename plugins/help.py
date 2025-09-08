@@ -207,8 +207,9 @@ async def help_handler(event):
                 [Button.inline(f"{get_emoji('kuning')} Back", b"help_prev"), Button.inline(f"Next {get_emoji('biru')}", b"help_next")],
                 [Button.inline(f"{get_emoji('merah')} Close", b"help_close")]
             ]
-            msg = await event.edit(help_msg, buttons=buttons)
-            help_sessions[user_id]['message'] = msg
+            # Use safe_edit_premium for proper emoji rendering
+            await safe_edit_premium(event, help_msg)
+            help_sessions[user_id]['message'] = event
         except Exception:
             # Fallback: Use alternative commands
             alternative_help = f"""{help_msg}
@@ -219,8 +220,8 @@ async def help_handler(event):
 • `.exit` - Close help
 
 **Use navigation commands while help is active**"""
-            msg = await event.edit(alternative_help)
-            help_sessions[user_id]['message'] = msg
+            await safe_edit_premium(event, alternative_help)
+            help_sessions[user_id]['message'] = event
         
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -339,7 +340,7 @@ async def help_close_callback(event):
         del help_sessions[user_id]
     
     close_msg = f"{get_emoji('centang')} Help closed. Use .help to open again."
-    await event.edit(close_msg)
+    await safe_edit_premium(event, close_msg)
     await event.answer()
 
 # Alternative navigation commands for fallback
@@ -374,9 +375,9 @@ async def help_next_handler(event):
 • `.next` - Next page
 • `.back` - Previous page  
 • `.exit` - Close help"""
-            await event.edit(alternative_help)
+            await safe_edit_premium(event, alternative_help)
         else:
-            await event.edit(f"{get_emoji('kuning')} Already at last page")
+            await safe_edit_premium(event, f"{get_emoji('kuning')} Already at last page")
         
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -408,9 +409,9 @@ async def help_back_handler(event):
 • `.next` - Next page
 • `.back` - Previous page  
 • `.exit` - Close help"""
-            await event.edit(alternative_help)
+            await safe_edit_premium(event, alternative_help)
         else:
-            await event.edit(f"{get_emoji('kuning')} Already at first page")
+            await safe_edit_premium(event, f"{get_emoji('kuning')} Already at first page")
         
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -431,7 +432,7 @@ async def help_exit_handler(event):
         del help_sessions[user_id]
         
         close_msg = f"{get_emoji('centang')} Help closed. Use .help to open again."
-        await event.edit(close_msg)
+        await safe_edit_premium(event, close_msg)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
@@ -462,7 +463,7 @@ async def help_refresh_handler(event):
 
 **Use .help to view updated plugin list**"""
         
-        await event.edit(refresh_msg)
+        await safe_edit_premium(event, refresh_msg)
         if vzoel_client:
             vzoel_client.increment_command_count()
 

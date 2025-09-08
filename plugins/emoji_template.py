@@ -28,43 +28,32 @@ def get_emoji(emoji_type):
     return PREMIUM_EMOJIS.get(emoji_type, {}).get('char', '🤩')
 
 def create_premium_entities(text):
-    """Create premium emoji entities for text (standalone version)"""
+    """Create premium emoji entities for text with proper offset calculation"""
     try:
         entities = []
-        current_offset = 0
-        i = 0
+        offset = 0
         
-        while i < len(text):
-            found_emoji = False
+        for char_idx, char in enumerate(text):
+            # Check if this character is one of our premium emojis
             for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
                 emoji_char = emoji_data['char']
                 emoji_id = emoji_data['id']
                 
-                if text[i:].startswith(emoji_char):
-                    try:
-                        # Calculate UTF-16 length
-                        emoji_bytes = emoji_char.encode('utf-16-le')
-                        utf16_length = len(emoji_bytes) // 2
-                        
-                        entities.append(MessageEntityCustomEmoji(
-                            offset=current_offset,
-                            length=utf16_length,
-                            document_id=int(emoji_id)
-                        ))
-                        
-                        i += len(emoji_char)
-                        current_offset += utf16_length
-                        found_emoji = True
-                        break
-                        
-                    except Exception:
-                        break
-            if not found_emoji:
-                char = text[i]
-                char_bytes = char.encode('utf-16-le')
-                char_utf16_length = len(char_bytes) // 2
-                current_offset += char_utf16_length
-                i += 1
+                # Check if current position matches emoji
+                if text[char_idx:char_idx + len(emoji_char)] == emoji_char:
+                    # Calculate proper UTF-16 offset for this emoji position
+                    text_before = text[:char_idx]
+                    utf16_offset = len(text_before.encode('utf-16-le')) // 2
+                    
+                    # Calculate UTF-16 length of emoji
+                    emoji_utf16_length = len(emoji_char.encode('utf-16-le')) // 2
+                    
+                    entities.append(MessageEntityCustomEmoji(
+                        offset=utf16_offset,
+                        length=emoji_utf16_length,
+                        document_id=int(emoji_id)
+                    ))
+                    break
         
         return entities
     except Exception:
@@ -74,56 +63,61 @@ async def safe_send_premium(event, text, buttons=None):
     """Send message with premium entities (standalone version)"""
     try:
         entities = create_premium_entities(text)
-        if entities and buttons:
-            await event.reply(text, formatting_entities=entities, buttons=buttons)
-        elif entities:
-            await event.reply(text, formatting_entities=entities)
-        elif buttons:
-            await event.reply(text, buttons=buttons)
+        
+        if entities:
+            if buttons:
+                return await event.reply(text, formatting_entities=entities, buttons=buttons)
+            else:
+                return await event.reply(text, formatting_entities=entities)
         else:
-            await event.reply(text)
+            # No premium emojis found, send normally
+            if buttons:
+                return await event.reply(text, buttons=buttons)
+            else:
+                return await event.reply(text)
     except Exception:
         # Fallback to simple reply
-        if buttons:
-            await event.reply(text, buttons=buttons)
-        else:
-            await event.reply(text)
+        try:
+            if buttons:
+                return await event.reply(text, buttons=buttons)
+            else:
+                return await event.reply(text)
+        except Exception:
+            return None
 
 async def safe_edit_premium(message_or_event, text, buttons=None):
     """Edit message with premium entities (standalone version)"""
     try:
-        # Handle both message objects and events
-        edit_target = message_or_event
-        if hasattr(message_or_event, 'message') and message_or_event.message is None:
-            # This is an event, we need to edit the event itself
-            edit_target = message_or_event
-        
         entities = create_premium_entities(text)
-        if entities and buttons:
-            await edit_target.edit(text, formatting_entities=entities, buttons=buttons)
-        elif entities:
-            await edit_target.edit(text, formatting_entities=entities)
-        elif buttons:
-            await edit_target.edit(text, buttons=buttons)
+        
+        if entities:
+            if buttons:
+                return await message_or_event.edit(text, formatting_entities=entities, buttons=buttons)
+            else:
+                return await message_or_event.edit(text, formatting_entities=entities)
         else:
-            await edit_target.edit(text)
-    except Exception as e:
-        # Fallback to simple edit - ensure we have a valid object to edit
+            # No premium emojis found, edit normally
+            if buttons:
+                return await message_or_event.edit(text, buttons=buttons)
+            else:
+                return await message_or_event.edit(text)
+                
+    except Exception:
+        # Fallback to simple edit
         try:
             if hasattr(message_or_event, 'edit'):
                 if buttons:
-                    await message_or_event.edit(text, buttons=buttons)
+                    return await message_or_event.edit(text, buttons=buttons)
                 else:
-                    await message_or_event.edit(text)
-            else:
-                # If no edit method, this might be a reply case
-                if hasattr(message_or_event, 'reply'):
-                    if buttons:
-                        await message_or_event.reply(text, buttons=buttons)
-                    else:
-                        await message_or_event.reply(text)
+                    return await message_or_event.edit(text)
+            elif hasattr(message_or_event, 'reply'):
+                # Fallback to reply if edit not available
+                if buttons:
+                    return await message_or_event.reply(text, buttons=buttons)
+                else:
+                    return await message_or_event.reply(text)
         except Exception:
-            pass  # Silent fail if all methods fail
+            return None
 
 # ===== OWNER CHECK (STANDALONE) =====
 async def is_owner(client, user_id):

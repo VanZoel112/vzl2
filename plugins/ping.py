@@ -44,18 +44,18 @@ async def ping_handler(event):
         
         start_time = time.time()
         
-        # Edit message to calculate ping
+        # Edit message to calculate ping with premium emoji
         calculating_msg = f"{get_emoji('loading')} Menghitung..."
         
-        msg = await event.edit(calculating_msg)
+        await safe_edit_premium(event, calculating_msg)
         
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
         
-        # Show ping with anti-delay message using comment system
+        # Show ping with anti-delay message using premium emoji
         ping_response = f"{get_emoji('utama')} PONG!!!! VzoelFox Assistant Anti Delay"
         
-        await safe_edit_premium(msg, ping_response)
+        await safe_edit_premium(event, ping_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
@@ -74,15 +74,15 @@ async def pink_handler(event):
         # Edit message to calculate latency
         testing_msg = f"{get_emoji('loading')} Testing latency..."
         
-        msg = await event.edit(testing_msg)
+        await safe_edit_premium(event, testing_msg)
         
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
-        # Show pink response with latency using comment system
+        # Show pink response with latency using premium emoji
         pink_response = f"{get_emoji('utama')} PONG!!!! Latency {latency:.2f}ms"
         
-        await safe_edit_premium(msg, pink_response)
+        await safe_edit_premium(event, pink_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
@@ -101,7 +101,7 @@ async def pong_handler(event):
         # Calculate latency first
         testing_msg = f"{get_emoji('loading')} Testing..."
         
-        msg = await event.edit(testing_msg)
+        await safe_edit_premium(event, testing_msg)
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
@@ -140,7 +140,7 @@ async def pong_handler(event):
             # Fallback response if spambot interaction fails
             pong_response = f"**PONG {latency_emoji}**\n\n`Failed to contact @spambot`"
         
-        await safe_edit_premium(test_msg, pong_response)
+        await safe_edit_premium(event, pong_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
@@ -154,9 +154,8 @@ async def ponk_handler(event):
         
         
         
-        # Show PONGGGGGG message first
-        
-        msg = await event.edit("**PONGGGGGG!!!!**")
+        # Show PONGGGGGG message first with premium emoji
+        await safe_edit_premium(event, "**PONGGGGGG!!!!**")
         await asyncio.sleep(1)
         
         # Trigger the alive plugin functionality by simulating .alive command
@@ -178,7 +177,7 @@ async def ponk_handler(event):
 {get_emoji('centang')} **Premium Emojis:** Loaded
 **Created by:** Vzoel Fox's
 **Enhanced by:** Vzoel Fox's Ltpn"""
-            await safe_edit_premium(ponk_msg, alive_text)
+            await safe_edit_premium(event, alive_text)
         
         if vzoel_client:
             vzoel_client.increment_command_count()

@@ -63,14 +63,13 @@ async def alive_handler(event):
             f"{get_emoji('utama')} VzoelFox's Assistant ONLINE!"
         ]
         
-        # Start animation with first phase
-        
-        msg = await event.edit(animation_phases[0])
+        # Start animation with first phase using safe_edit_premium
+        await safe_edit_premium(event, animation_phases[0])
         
         # Animate through all 12 phases
         for i in range(1, 12):
             await asyncio.sleep(0.8)  # 0.8 second delay between phases
-            await msg.edit(animation_phases[i])
+            await safe_edit_premium(event, animation_phases[i])
         
         # Final delay before showing result
         await asyncio.sleep(1)
@@ -97,7 +96,7 @@ Repo ini hanya untuk pembelajaran dan pengembangan.
 {random_emoji2} **©2025 ~ VZOEL FOX'S ASSISTANT**"""
         
         # Display final result
-        await safe_edit_premium(msg, alive_display)
+        await safe_edit_premium(event, alive_display)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
@@ -145,9 +144,8 @@ async def alive_info_handler(event):
 
 **By VzoelFox Assistant**"""
         
-        
-        msg = await event.edit(alive_info)
-        await safe_edit_premium(msg, alive_info)
+        # Display alive info with premium emoji support
+        await safe_edit_premium(event, alive_info)
         if vzoel_client:
             vzoel_client.increment_command_count()
 
