@@ -254,12 +254,11 @@ async def lock_user_handler(event):
                     return
         
         if not target_user:
-            help_msg = f"{get_emoji('kuning')} {signature} **VZOEL Lock Usage:**
-• `.lock @username` - Lock user by username
-• `.lock` (reply) - Lock user dari reply
+help_msg = f"{get_emoji('kuning')} {signature} **VZOEL Lock Usage:**\n•  - Lock user by username\n•  (reply) - Lock user dari reply\n•  - Unlock user\n•  - List locked users"
 • `.unlock @username` - Unlock user
-• `.locked` - List locked users"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+• `.locked` - List locked users
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(help_msg)
             return

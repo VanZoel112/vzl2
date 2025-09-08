@@ -192,10 +192,9 @@ async def stop_tagall_handler(event):
             # Cancel the tagall task
             tagall_tasks[chat_id].cancel()
             tagall_active[chat_id] = False
-            stop_msg = f"{get_emoji('centang')} {signature} **VZOEL Tagall Dihentikan**
-Proses tagall telah diberhentikan oleh pengguna
-Status: Cancelled"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+stop_msg = f"{get_emoji('centang')} {signature} **VZOEL Tagall Dihentikan**\n\nProses tagall telah diberhentikan oleh pengguna\nStatus: Cancelled"
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(stop_msg)
         else:

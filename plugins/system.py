@@ -52,7 +52,7 @@ async def update_handler(event):
         
         # If no updates and not force
         if not update_info.get("needs_update", False) and not force:
-            up_to_date_msg = f"{get_emoji('centang')} Already up to date!
+up_to_date_msg = f"{get_emoji('centang')} Already up to date!"
 Current: `{update_info['current_commit']}`"
             await safe_edit_premium(msg, up_to_date_msg)
             return
@@ -68,17 +68,16 @@ Latest: `{update_info['remote_commit']}`" if not force else "Force updating...")
         result = await vzoel_client.auto_updater.perform_update(force=force)
         
         if result.get("status") == "success":
-            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} **VZOEL Update Successful!**
-{result['message']}
+            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} **VZOEL Update Successful!**\n{result['message']}\n"
 
-{get_emoji('kuning')} Restart required to apply changes"
+
 {get_emoji('adder2')} **Powered by VzoelFox Technology**
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         else:
             error_msg = f"{get_emoji('merah')} {signature} **VZOEL Update Failed**
-{result.get('message', 'Unknown error')}"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{result.get('message', 'Unknown error')}""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, error_msg)
 

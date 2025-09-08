@@ -65,8 +65,8 @@ async def ping_handler(event):
         # Show VzoelFox ping result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         ping_response = f"{signature} **VZOEL ASSISTANT**\n\n{get_emoji('adder1')} **PONG !!!!!!**\n{get_emoji('centang')} **LATENCY:** {ping_time:.2f}ms\n{get_emoji('proses')} **Status:** Online & Active\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+
+
         
         await safe_edit_premium(event, ping_response)
         if vzoel_client:
@@ -95,7 +95,7 @@ async def pink_handler(event):
         # Show VzoelFox pink result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         pink_response = f"{signature} **VZOEL ASSISTANT**\n\n{get_emoji('adder1')} **PINK !!!!!!**\n{get_emoji('kuning')} **LATENCY:** {latency:.2f}ms\n{get_emoji('aktif')} **Status:** Pink Mode Active\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, pink_response)
@@ -141,7 +141,7 @@ async def pong_handler(event):
                 pass  # Ignore if spambot interaction fails
             # Send the PONG message with latency emoji
             pong_response = f"{signature} **VZOEL PONG {latency_emoji}**"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             # If we can forward from spambot, do it, otherwise just show response
             try:
@@ -149,10 +149,9 @@ async def pong_handler(event):
                 async for message in event.client.iter_messages('@spambot', limit=1):
                     if message.text:
                         # Forward the message content style
-                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**
+                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Forwarded from @spambot to reduce limits`
+"
 
-`Forwarded from @spambot to reduce limits`"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
                         break
             except:
@@ -160,10 +159,9 @@ async def pong_handler(event):
                 
         except Exception as e:
             # Fallback response if spambot interaction fails
-            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**
+            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Failed to contact @spambot`
+"
 
-`Failed to contact @spambot`"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, pong_response)
@@ -235,7 +233,7 @@ async def pings_info_handler(event):
 • @spambot integration for limit reduction
 • Automatic .alive command triggering
 
-**By VzoelFox Assistant**"""
+**By VzoelFox Assistant**""
         await safe_edit_premium(event, pings_info)
         if vzoel_client:
             vzoel_client.increment_command_count()

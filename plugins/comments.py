@@ -120,7 +120,7 @@ class VzoelComments:
                 "tagline": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "creator": "Created by: Vzoel Fox's",
-                "repo_notice": "Userbot ini dibuat dengan repo murni oleh Vzoel Fox's..
+"repo_notice": "Userbot ini dibuat dengan repo murni oleh Vzoel Fox's untuk pembelajaran dan pengembangan"
 Bukan hasil fork maupun beli dari seller manapun!!!
 Hak cipta sepenuhnya milik Vzoel..",
                 "zone": "Zone: ID 🇮🇩",

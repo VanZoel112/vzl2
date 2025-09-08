@@ -80,9 +80,9 @@ async def add_blacklist_handler(event):
         if chat_id:
             # Add to blacklist
             if Config.add_to_blacklist(chat_id):
-                success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Added**
-"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Added**\n\nChat: \nID: \nTotal Blacklisted: "
+""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                     f"Chat: `{chat_title}`
 " + \
@@ -93,8 +93,8 @@ async def add_blacklist_handler(event):
                 await safe_edit_premium(event, success_msg)
             else:
                 already_msg = f"{get_emoji('kuning')} {signature} **VZOEL Already Blacklisted**
-"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                     f"Chat: `{chat_title}`
 " + \
@@ -130,8 +130,8 @@ async def remove_blacklist_handler(event):
         
         if Config.remove_from_blacklist(chat_id):
             success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Removed**
-"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                 f"ID: `{chat_id}`
 " + \
@@ -156,10 +156,9 @@ async def list_blacklist_handler(event):
             await safe_edit_premium(event, empty_msg)
             return
         
-        blacklist_text = f"{signature} **VZOEL VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**
-
+        blacklist_text = f"{signature} **VZOEL VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n
 "
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         for i, chat_id in enumerate(Config.GCAST_BLACKLIST, 1):
@@ -171,15 +170,14 @@ async def list_blacklist_handler(event):
 
 "
             except:
-                blacklist_text += f"`{i}.` {signature} **VZOEL Unknown Chat**
-   ID: `{chat_id}`
+                blacklist_text += f"`{i}.` {signature} **VZOEL Unknown Chat**\n   ID: `{chat_id}`\n
 
 "
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
-        blacklist_text += f"{signature} **VZOEL By VzoelFox Assistant**"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+        blacklist_text += f"{signature} **VZOEL By VzoelFox Assistant**""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, blacklist_text)
@@ -242,8 +240,8 @@ async def gcast_handler(event):
         
         # Animation phase 2: Starting broadcast
         start_msg = f"{get_emoji('proses')} {signature} **VZOEL Broadcasting Started**
-"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
             f"Target Chats: `{total_chats}`
 " + \
@@ -262,8 +260,8 @@ async def gcast_handler(event):
                 # Update progress every 5 chats or on last chat
                 if i % 5 == 0 or i == total_chats:
                     progress_msg = f"{get_emoji('aktif')} {signature} **VZOEL Broadcasting in Progress**
-"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+""
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                         f"Progress: `{i}/{total_chats}`
 " + \

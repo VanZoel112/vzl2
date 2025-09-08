@@ -96,11 +96,10 @@ async def vc_join_handler(event):
                 'muted': False,
                 'chat_title': (await event.get_chat()).title
             }
-            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Joined**
-Chat: {vc_status[chat_id]['chat_title']}
-Status: Connected
-Audio: Ready"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+success_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Joined**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Connected\nAudio: Ready"
+Audio: Ready
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
@@ -139,10 +138,9 @@ async def vc_leave_handler(event):
             await vc_instances[chat_id].leave_group_call(chat_id)
             # Update status
             vc_status[chat_id]['joined'] = False
-            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Left Voice Chat**
-Chat: {vc_status[chat_id]['chat_title']}
-Status: Disconnected"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Left Voice Chat**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Disconnected
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
@@ -176,10 +174,9 @@ async def vc_mute_handler(event):
             # Mute stream
             await vc_instances[chat_id].mute_stream(chat_id)
             vc_status[chat_id]['muted'] = True
-            muted_msg = f"{get_emoji('proses')} {signature} **VZOEL Voice Chat Muted**
-Chat: {vc_status[chat_id]['chat_title']}
-Status: Muted"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+            muted_msg = f"{get_emoji('proses')} {signature} **VZOEL Voice Chat Muted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Muted
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(muted_msg)
         except Exception as e:
@@ -213,10 +210,9 @@ async def vc_unmute_handler(event):
             # Unmute stream
             await vc_instances[chat_id].unmute_stream(chat_id)
             vc_status[chat_id]['muted'] = False
-            unmuted_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Unmuted**
-Chat: {vc_status[chat_id]['chat_title']}
-Status: Speaking"
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
+            unmuted_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Unmuted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Speaking
+"
+
 {get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(unmuted_msg)
         except Exception as e:
