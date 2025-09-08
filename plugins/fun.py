@@ -34,7 +34,8 @@ async def dice_handler(event):
         
         # Show rolling animation
         rolling_msg = f"{get_emoji('loading')} Rolling dice..."
-        msg = await safe_edit_premium(event, rolling_msg)
+        
+        msg = await event.edit(rolling_msg)
         
         await asyncio.sleep(1)
         
@@ -45,7 +46,8 @@ async def dice_handler(event):
         result_msg = f"{get_emoji('utama')} **VzoelFox Dice Roll**\n\n{dice_emojis[result-1]} You rolled: **{result}**"
         
         await safe_edit_premium(msg, result_msg)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.flip'))
 async def flip_handler(event):
@@ -55,17 +57,19 @@ async def flip_handler(event):
         
         
         flipping_msg = f"{get_emoji('proses')} Flipping coin..."
-        msg = await safe_edit_premium(event, flipping_msg)
+        
+        msg = await event.edit(flipping_msg)
         
         await asyncio.sleep(1)
         
         result = random.choice(['Heads', 'Tails'])
-        emoji = '👑' if result == 'Heads' else '🪙'
+        emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
         result_msg = f"{get_emoji('kuning')} **VzoelFox Coin Flip**\\n\\n{emoji} Result: **{result}**"
         
         await safe_edit_premium(msg, result_msg)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.quote'))
 async def quote_handler(event):
@@ -74,14 +78,14 @@ async def quote_handler(event):
         from client import vzoel_client
         
         vzoel_quotes = [
-            "The fox always finds a way 🦊",
-            "Premium emojis make everything better 🤩",
-            "VzoelFox's domain knows no limits ⛈",
-            "Enhanced by Vzoel Fox's Ltpn 🎚",
-            "Every command is a work of art 💟",
-            "The storm follows the fox ⛈🦊",
-            "Premium features for premium users 😈",
-            "VzoelFox's Assistant at your service 👽"
+            f"The fox always finds a way {get_emoji('adder1')}",
+            f"Premium emojis make everything better {get_emoji('utama')}",
+            f"VzoelFox's domain knows no limits {get_emoji('petir')}",
+            f"Enhanced by Vzoel Fox's Ltpn {get_emoji('aktif')}",
+            f"Every command is a work of art {get_emoji('adder2')}",
+            f"The storm follows the fox {get_emoji('petir')}{get_emoji('adder1')}",
+            f"Premium features for premium users {get_emoji('adder1')}",
+            f"VzoelFox's Assistant at your service {get_emoji('proses')}"
         ]
         
         quote = random.choice(vzoel_quotes)
@@ -91,5 +95,8 @@ async def quote_handler(event):
         
         quote_msg = f"**{signature} VzoelFox Quote**\n\n*\"{quote}\"*\n\n— **Vzoel Fox's**"
         
-        await safe_edit_premium(event, quote_msg)
-        vzoel_client.increment_command_count()
+        
+        msg = await event.edit(quote_msg)
+        await safe_edit_premium(msg, quote_msg)
+        if vzoel_client:
+            vzoel_client.increment_command_count()

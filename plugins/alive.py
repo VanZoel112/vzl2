@@ -44,13 +44,27 @@ async def alive_handler(event):
         
         
         
-        # Get plugin count for features display
-        plugin_count = len(vzoel_client.plugin_manager.plugins) if vzoel_client.plugin_manager else 0
+        # Get plugin count for features display  
+        plugin_count = 13  # Static count since vzoel_client might not be available
         
-        # Get 12-phase animation from comment system
-        animation_phases = vzoel_comments.get_alive_phases()
+        # 12-phase animation with VzoelFox emojis
+        animation_phases = [
+            f"{get_emoji('loading')} Initializing VzoelFox's Assistant...",
+            f"{get_emoji('proses')} Loading premium systems...",
+            f"{get_emoji('petir')} Activating power modules...",
+            f"{get_emoji('aktif')} Configuring features...",
+            f"{get_emoji('telegram')} Establishing connections...",
+            f"{get_emoji('kuning')} Running diagnostics...",
+            f"{get_emoji('biru')} Checking permissions...",
+            f"{get_emoji('merah')} Validating plugins...",
+            f"{get_emoji('adder1')} Applying enhancements...",
+            f"{get_emoji('adder2')} Finalizing configuration...",
+            f"{get_emoji('centang')} System ready...",
+            f"{get_emoji('utama')} VzoelFox's Assistant ONLINE!"
+        ]
         
         # Start animation with first phase
+        
         msg = await event.edit(animation_phases[0])
         
         # Animate through all 12 phases
@@ -63,26 +77,29 @@ async def alive_handler(event):
         
         # Get random emoji for NOTE section (from premium mapping)
         available_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif', 'adder1', 'adder2', 'telegram']
-        random_emoji1 = vzoel_emoji.get_emoji(random.choice(available_emojis))
-        random_emoji2 = vzoel_emoji.get_emoji(random.choice(available_emojis))
+        random_emoji1 = get_emoji(random.choice(available_emojis))
+        random_emoji2 = get_emoji(random.choice(available_emojis))
         
-        # Build final alive display with premium emojis and comment system
-        alive_display = f"""{vzoel_emoji.getemoji('utama', premium=True)} **{vzoel_comments.vzoel('signature')}**
+        # Build final alive display with premium emojis
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        alive_display = f"""{get_emoji('utama')} **VzoelFox's Assistant v2**
 
-{vzoel_emoji.getemoji('centang', premium=True)} **Founder Userbot** : Vzoel Fox's (Lutpan) {vzoel_emoji.getemoji('utama', premium=True)}
-{vzoel_emoji.getemoji('centang', premium=True)} **Code** : python3,python2
-{vzoel_emoji.getemoji('centang', premium=True)} **Fitur** : {plugin_count}
-{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.vzoel('ig')}**
-{vzoel_emoji.getemoji('centang', premium=True)} **{vzoel_comments.vzoel('zone')}**
+{get_emoji('centang')} **Founder Userbot** : Vzoel Fox's (Lutpan) {get_emoji('utama')}
+{get_emoji('centang')} **Code** : python3, python2
+{get_emoji('centang')} **Fitur** : {plugin_count}
+{get_emoji('centang')} **Instagram** : vzoel.fox_s
+{get_emoji('centang')} **Zone** : Indonesia 🇮🇩
 
 {random_emoji1} **NOTE !!!** :
-{vzoel_comments.vzoel('repo_notice')}
+Jangan diperjualbelikan atau dikomersilkan!
+Repo ini hanya untuk pembelajaran dan pengembangan.
 
-{random_emoji2} **{vzoel_comments.vzoel('copyright')}**"""
+{random_emoji2} **©2025 ~ VZOEL FOX'S ASSISTANT**"""
         
         # Display final result
-        await msg.edit(alive_display)
-        vzoel_client.increment_command_count()
+        await safe_edit_premium(msg, alive_display)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator
 
@@ -128,6 +145,9 @@ async def alive_info_handler(event):
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, alive_info)
-        vzoel_client.increment_command_count()
+        
+        msg = await event.edit(alive_info)
+        await safe_edit_premium(msg, alive_info)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 

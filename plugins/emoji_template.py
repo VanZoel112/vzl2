@@ -36,7 +36,6 @@ def create_premium_entities(text):
         
         while i < len(text):
             found_emoji = False
-            
             for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
                 emoji_char = emoji_data['char']
                 emoji_id = emoji_data['id']
@@ -60,7 +59,6 @@ def create_premium_entities(text):
                         
                     except Exception:
                         break
-            
             if not found_emoji:
                 char = text[i]
                 char_bytes = char.encode('utf-16-le')
@@ -91,24 +89,41 @@ async def safe_send_premium(event, text, buttons=None):
         else:
             await event.reply(text)
 
-async def safe_edit_premium(event, text, buttons=None):
+async def safe_edit_premium(message_or_event, text, buttons=None):
     """Edit message with premium entities (standalone version)"""
     try:
+        # Handle both message objects and events
+        edit_target = message_or_event
+        if hasattr(message_or_event, 'message') and message_or_event.message is None:
+            # This is an event, we need to edit the event itself
+            edit_target = message_or_event
+        
         entities = create_premium_entities(text)
         if entities and buttons:
-            await event.edit(text, formatting_entities=entities, buttons=buttons)
+            await edit_target.edit(text, formatting_entities=entities, buttons=buttons)
         elif entities:
-            await event.edit(text, formatting_entities=entities)
+            await edit_target.edit(text, formatting_entities=entities)
         elif buttons:
-            await event.edit(text, buttons=buttons)
+            await edit_target.edit(text, buttons=buttons)
         else:
-            await event.edit(text)
-    except Exception:
-        # Fallback to simple edit
-        if buttons:
-            await event.edit(text, buttons=buttons)
-        else:
-            await event.edit(text)
+            await edit_target.edit(text)
+    except Exception as e:
+        # Fallback to simple edit - ensure we have a valid object to edit
+        try:
+            if hasattr(message_or_event, 'edit'):
+                if buttons:
+                    await message_or_event.edit(text, buttons=buttons)
+                else:
+                    await message_or_event.edit(text)
+            else:
+                # If no edit method, this might be a reply case
+                if hasattr(message_or_event, 'reply'):
+                    if buttons:
+                        await message_or_event.reply(text, buttons=buttons)
+                    else:
+                        await message_or_event.reply(text)
+        except Exception:
+            pass  # Silent fail if all methods fail
 
 # ===== OWNER CHECK (STANDALONE) =====
 async def is_owner(client, user_id):

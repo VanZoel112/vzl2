@@ -46,7 +46,8 @@ async def ping_handler(event):
         
         # Edit message to calculate ping
         calculating_msg = f"{get_emoji('loading')} Menghitung..."
-        msg = await safe_edit_premium(event, calculating_msg)
+        
+        msg = await event.edit(calculating_msg)
         
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
@@ -55,7 +56,8 @@ async def ping_handler(event):
         ping_response = f"{get_emoji('utama')} PONG!!!! VzoelFox Assistant Anti Delay"
         
         await safe_edit_premium(msg, ping_response)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator
 
@@ -71,7 +73,8 @@ async def pink_handler(event):
         
         # Edit message to calculate latency
         testing_msg = f"{get_emoji('loading')} Testing latency..."
-        msg = await safe_edit_premium(event, testing_msg)
+        
+        msg = await event.edit(testing_msg)
         
         end_time = time.time()
         latency = (end_time - start_time) * 1000
@@ -80,7 +83,8 @@ async def pink_handler(event):
         pink_response = f"{get_emoji('utama')} PONG!!!! Latency {latency:.2f}ms"
         
         await safe_edit_premium(msg, pink_response)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator
 
@@ -96,7 +100,8 @@ async def pong_handler(event):
         
         # Calculate latency first
         testing_msg = f"{get_emoji('loading')} Testing..."
-        test_msg = await safe_edit_premium(event, testing_msg)
+        
+        msg = await event.edit(testing_msg)
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
@@ -118,10 +123,8 @@ async def pong_handler(event):
                 await asyncio.sleep(1)
             except:
                 pass  # Ignore if spambot interaction fails
-            
             # Send the PONG message with latency emoji
             pong_response = f"**PONG {latency_emoji}**"
-            
             # If we can forward from spambot, do it, otherwise just show response
             try:
                 # Try to get recent message from spambot
@@ -138,7 +141,8 @@ async def pong_handler(event):
             pong_response = f"**PONG {latency_emoji}**\n\n`Failed to contact @spambot`"
         
         await safe_edit_premium(test_msg, pong_response)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator
 
@@ -151,7 +155,8 @@ async def ponk_handler(event):
         
         
         # Show PONGGGGGG message first
-        ponk_msg = await safe_edit_premium(event, "**PONGGGGGG!!!!**")
+        
+        msg = await event.edit("**PONGGGGGG!!!!**")
         await asyncio.sleep(1)
         
         # Trigger the alive plugin functionality by simulating .alive command
@@ -161,27 +166,22 @@ async def ponk_handler(event):
             spec = importlib.util.spec_from_file_location("alive", "plugins/alive.py")
             alive_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(alive_module)
-            
             # Call the alive handler directly
             await alive_module.alive_handler(event)
-            
         except Exception as e:
             # Fallback to simple alive display if plugin loading fails
             signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-            
             alive_text = f"""**VzoelFox's Assistant v2**
-            
 {signature} **Status:** ALIVE & RUNNING
 {get_emoji('aktif')} **Version:** v2.0.0-vzoel
 {get_emoji('telegram')} **Engine:** Enhanced
 {get_emoji('centang')} **Premium Emojis:** Loaded
-            
 **Created by:** Vzoel Fox's
 **Enhanced by:** Vzoel Fox's Ltpn"""
-            
             await safe_edit_premium(ponk_msg, alive_text)
         
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator
 
@@ -211,8 +211,8 @@ async def pings_info_handler(event):
 • Automatic .alive command triggering
 
 **By VzoelFox Assistant**"""
-        
         await safe_edit_premium(event, pings_info)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 # Handler automatically registered via @events.register decorator

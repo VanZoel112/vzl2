@@ -32,96 +32,91 @@ class VzoelComments:
         return {
             # ==== PROCESS COMMENTS ====
             "process": {
-                "loading": "⚙️ Sedang memproses...",
-                "calculating": "🔄 Menghitung...",
-                "connecting": "🌐 Menghubungkan...",
-                "generating": "⚡ Menghasilkan...",
-                "scanning": "🔍 Memindai...",
-                "checking": "✅ Memeriksa...",
-                "validating": "🔐 Memvalidasi...",
-                "finalizing": "🎯 Menyelesaikan...",
-                "initializing": "🚀 Memulai sistem...",
-                "preparing": "📋 Mempersiapkan...",
-                "testing": "🧪 Menguji koneksi...",
-                "uploading": "📤 Mengupload...",
-                "downloading": "📥 Mendownload...",
-                "processing": "⚙️ Memproses data..."
+                "loading": f"{get_emoji('loading')} Sedang memproses...",
+                "calculating": f"{get_emoji('loading')} Menghitung...",
+                "connecting": f"{get_emoji('telegram')} Menghubungkan...",
+                "generating": f"{get_emoji('petir')} Menghasilkan...",
+                "scanning": f"{get_emoji('proses')} Memindai...",
+                "checking": f"{get_emoji('centang')} Memeriksa...",
+                "validating": f"{get_emoji('aktif')} Memvalidasi...",
+                "finalizing": f"{get_emoji('utama')} Menyelesaikan...",
+                "initializing": f"{get_emoji('petir')} Memulai sistem...",
+                "preparing": f"{get_emoji('aktif')} Mempersiapkan...",
+                "testing": f"{get_emoji('kuning')} Menguji koneksi...",
+                "uploading": f"{get_emoji('telegram')} Mengupload...",
+                "downloading": f"{get_emoji('telegram')} Mendownload...",
+                "processing": f"{get_emoji('loading')} Memproses data..."
             },
-            
             # ==== SUCCESS COMMENTS ====
             "success": {
-                "completed": "✅ Berhasil diselesaikan!",
-                "done": "🎉 Selesai!",
-                "sent": "📤 Berhasil dikirim!",
-                "saved": "💾 Berhasil disimpan!",
-                "updated": "🔄 Berhasil diperbarui!",
-                "connected": "🌐 Terhubung dengan sukses!",
-                "uploaded": "📤 Upload berhasil!",
-                "downloaded": "📥 Download selesai!",
-                "activated": "⚡ Berhasil diaktifkan!",
-                "configured": "⚙️ Konfigurasi berhasil!"
+                "completed": f"{get_emoji('centang')} Berhasil diselesaikan!",
+                "done": f"{get_emoji('utama')} Selesai!",
+                "sent": f"{get_emoji('telegram')} Berhasil dikirim!",
+                "saved": f"{get_emoji('adder2')} Berhasil disimpan!",
+                "updated": f"{get_emoji('loading')} Berhasil diperbarui!",
+                "connected": f"{get_emoji('telegram')} Terhubung dengan sukses!",
+                "uploaded": f"{get_emoji('telegram')} Upload berhasil!",
+                "downloaded": f"{get_emoji('telegram')} Download selesai!",
+                "activated": f"{get_emoji('petir')} Berhasil diaktifkan!",
+                "configured": f"{get_emoji('loading')} Konfigurasi berhasil!"
             },
-            
             # ==== ERROR COMMENTS ====
             "error": {
-                "failed": "❌ Gagal diproses!",
-                "timeout": "⏱️ Waktu habis!",
-                "connection_error": "🌐 Error koneksi!",
-                "permission_denied": "🚫 Akses ditolak!",
-                "not_found": "🔍 Tidak ditemukan!",
-                "invalid_input": "📝 Input tidak valid!",
-                "server_error": "🛠️ Error server!",
-                "rate_limit": "⏳ Terkena rate limit!",
-                "unknown_error": "❓ Error tidak diketahui!"
+                "failed": f"{get_emoji('merah')} Gagal diproses!",
+                "timeout": f"{get_emoji('loading')} Waktu habis!",
+                "connection_error": f"{get_emoji('telegram')} Error koneksi!",
+                "permission_denied": f"{get_emoji('merah')} Akses ditolak!",
+                "not_found": f"{get_emoji('proses')} Tidak ditemukan!",
+                "invalid_input": f"{get_emoji('kuning')} Input tidak valid!",
+                "server_error": f"{get_emoji('loading')} Error server!",
+                "rate_limit": f"{get_emoji('loading')} Terkena rate limit!",
+                "unknown_error": f"{get_emoji('kuning')} Error tidak diketahui!"
             },
-            
             # ==== COMMAND RESPONSES ====
             "commands": {
                 "ping": {
-                    "testing": "📡 Testing latency...",
-                    "result": "🏓 PONG!!!! VzoelFox Assistant Anti Delay",
-                    "with_latency": "🏓 PONG!!!! Latency {latency}ms"
+                    "testing": f"{get_emoji('telegram')} Testing latency...",
+                    "result": f"{get_emoji('kuning')} PONG!!!! VzoelFox Assistant Anti Delay",
+                    "with_latency": f"{get_emoji('kuning')} PONG!!!! Latency {{latency}}ms"
                 },
                 "alive": {
                     "phases": [
-                        "🔧 Initializing VzoelFox Assistant...",
-                        "💎 Loading premium components...",
-                        "🌐 Connecting to VzoelFox servers...",
-                        "🎭 Validating premium emojis...",
-                        "🔌 Scanning installed plugins...",
-                        "🛡️ Checking system integrity...",
-                        "🔐 Verifying VzoelFox credentials...",
-                        "👤 Loading assistant profile...",
-                        "🎨 Preparing display interface...",
-                        "📊 Finalizing system status...",
-                        "✨ VzoelFox Assistant ready!",
-                        "📱 Generating status display..."
+                        f"{get_emoji('loading')} Initializing VzoelFox Assistant...",
+                        f"{get_emoji('adder2')} Loading premium components...",
+                        f"{get_emoji('telegram')} Connecting to VzoelFox servers...",
+                        f"{get_emoji('biru')} Validating premium emojis...",
+                        f"{get_emoji('aktif')} Scanning installed plugins...",
+                        f"{get_emoji('utama')} Checking system integrity...",
+                        f"{get_emoji('aktif')} Verifying VzoelFox credentials...",
+                        f"{get_emoji('utama')} Loading assistant profile...",
+                        f"{get_emoji('biru')} Preparing display interface...",
+                        f"{get_emoji('aktif')} Finalizing system status...",
+                        f"{get_emoji('utama')} VzoelFox Assistant ready!",
+                        f"{get_emoji('telegram')} Generating status display..."
                     ]
                 },
                 "help": {
-                    "loading": "📚 Memuat daftar bantuan...",
-                    "generating": "📋 Menyusun informasi bantuan..."
+                    "loading": f"{get_emoji('kuning')} Memuat daftar bantuan...",
+                    "generating": f"{get_emoji('aktif')} Menyusun informasi bantuan..."
                 },
                 "gcast": {
-                    "preparing": "📢 Mempersiapkan global cast...",
-                    "sending": "📤 Mengirim ke {count} grup...",
-                    "completed": "✅ Global cast selesai!"
+                    "preparing": f"{get_emoji('telegram')} Mempersiapkan global cast...",
+                    "sending": f"{get_emoji('telegram')} Mengirim ke {{count}} grup...",
+                    "completed": f"{get_emoji('centang')} Global cast selesai!"
                 }
             },
-            
             # ==== STATUS INDICATORS ====
             "status": {
-                "online": "🟢 Online",
-                "offline": "🔴 Offline", 
-                "busy": "🟡 Sibuk",
-                "away": "🟠 Away",
-                "dnd": "⛔ Jangan Diganggu",
-                "invisible": "👻 Tidak Terlihat"
+                "online": f"{get_emoji('centang')} Online",
+                "offline": f"{get_emoji('merah')} Offline", 
+                "busy": f"{get_emoji('kuning')} Sibuk",
+                "away": f"{get_emoji('kuning')} Away",
+                "dnd": f"{get_emoji('merah')} Jangan Diganggu",
+                "invisible": f"{get_emoji('proses')} Tidak Terlihat"
             },
-            
             # ==== CUSTOM VZOEL MESSAGES ====
             "vzoel": {
-                "signature": "🦊 VzoelFox's Assistant",
+                "signature": f"{get_emoji('adder1')} VzoelFox's Assistant",
                 "tagline": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "creator": "Created by: Vzoel Fox's",
@@ -129,14 +124,13 @@ class VzoelComments:
                 "zone": "Zone: ID 🇮🇩",
                 "ig": "IG: vzoel.fox_s"
             },
-            
             # ==== SYSTEM MESSAGES ====
             "system": {
-                "restarting": "🔄 Restarting VzoelFox Assistant...",
-                "updating": "⬆️ Updating system...",
-                "maintenance": "🔧 System maintenance...",
-                "backup": "💾 Creating backup...",
-                "restore": "📁 Restoring from backup..."
+                "restarting": f"{get_emoji('loading')} Restarting VzoelFox Assistant...",
+                "updating": f"{get_emoji('petir')} Updating system...",
+                "maintenance": f"{get_emoji('loading')} System maintenance...",
+                "backup": f"{get_emoji('adder2')} Creating backup...",
+                "restore": f"{get_emoji('aktif')} Restoring from backup..."
             }
         }
     
@@ -234,7 +228,8 @@ async def comments_info_handler(event):
 
 **Easy Customization Available!**"""
         
-        await safe_edit_premium(event, comments_info)
+        
+        msg = await event.edit(comments_info)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.customize (\w+) (\w+) (.+)'))
@@ -258,7 +253,8 @@ async def customize_comment_handler(event):
 
 {get_emoji('proses')} Comment berhasil di-customize untuk session ini."""
         
-        await safe_edit_premium(event, success_msg)
+        
+        msg = await event.edit(success_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.showcomment (\w+) (\w+)'))
@@ -280,5 +276,6 @@ async def show_comment_handler(event):
 
 {get_emoji('telegram')} Use `.customize {category} {key} new_message` to change"""
         
-        await safe_edit_premium(event, display_msg)
+        
+        msg = await event.edit(display_msg)
         vzoel_client.increment_command_count()

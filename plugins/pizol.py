@@ -82,12 +82,13 @@ async def pizol_handler(event):
         ]
         
         # Start animation with first phase
-        msg = await safe_edit_premium(event, animation_phases[0])
+        
+        msg = await event.edit(animation_phases[0])
         
         # Animate through all 40 phases
         for i in range(1, 40):
             await asyncio.sleep(0.6)  # 0.6 second delay between phases
-            await safe_edit_premium(msg, animation_phases[i])
+            await msg.edit(animation_phases[i])
         
         # Final delay before showing result
         await asyncio.sleep(1)
@@ -129,7 +130,8 @@ Ready untuk menjalankan semua perintah premium!
         
         # Display final result
         await safe_edit_premium(msg, pizol_display)
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.pinfo'))
 async def pizol_info_handler(event):
@@ -176,5 +178,8 @@ Simply type `.pizol` to activate the full 40-phase animation sequence and view c
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, pizol_info)
-        vzoel_client.increment_command_count()
+        
+        msg = await event.edit(pizol_info)
+        await safe_edit_premium(msg, pizol_info)
+        if vzoel_client:
+            vzoel_client.increment_command_count()

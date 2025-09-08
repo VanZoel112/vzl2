@@ -46,7 +46,7 @@ async def limit_checker_handler(event):
         
         # Initial process message
         process_msg = f"{get_emoji('loading')} Memulai pengecekan limit akun..."
-        msg = await safe_edit_premium(event, process_msg)
+        msg = await event.edit(process_msg)
         
         # Start limit checking task
         limit_tasks[chat_id] = asyncio.create_task(
@@ -124,9 +124,7 @@ async def perform_limit_check(event, msg):
 • Hindari broadcast massal
 
 **VzoelFox Limit Checker**"""
-            
             await safe_edit_premium(msg, restriction_msg)
-            
         elif account_status['good_news']:
             # Good news from spambot - account is safe
             safe_msg = f"""**{get_emoji('centang')} VZOEL FOX'S AMAN**
@@ -145,9 +143,7 @@ async def perform_limit_check(event, msg):
 {get_emoji('proses')} **Bot Message:** {account_status['bot_message']}
 
 **Vzoel Fox's Aman!**"""
-            
             await safe_edit_premium(msg, safe_msg)
-            
         else:
             # Unclear response or other status
             unclear_msg = f"""**{get_emoji('kuning')} STATUS TIDAK JELAS**
@@ -162,7 +158,6 @@ async def perform_limit_check(event, msg):
 • Respons bot tidak standar
 
 **VzoelFox Limit Checker**"""
-            
             await safe_edit_premium(msg, unclear_msg)
     
     except Exception as e:
@@ -202,7 +197,6 @@ def analyze_spambot_responses(responses):
     for keyword in restriction_keywords:
         if keyword in combined_response:
             result['restricted'] = True
-            
             # Try to extract restriction type
             if 'flood' in combined_response:
                 result['restriction_type'] = 'Flood Wait'
@@ -212,12 +206,10 @@ def analyze_spambot_responses(responses):
                 result['restriction_type'] = 'Account Banned'
             else:
                 result['restriction_type'] = 'General Restriction'
-            
             # Try to extract duration
             duration_match = re.search(r'(\d+)\s*(hour|day|minute)', combined_response)
             if duration_match:
                 result['duration'] = f"{duration_match.group(1)} {duration_match.group(2)}(s)"
-            
             break
     
     # Check for good news (only if not restricted)
@@ -270,5 +262,6 @@ Simply type `.limit` to start comprehensive account restriction check via @spamb
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, limit_info)
+        
+        msg = await event.edit(limit_info)
         vzoel_client.increment_command_count()

@@ -40,7 +40,7 @@ async def tagall_handler(event):
         # Check if we're in a group
         if event.is_private:
             error_msg = f"{get_emoji('merah')} Tagall hanya bisa digunakan di grup"
-            await safe_edit_premium(event, error_msg)
+            msg = await event.edit(error_msg)
             return
         
         chat_id = event.chat_id
@@ -55,56 +55,49 @@ async def tagall_handler(event):
         if event.reply_to_msg_id:
             # Reply mode - get replied message
             replied_msg = await event.get_reply_message()
-            message_text = replied_msg.message or "📢 Tagged by VzoelFox"
+            message_text = replied_msg.message or f"{get_emoji('telegram')} Tagged by VzoelFox"
         else:
             # Text mode - get text after .tagall
             match = event.pattern_match
             if match and match.group(2):
                 message_text = match.group(2)
             else:
-                message_text = "📢 Tagged by VzoelFox"
+                message_text = f"{get_emoji('telegram')} Tagged by VzoelFox"
         
         # Start tagall process
         tagall_active[chat_id] = True
         
         # Initial process message
         process_msg = f"{get_emoji('loading')} Memulai proses tagall..."
-        msg = await safe_edit_premium(event, process_msg)
+        msg = await event.edit(process_msg)
         
         # Get chat info
         try:
             chat = await event.get_chat()
             chat_title = chat.title
-            
             # Get all members
             await asyncio.sleep(1)
             await safe_edit_premium(msg, f"{get_emoji('proses')} Mengambil daftar member dari {chat_title}...")
-            
             participants = []
             async for user in event.client.iter_participants(chat_id):
                 if not user.bot and not user.deleted:
                     participants.append(user)
-            
             if not participants:
                 no_members_msg = f"{get_emoji('kuning')} Tidak ada member yang bisa di-tag"
                 await safe_edit_premium(msg, no_members_msg)
                 return
-            
             await asyncio.sleep(1)
             await safe_edit_premium(msg, f"{get_emoji('centang')} Ditemukan {len(participants)} member. Memulai tagall...")
-            
             # Start tagall task
             tagall_tasks[chat_id] = asyncio.create_task(
                 perform_tagall(event, participants, message_text, chat_title)
             )
-            
             # Wait for task completion
             try:
                 await tagall_tasks[chat_id]
             except asyncio.CancelledError:
                 cancel_msg = f"{get_emoji('kuning')} Tagall dihentikan oleh pengguna"
                 await safe_edit_premium(msg, cancel_msg)
-            
         except ChatAdminRequiredError:
             error_msg = f"{get_emoji('merah')} Bot membutuhkan akses admin untuk melihat member"
             await safe_edit_premium(msg, error_msg)
@@ -141,42 +134,34 @@ async def perform_tagall(event, participants, message_text, chat_title):
             full_name = f"{participant.first_name or ''} {participant.last_name or ''}".strip()
             if not full_name:
                 full_name = "Unknown User"
-            
             user_count += 1
-            
             # Random premium emoji for animation
             premium_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif']
-            random_emoji = get_emoji(random.choice(premium_emojis, premium=True))
-            
+            random_emoji = get_emoji(random.choice(premium_emojis))
             # Create animated status message
-            animation_text = f"""**{get_emoji('telegram', premium=True)} VZOEL TAGALL PROCESS**
+            animation_text = f"""**{get_emoji('telegram')} VZOEL TAGALL PROCESS**
 
-{get_emoji('aktif', premium=True)} **Username:** {username}
-{get_emoji('utama', premium=True)} **Nama:** {full_name}
+{get_emoji('aktif')} **Username:** {username}
+{get_emoji('utama')} **Nama:** {full_name}
 {random_emoji} **Status:** {random.choice(animation_phases)}
-{get_emoji('centang', premium=True)} **Tagall by:** Vzoel Fox's Assistant
-{get_emoji('proses', premium=True)} **Progress:** {user_count}/{len(participants)}
+{get_emoji('centang')} **Tagall by:** Vzoel Fox's Assistant
+{get_emoji('proses')} **Progress:** {user_count}/{len(participants)}
 
 **Pesan:** {message_text}
 
-{get_emoji('petir', premium=True)} **Grup:** {chat_title}"""
-            
+{get_emoji('petir')} **Grup:** {chat_title}"""
             # Send tag message
             tag_message = f"[{full_name}](tg://user?id={participant.id}) {message_text}"
-            
             # Send the actual tag
             await event.client.send_message(chat_id, tag_message)
-            
             # Show animation in original message
-            await safe_edit_premium(event, animation_text)
-            
+            msg = await event.edit(animation_text)
             # Delay to avoid flood
             await asyncio.sleep(2)
-            
         except FloodWaitError as e:
             # Handle flood wait
             wait_msg = f"{get_emoji('kuning')} Flood wait {e.seconds} detik, menunggu..."
-            await safe_edit_premium(event, wait_msg)
+            msg = await event.edit(wait_msg)
             await asyncio.sleep(e.seconds)
         except Exception as e:
             # Skip problematic users
@@ -184,16 +169,16 @@ async def perform_tagall(event, participants, message_text, chat_title):
     
     # Final completion message
     if tagall_active.get(chat_id, False):
-        completion_msg = f"""**{get_emoji('centang', premium=True)} TAGALL SELESAI**
+        completion_msg = f"""**{get_emoji('centang')} TAGALL SELESAI**
 
-{get_emoji('utama', premium=True)} **Total Member Tagged:** {user_count}
-{get_emoji('telegram', premium=True)} **Grup:** {chat_title}
-{get_emoji('aktif', premium=True)} **Pesan:** {message_text}
-{get_emoji('petir', premium=True)} **Status:** Completed Successfully
+{get_emoji('utama')} **Total Member Tagged:** {user_count}
+{get_emoji('telegram')} **Grup:** {chat_title}
+{get_emoji('aktif')} **Pesan:** {message_text}
+{get_emoji('petir')} **Status:** Completed Successfully
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, completion_msg)
+        msg = await event.edit(completion_msg)
 
 @events.register(events.NewMessage(pattern=r'\.stop'))
 async def stop_tagall_handler(event):
@@ -207,12 +192,11 @@ async def stop_tagall_handler(event):
             # Cancel the tagall task
             tagall_tasks[chat_id].cancel()
             tagall_active[chat_id] = False
-            
-            stop_msg = f"{get_emoji('centang')} **Tagall Dihentikan**\\nProses tagall telah diberhentikan oleh pengguna\\nStatus: Cancelled"
-            await safe_edit_premium(event, stop_msg)
+            stop_msg = f"{get_emoji('centang')} **Tagall Dihentikan**\nProses tagall telah diberhentikan oleh pengguna\nStatus: Cancelled"
+            msg = await event.edit(stop_msg)
         else:
             no_tagall_msg = f"{get_emoji('kuning')} Tidak ada proses tagall yang sedang berjalan"
-            await safe_edit_premium(event, no_tagall_msg)
+            msg = await event.edit(no_tagall_msg)
         
         vzoel_client.increment_command_count()
 
@@ -226,15 +210,15 @@ async def tagall_info_handler(event):
         
         tagall_info = f"""**{signature} Tagall System Information**
 
-{get_emoji('utama', premium=True)} **Apa itu Tagall?**
+{get_emoji('utama')} **Apa itu Tagall?**
 Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time dan kontrol penuh.
 
-{get_emoji('centang', premium=True)} **Cara Penggunaan:**
+{get_emoji('centang')} **Cara Penggunaan:**
 • `.tagall <pesan>` - Tag semua member dengan pesan
 • `.tagall` (reply) - Tag semua member dengan pesan yang direply
 • `.stop` - Hentikan proses tagall yang sedang berjalan
 
-{get_emoji('aktif', premium=True)} **Fitur Tagall:**
+{get_emoji('aktif')} **Fitur Tagall:**
 • Real-time animated feedback
 • Progress tracking per member
 • Username dan nama lengkap display
@@ -242,21 +226,21 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 • Flood protection dengan auto-delay
 • Cancellation support dengan .stop
 
-{get_emoji('telegram', premium=True)} **Animasi Display:**
+{get_emoji('telegram')} **Animasi Display:**
 1. Username member di grup
 2. Nama lengkap member  
 3. Random premium emoji
 4. "Tagall by Vzoel Fox's Assistant"
 5. Isi pesan yang ditulis/direply
 
-{get_emoji('proses', premium=True)} **Safety Features:**
+{get_emoji('proses')} **Safety Features:**
 • Skip bot accounts automatically
 • Handle deleted accounts
 • Flood wait protection
 • Admin permission checking
 • Error handling untuk user bermasalah
 
-{get_emoji('petir', premium=True)} **Performance:**
+{get_emoji('petir')} **Performance:**
 • 2 detik delay per member (flood protection)
 • Async processing untuk efisiensi
 • Real-time progress display
@@ -264,5 +248,5 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, tagall_info)
+        msg = await event.edit(tagall_info)
         vzoel_client.increment_command_count()

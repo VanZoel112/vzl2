@@ -49,9 +49,8 @@ async def id_checker_handler(event):
         if event.reply_to_msg_id:
             # Get user from reply
             process_msg = f"{get_emoji('loading')} Analyzing replied message..."
-            msg = await safe_edit_premium(event, process_msg)
+            msg = await event.edit(process_msg)
             await asyncio.sleep(0.8)
-            
             try:
                 reply_msg = await event.get_reply_message()
                 if reply_msg.sender:
@@ -68,11 +67,9 @@ async def id_checker_handler(event):
         elif args:
             # Get user from username/mention
             username = args.strip().replace('@', '')
-            
             process_msg = f"{get_emoji('proses')} Searching for user: @{username}..."
-            msg = await safe_edit_premium(event, process_msg)
+            msg = await event.edit(process_msg)
             await asyncio.sleep(0.8)
-            
             try:
                 target_user = await event.client.get_entity(username)
             except (UsernameNotOccupiedError, UsernameInvalidError):
@@ -86,7 +83,8 @@ async def id_checker_handler(event):
         else:
             # No target specified
             help_msg = f"{get_emoji('kuning')} Usage: .id @username or .id (reply to message)"
-            await safe_edit_premium(event, help_msg)
+            msg = await event.edit(help_msg)
+            await safe_edit_premium(msg, help_msg)
             return
         
         # Phase 2: Processing animation sequence
@@ -122,7 +120,8 @@ async def id_checker_handler(event):
         )
         animation_tasks[chat_id] = animation_task
         
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 async def animate_id_display(msg, user_id, username, full_name):
     """Unlimited loop animation for ID display"""
@@ -191,14 +190,14 @@ async def stop_id_animation_handler(event):
         if chat_id in animation_tasks:
             animation_tasks[chat_id].cancel()
             del animation_tasks[chat_id]
-            
             stop_msg = f"{get_emoji('centang')} ID animation stopped"
             await safe_edit_premium(event, stop_msg)
         else:
             no_animation_msg = f"{get_emoji('kuning')} No ID animation running"
             await safe_edit_premium(event, no_animation_msg)
         
-        vzoel_client.increment_command_count()
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.idinfo'))
 async def id_info_handler(event):
@@ -240,5 +239,7 @@ async def id_info_handler(event):
 
 **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, id_info)
-        vzoel_client.increment_command_count()
+        msg = await event.edit(id_info)
+        await safe_edit_premium(msg, id_info)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
