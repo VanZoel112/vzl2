@@ -125,16 +125,16 @@ async def alive_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        alive_info = f"""**{signature} VzoelFox Alive System**
+        alive_info = f"""{signature} VzoelFox Alive System
 
-{get_emoji('utama')} **Features:**
+{get_emoji('utama')} Features:
 • 12-phase animated loading sequence
 • Premium emoji integration throughout
 • Dynamic plugin count display
 • Indonesian flag zone indicator
 • Random emoji selection for notices
 
-{get_emoji('centang')} **Animation Phases:**
+{get_emoji('centang')} Animation Phases:
 1. Initializing VzoelFox Assistant
 2. Loading premium components
 3. Connecting to VzoelFox servers
@@ -148,14 +148,14 @@ async def alive_info_handler(event):
 11. VzoelFox Assistant ready
 12. Generating status display
 
-{get_emoji('telegram')} **Display Info:**
+{get_emoji('telegram')} Display Info:
 • Founder: Vzoel Fox's (Lutpan)
 • Programming: Python3, Python2
 • Features: Dynamic plugin count
 • Social: vzoel.fox_s (Instagram)
 • Location: Indonesia 🇮🇩
 
-**By VzoelFox Assistant**"""
+By VzoelFox Assistant"""
         
         # Display alive info with premium emoji support
         await safe_edit_premium(event, alive_info)

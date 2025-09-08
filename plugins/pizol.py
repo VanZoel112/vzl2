@@ -99,33 +99,33 @@ async def pizol_handler(event):
         random_emoji3 = get_emoji(random.choice(available_emojis))
         
         # Build final pizol display
-        pizol_display = f"""{get_emoji('utama')} **PIZOL VZOEL ASSISTANT**
+        pizol_display = f"""{get_emoji('utama')} PIZOL VZOEL ASSISTANT
 
-{get_emoji('centang')} **System Status** : FULLY OPERATIONAL
-{get_emoji('aktif')} **Core Engine** : VzoelFox v2.0.0
-{get_emoji('petir')} **Power Level** : MAXIMUM
-{get_emoji('telegram')} **Plugins Loaded** : {plugin_count}
-{get_emoji('proses')} **Mode** : PIZOL ACTIVATED
+{get_emoji('centang')} System Status : FULLY OPERATIONAL
+{get_emoji('aktif')} Core Engine : VzoelFox v2.0.0
+{get_emoji('petir')} Power Level : MAXIMUM
+{get_emoji('telegram')} Plugins Loaded : {plugin_count}
+{get_emoji('proses')} Mode : PIZOL ACTIVATED
 
-{random_emoji1} **PIZOL FEATURES:**
+{random_emoji1} PIZOL FEATURES:
 • 40-Phase Animation System
 • Advanced Plugin Management  
 • Premium Emoji Integration
 • Professional Voice Chat Support
 • Intelligent Broadcast System
 
-{random_emoji2} **VZOEL TECHNOLOGIES:**
+{random_emoji2} VZOEL TECHNOLOGIES:
 • Dynamic Session Management
 • Real-time Statistics Tracking
 • Automated Update System
 • Advanced Error Handling
 • Multi-Chat Voice Support
 
-{random_emoji3} **PIZOL READY !!!**
+{random_emoji3} PIZOL READY !!!
 Semua sistem VzoelFox Assistant telah dimuat dengan sempurna!
 Ready untuk menjalankan semua perintah premium!
 
-{get_emoji('adder1')} **©2025 ~ PIZOL VZOEL FOX'S SYSTEM**"""
+{get_emoji('adder1')} ©2025 ~ PIZOL VZOEL FOX'S SYSTEM"""
         
         # Display final result
         await safe_edit_premium(event, pizol_display)
