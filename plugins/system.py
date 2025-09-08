@@ -52,33 +52,23 @@ async def update_handler(event):
         
         # If no updates and not force
         if not update_info.get("needs_update", False) and not force:
-            up_to_date_msg = f"{get_emoji('centang')} Already up to date"
-Current: `{update_info['current_commit']}`"
+            up_to_date_msg = f"{get_emoji('centang')} Already up to date\nCurrent: `{update_info['current_commit']}`"
             await safe_edit_premium(msg, up_to_date_msg)
             return
         
         # Show update progress
-        progress_msg = f"{get_emoji('proses')} Updating..."
-" + \
-            (f"Current: `{update_info['current_commit']}`
-Latest: `{update_info['remote_commit']}`" if not force else "Force updating...")
+        progress_msg = f"{get_emoji('proses')} Updating..." + \
+            (f"\nCurrent: `{update_info['current_commit']}`\nLatest: `{update_info['remote_commit']}`" if not force else "\nForce updating...")
         await safe_edit_premium(msg, progress_msg)
         
         # Perform update
         result = await vzoel_client.auto_updater.perform_update(force=force)
         
         if result.get("status") == "success":
-            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} **VZOEL Update Successful!**\n{result['message']}\n"
-
-
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} **VZOEL Update Successful!**\n{result['message']}\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
             await safe_edit_premium(msg, success_msg)
         else:
-            error_msg = f"{get_emoji('merah')} {signature} **VZOEL Update Failed**
-{result.get('message', 'Unknown error')}""
-
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+            error_msg = f"{get_emoji('merah')} {signature} **VZOEL Update Failed**\n{result.get('message', 'Unknown error')}\n\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
             await safe_edit_premium(msg, error_msg)
 
 @events.register(events.NewMessage(pattern=r'\.stats'))
@@ -130,21 +120,14 @@ async def plugins_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        plugins_text = f"**{signature} Loaded Plugins ({len(plugin_list)})**
-
-"
+        plugins_text = f"**{signature} Loaded Plugins ({len(plugin_list)})**\n\n"
         
         for plugin in plugin_list:
-            description = plugin['description'].split('
-')[0] if plugin['description'] else 'No description'
+            description = plugin['description'].split('\n')[0] if plugin['description'] else 'No description'
             commands = ', '.join([f"`{cmd}`" for cmd in plugin['commands']]) if plugin['commands'] else 'No commands'
-            plugins_text += f"{get_emoji('telegram')} **{plugin['name']}**
-"
-            plugins_text += f"{get_emoji('kuning')} {description[:50]}{'...' if len(description) > 50 else ''}
-"
-            plugins_text += f"{get_emoji('petir')} {commands}
-
-"
+            plugins_text += f"{get_emoji('telegram')} **{plugin['name']}**\n"
+            plugins_text += f"{get_emoji('kuning')} {description[:50]}{'...' if len(description) > 50 else ''}\n"
+            plugins_text += f"{get_emoji('petir')} {commands}\n\n"
         
         plugins_text += "**© VzoelFox's Plugin System**"
         

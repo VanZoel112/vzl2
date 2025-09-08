@@ -121,8 +121,7 @@ class VzoelComments:
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "creator": "Created by: Vzoel Fox's",
                 "repo_notice": "VzoelFox Userbot",
-                "info": "Created by Vzoel Fox's"
-Hak cipta sepenuhnya milik Vzoel..",
+                "info": "Created by Vzoel Fox's\nHak cipta sepenuhnya milik Vzoel..",
                 "zone": "Zone: ID 🇮🇩",
                 "ig": "IG: vzoel.fox_s"
             },

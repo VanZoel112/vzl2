@@ -64,11 +64,7 @@ async def ping_handler(event):
         
         # Show VzoelFox ping result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms"
-
-
-
-        
+        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms\n\n**VzoelFox Anti-Delay System**"
         await safe_edit_premium(event, ping_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -95,8 +91,7 @@ async def pink_handler(event):
         
         # Show VzoelFox pink result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-
-        
+        pink_response = f"{signature} PINK: {latency:.2f}ms\n\n**VzoelFox Latency Test**"
         await safe_edit_premium(event, pink_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -139,6 +134,7 @@ async def pong_handler(event):
             except:
                 pass  # Ignore if spambot interaction fails
             # Send the PONG message with latency emoji
+            signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
             pong_response = f"{signature} **VZOEL PONG {latency_emoji}**"
 
             # If we can forward from spambot, do it, otherwise just show response
@@ -147,17 +143,14 @@ async def pong_handler(event):
                 async for message in event.client.iter_messages('@spambot', limit=1):
                     if message.text:
                         # Forward the message content style
-                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Forwarded from @spambot to reduce limits`
-
+                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Forwarded from @spambot to reduce limits`"
                         break
             except:
                 pass
                 
         except Exception as e:
             # Fallback response if spambot interaction fails
-            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Failed to contact @spambot`
-
-        
+            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**\n\n`Failed to contact @spambot`"
         await safe_edit_premium(event, pong_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -225,7 +218,7 @@ async def pings_info_handler(event):
 • @spambot integration for limit reduction
 • Automatic .alive command triggering
 
-**By VzoelFox Assistant**""
+**By VzoelFox Assistant**"""
         await safe_edit_premium(event, pings_info)
         if vzoel_client:
             vzoel_client.increment_command_count()

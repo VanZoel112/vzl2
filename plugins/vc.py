@@ -135,8 +135,8 @@ async def vc_leave_handler(event):
             # Leave voice chat
             await vc_instances[chat_id].leave_group_call(chat_id)
             # Update status
+            vc_status[chat_id]['joined'] = False
             success_msg = f"{get_emoji('centang')} Left Voice Chat"
-            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Left Voice Chat**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Disconnected
 
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
@@ -170,7 +170,6 @@ async def vc_mute_handler(event):
             # Mute stream
             await vc_instances[chat_id].mute_stream(chat_id)
             vc_status[chat_id]['muted'] = True
-            muted_msg = f"{get_emoji('proses')} {signature} **VZOEL Voice Chat Muted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Muted
             muted_msg = f"{get_emoji('proses')} Voice Chat Muted"
             msg = await event.edit(muted_msg)
         except Exception as e:
@@ -204,10 +203,9 @@ async def vc_unmute_handler(event):
             # Unmute stream
             await vc_instances[chat_id].unmute_stream(chat_id)
             vc_status[chat_id]['muted'] = False
-            unmuted_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Unmuted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Speaking
-
-            msg = await event.edit(unmuted_msg)
             unmuted_msg = f"{get_emoji('centang')} Voice Chat Unmuted"
+            msg = await event.edit(unmuted_msg)
+        except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to unmute: {str(e)}"
             msg = await event.edit(error_msg)
         

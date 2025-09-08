@@ -61,6 +61,7 @@ async def tagall_handler(event):
             if match and match.group(2):
                 message_text = match.group(2)
             else:
+                message_text = ""
         
         # Start tagall process
         tagall_active[chat_id] = True
@@ -137,8 +138,7 @@ async def perform_tagall(event, participants, message_text, chat_title):
             premium_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif']
             random_emoji = get_emoji(random.choice(premium_emojis))
             # Create animated status message
-
-{get_emoji('aktif')} **Username:** {username}
+            status_msg = f"""{get_emoji('aktif')} **Username:** {username}
 {get_emoji('utama')} **Nama:** {full_name}
 {random_emoji} **Status:** {random.choice(animation_phases)}
 {get_emoji('centang')} **Tagall by:** Vzoel Fox's Assistant
@@ -151,8 +151,8 @@ async def perform_tagall(event, participants, message_text, chat_title):
             tag_message = f"[{full_name}](tg://user?id={participant.id}) {message_text}"
             # Send the actual tag
             await event.client.send_message(chat_id, tag_message)
-            # Show animation in original message
-            msg = await event.edit(animation_text)
+            # Show animation in original message  
+            await safe_edit_premium(msg, status_msg)
             # Delay to avoid flood
             await asyncio.sleep(2)
         except FloodWaitError as e:

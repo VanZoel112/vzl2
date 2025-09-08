@@ -80,21 +80,12 @@ async def add_blacklist_handler(event):
         if chat_id:
             # Add to blacklist
             if Config.add_to_blacklist(chat_id):
-                success_msg = f"{get_emoji('centang')} Added to blacklist"
-
-                    f"Chat: `{chat_title}`
-" + \
-                    f"ID: `{chat_id}`
-" + \
-                    f"Total Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
+                success_msg = f"{get_emoji('centang')} Added to blacklist\nChat: `{chat_title}`\nID: `{chat_id}`\nTotal Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
                 
                 await safe_edit_premium(event, success_msg)
             else:
-                already_msg = f"{get_emoji('kuning')} {signature} **VZOEL Already Blacklisted**
-
-                    f"Chat: `{chat_title}`
-" + \
-                    f"ID: `{chat_id}`"
+                signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+                already_msg = f"{get_emoji('kuning')} Already Blacklisted\nChat: `{chat_title}`\nID: `{chat_id}`"
                 
                 await safe_edit_premium(event, already_msg)
         else:
@@ -125,11 +116,8 @@ async def remove_blacklist_handler(event):
             chat_id = event.chat_id
         
         if Config.remove_from_blacklist(chat_id):
-            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Removed**
-
-                f"ID: `{chat_id}`
-" + \
-                f"Total Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
+            signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+            success_msg = f"{get_emoji('centang')} Blacklist Removed\nID: `{chat_id}`\nTotal Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
             await safe_edit_premium(event, success_msg)
         else:
             not_found_msg = f"{get_emoji('kuning')} ID `{chat_id}` not in blacklist"
@@ -150,22 +138,21 @@ async def list_blacklist_handler(event):
             await safe_edit_premium(event, empty_msg)
             return
         
-        blacklist_text = f"{signature} **VZOEL VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n
-
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        blacklist_text = f"{signature} **VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n"
         
         for i, chat_id in enumerate(Config.GCAST_BLACKLIST, 1):
             try:
                 chat = await event.client.get_entity(chat_id)
                 chat_title = chat.title if hasattr(chat, 'title') else f"Private {chat_id}"
-                blacklist_text += f"`{i}.` **{chat_title}**
-   ID: `{chat_id}`
+                blacklist_text += f"`{i}.` **{chat_title}**\n   ID: `{chat_id}`\n\n"
 
             except:
-                blacklist_text += f"`{i}.` {signature} **VZOEL Unknown Chat**\n   ID: `{chat_id}`\n
+                blacklist_text += f"`{i}.` **Unknown Chat**\n   ID: `{chat_id}`\n\n"
 
 
         
-        blacklist_text += f"{signature} **VZOEL By VzoelFox Assistant**""
+        blacklist_text += "\n**By VzoelFox Assistant**"
 
         
         await safe_edit_premium(event, blacklist_text)
@@ -206,7 +193,7 @@ async def gcast_handler(event):
         start_time = time.time()
         
         # Animation phase 1: Process setup
-        
+        process_msg = f"{get_emoji('loading')} Preparing global broadcast..."
         await safe_edit_premium(event, process_msg)
         await asyncio.sleep(1)
         
@@ -226,13 +213,8 @@ async def gcast_handler(event):
             return
         
         # Animation phase 2: Starting broadcast
-        start_msg = f"{get_emoji('proses')} {signature} **VZOEL Broadcasting Started**
-
-            f"Target Chats: `{total_chats}`
-" + \
-            f"Blacklisted: `{blacklisted_count}`
-" + \
-            f"Status: Processing..."
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        start_msg = f"{get_emoji('proses')} Broadcasting Started\nTarget Chats: `{total_chats}`\nBlacklisted: `{blacklisted_count}`\nStatus: Processing..."
         await safe_edit_premium(event, start_msg)
         await asyncio.sleep(1)
         
@@ -244,15 +226,7 @@ async def gcast_handler(event):
             try:
                 # Update progress every 5 chats or on last chat
                 if i % 5 == 0 or i == total_chats:
-                    progress_msg = f"{get_emoji('aktif')} {signature} **VZOEL Broadcasting in Progress**
-
-                        f"Progress: `{i}/{total_chats}`
-" + \
-                        f"Success: `{successful_sends}`
-" + \
-                        f"Failed: `{failed_sends}`
-" + \
-                        f"Current: `{dialog.title or 'Unknown'}`"
+                    progress_msg = f"{get_emoji('aktif')} Broadcasting in Progress\nProgress: `{i}/{total_chats}`\nSuccess: `{successful_sends}`\nFailed: `{failed_sends}`\nCurrent: `{dialog.title or 'Unknown'}`"
                     await safe_edit_premium(event, progress_msg)
                 
                 # Send message
