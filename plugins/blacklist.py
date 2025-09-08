@@ -254,7 +254,7 @@ async def lock_user_handler(event):
                     return
         
         if not target_user:
-            help_msg = f"{get_emoji('kuning')} **Lock Usage:**\\n• `.lock @username` - Lock user by username\\n• `.lock` (reply) - Lock user dari reply\\n• `.unlock @username` - Unlock user\\n• `.locked` - List locked users"
+            help_msg = f"{get_emoji('kuning')} **Lock Usage:**\n• `.lock @username` - Lock user by username\n• `.lock` (reply) - Lock user dari reply\n• `.unlock @username` - Unlock user\n• `.locked` - List locked users"
             msg = await event.edit(help_msg)
             return
         

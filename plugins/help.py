@@ -1,469 +1,220 @@
 """
-VzoelFox's Assistant Help Plugin
-Comprehensive help system with pagination and navigation
+VzoelFox's Assistant Help Plugin - Simple Navigation
+Simple help system with .next navigation and premium emoji support
 Created by: Vzoel Fox's
 Enhanced by: Vzoel Fox's Ltpn
 """
 
 from telethon import events
-from telethon.tl.custom import Button
 import asyncio
-import math
-import importlib
 import os
+import glob
 import sys
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from central emoji template (VzoelFox style)
-from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+from plugins.emoji_template import get_emoji, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
 
 # Plugin info
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __author__ = "Vzoel Fox's"
 
 # Global variables for help navigation
-help_sessions = {}  # {user_id: {'page': int, 'message': message_obj}}
-help_active = {}    # {user_id: True/False}
-plugin_cache = {}   # Cache for plugin info
-cache_timestamp = 0 # Last cache update time
+help_sessions = {}  # {user_id: {'page': int, 'total_pages': int}}
+PLUGINS_PER_PAGE = 8
 
 async def vzoel_init(client, vzoel_emoji):
     """Plugin initialization"""
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-    print(f"{signature} Help Plugin loaded - Navigation system ready")
+    print(f"{signature} Help Plugin loaded - Simple navigation ready")
 
-def get_plugin_info(force_refresh=False):
-    """Get information about all loaded plugins from plugin manager"""
-    global plugin_cache, cache_timestamp
-    
-    # Check cache validity (refresh every 30 seconds or on force)
-    current_time = asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 0
-    cache_valid = (current_time - cache_timestamp) < 30 and plugin_cache and not force_refresh
-    
-    if cache_valid:
-        return plugin_cache
-    
-    try:
-        # Import client to access plugin manager
-        from client import vzoel_client
-        
-        # Get loaded plugins from plugin manager
-        if hasattr(vzoel_client, 'plugin_manager') and vzoel_client.plugin_manager:
-            plugins_info = vzoel_client.plugin_manager.get_plugin_list()
-            # Process plugin info for help display
-            processed_plugins = []
-            for plugin in plugins_info:
-                # Clean up description
-                description = plugin.get('description', 'No description')
-                if description and isinstance(description, str):
-                    # Extract first meaningful line from docstring
-                    lines = description.strip().split('\n')
-                    for line in lines:
-                        line = line.strip()
-                        if line and not line.startswith('"""') and not line.startswith("'''"):
-                            description = line[:80] + '...' if len(line) > 80 else line
-                            break
-                    if not description or description.startswith('"""'):
-                        description = f"{plugin['name'].title()} plugin functionality"
-                
-                processed_plugin = {
-                    'name': plugin['name'].title(),
-                    'description': description,
-                    'commands': plugin.get('commands', [f".{plugin['name']}"]),
-                    'file': plugin.get('file', f"{plugin['name']}.py")
-                }
-                processed_plugins.append(processed_plugin)
-            # Update cache
-            plugin_cache = processed_plugins
-            cache_timestamp = current_time
-            return processed_plugins
-        else:
-            # Fallback: scan files if plugin manager not available
-            fallback_plugins = get_plugin_info_fallback()
-            plugin_cache = fallback_plugins
-            cache_timestamp = current_time
-            return fallback_plugins
-    except Exception as e:
-        # Fallback: scan files manually
-        print(f"Error accessing plugin manager: {e}")
-        fallback_plugins = get_plugin_info_fallback()
-        plugin_cache = fallback_plugins
-        cache_timestamp = current_time
-        return fallback_plugins
-
-def get_plugin_info_fallback():
-    """Fallback method to scan plugin files manually"""
-    plugins_info = []
-    
-    # Get plugin directory
+def get_all_plugins():
+    """Get all plugin files and their info"""
+    plugins = []
     plugin_dir = "plugins"
-    if not os.path.exists(plugin_dir):
-        return plugins_info
     
-    # Scan all plugin files
-    for filename in os.listdir(plugin_dir):
-        if filename.endswith('.py') and not filename.startswith('__'):
-            plugin_name = filename[:-3]  # Remove .py extension
-            try:
-                # Try to load plugin info without full import
-                plugin_info = get_plugin_metadata(f"{plugin_dir}/{filename}")
-                if plugin_info:
-                    plugins_info.append(plugin_info)
-                    continue
-                
-                # Fallback: basic info from filename
-                plugins_info.append({
-                    'name': plugin_name.title(),
-                    'description': f"{plugin_name.title()} plugin functionality",
-                    'commands': [f".{plugin_name}"],
-                    'file': filename
-                })
-                
-            except Exception as e:
-                # Skip problematic plugins
+    if os.path.exists(plugin_dir):
+        for file in glob.glob(f"{plugin_dir}/*.py"):
+            if file.endswith('__init__.py') or file.endswith('emoji_template.py'):
                 continue
+                
+            plugin_name = os.path.basename(file)[:-3]  # Remove .py extension
+            
+            # Try to get plugin info
+            try:
+                spec = __import__(f'plugins.{plugin_name}', fromlist=['__version__', '__author__'])
+                version = getattr(spec, '__version__', 'Unknown')
+                author = getattr(spec, '__author__', 'VzoelFox')
+                
+                # Get commands by looking for @events.register patterns
+                commands = []
+                try:
+                    with open(file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        import re
+                        patterns = re.findall(r'pattern=r["\']\\\.([^"\']+)["\']', content)
+                        commands = [f'.{cmd}' for cmd in patterns]
+                except:
+                    commands = ['Unknown']
+                
+                plugins.append({
+                    'name': plugin_name,
+                    'version': version,
+                    'author': author,
+                    'commands': commands[:3],  # Show max 3 commands
+                    'file': file
+                })
+            except:
+                plugins.append({
+                    'name': plugin_name,
+                    'version': 'Unknown',
+                    'author': 'VzoelFox',
+                    'commands': ['Unknown'],
+                    'file': file
+                })
     
-    return plugins_info
+    return sorted(plugins, key=lambda x: x['name'])
 
-def get_plugin_metadata(file_path):
-    """Extract plugin metadata from file"""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        # Extract plugin info
-        plugin_name = os.path.basename(file_path)[:-3].title()
-        
-        # Try to find description from docstring
-        description = "Plugin functionality"
-        if '"""' in content:
-            docstring_start = content.find('"""')
-            docstring_end = content.find('"""', docstring_start + 3)
-            if docstring_end != -1:
-                docstring = content[docstring_start + 3:docstring_end]
-                lines = docstring.strip().split('\n')
-                if len(lines) > 1:
-                    description = lines[1].strip()
-        
-        # Extract commands from @events.register patterns
-        commands = []
-        lines = content.split('\n')
-        for line in lines:
-            if 'pattern=' in line and 'events.register' in content:
-                # Try to extract command pattern
-                if 'pattern=r' in line:
-                    pattern_start = line.find("'") or line.find('"')
-                    if pattern_start != -1:
-                        pattern_end = line.find(line[pattern_start], pattern_start + 1)
-                        if pattern_end != -1:
-                            pattern = line[pattern_start + 1:pattern_end]
-                            if pattern.startswith('\\\\'):
-                                # Extract command from regex pattern
-                                cmd = pattern.split('(')[0].replace('\\\\', '').replace('.', '')
-                                if cmd:
-                                    commands.append(f".{cmd}")
-        
-        # If no commands found, use plugin name as command
-        if not commands:
-            commands = [f".{plugin_name.lower()}"]
-        
-        return {
-            'name': plugin_name,
-            'description': description,
-            'commands': commands[:3],  # Max 3 commands shown
-            'file': os.path.basename(file_path)
-        }
-        
-    except Exception:
-        return None
-
-@events.register(events.NewMessage(pattern=r'\.help'))
-async def help_handler(event):
-    """Show comprehensive help system with pagination"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        
-        user_id = event.sender_id
-        
-        # Initialize help session
-        help_sessions[user_id] = {'page': 0, 'message': None}
-        help_active[user_id] = True
-        
-        # Get plugin information (force refresh to get latest plugins)
-        plugins_info = get_plugin_info(force_refresh=True)
-        total_plugins = len(plugins_info)
-        
-        # Count total commands
-        total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
-        
-        # Create help message
-        help_msg = await create_help_page(0, plugins_info, total_plugins, total_commands)
-        
-        try:
-            # Try to create inline buttons (Telegram Bot-like)
-            buttons = [
-                [Button.inline(f"{get_emoji('kuning')} Back", b"help_prev"), Button.inline(f"Next {get_emoji('biru')}", b"help_next")],
-                [Button.inline(f"{get_emoji('merah')} Close", b"help_close")]
-            ]
-            # Use safe_edit_premium for proper emoji rendering
-            await safe_edit_premium(event, help_msg)
-            help_sessions[user_id]['message'] = event
-        except Exception:
-            # Fallback: Use alternative commands
-            alternative_help = f"""{help_msg}
-
-{get_emoji('centang')} **Navigation Commands:**
-• `.next` - Next page
-• `.back` - Previous page  
-• `.exit` - Close help
-
-**Use navigation commands while help is active**"""
-            await safe_edit_premium(event, alternative_help)
-            help_sessions[user_id]['message'] = event
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
-
-async def create_help_page(page, plugins_info, total_plugins, total_commands):
+def create_help_page(page=0):
     """Create help page content"""
-    plugins_per_page = 10
-    total_pages = math.ceil(len(plugins_info) / plugins_per_page)
+    plugins = get_all_plugins()
+    total_plugins = len(plugins)
+    total_pages = (total_plugins + PLUGINS_PER_PAGE - 1) // PLUGINS_PER_PAGE
     
     # Ensure page is within bounds
     page = max(0, min(page, total_pages - 1))
     
-    # Get plugins for current page
-    start_idx = page * plugins_per_page
-    end_idx = start_idx + plugins_per_page
-    page_plugins = plugins_info[start_idx:end_idx]
+    start_idx = page * PLUGINS_PER_PAGE
+    end_idx = start_idx + PLUGINS_PER_PAGE
+    page_plugins = plugins[start_idx:end_idx]
     
-    # Build help header
+    # Build help header with premium emojis
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-    help_content = f"""**{signature} VZOEL ASSISTANT HELP**
+    
+    help_content = f"""{signature} **VZOEL ASSISTANT HELP**
 
 {get_emoji('utama')} **Total Plugins:** {total_plugins}
-{get_emoji('telegram')} **Total Commands:** {total_commands}
-{get_emoji('aktif')} **Page:** {page + 1}/{total_pages}
+{get_emoji('telegram')} **Page:** {page + 1}/{total_pages}
+{get_emoji('aktif')} **Navigation:** .next for next page
 
 """
     
     # Add plugins for current page
     for i, plugin in enumerate(page_plugins, 1):
         plugin_num = start_idx + i
-        commands_str = ", ".join(plugin.get('commands', []))
+        commands_str = ', '.join(plugin['commands']) if plugin['commands'] else 'No commands'
         
-        help_content += f"""**{plugin_num}. {plugin['name']}**
-{get_emoji('proses')} {plugin['description']}
-{get_emoji('centang')} Commands: {commands_str}
-
-"""
+        help_content += f"{get_emoji('centang')} **{plugin_num}. {plugin['name'].title()}**\n"
+        help_content += f"{get_emoji('proses')} Version: {plugin['version']}\n"  
+        help_content += f"{get_emoji('kuning')} Commands: {commands_str}\n\n"
     
     # Add footer
-    help_content += f"""{get_emoji('petir')} **Navigation:**
-Page {page + 1} of {total_pages} • Use buttons or commands to navigate
+    help_content += f"""
+{get_emoji('telegram')} **Navigation Commands:**
+{get_emoji('petir')} .next - Next page
+{get_emoji('loading')} .help - Refresh help
 
-**©2025 ~ VzoelFox Assistant Help System**"""
-    
-    return help_content
+{get_emoji('adder1')} **Created by VzoelFox's Assistant**
+{get_emoji('adder2')} **Enhanced by Vzoel Fox's Ltpn**"""
 
-@events.register(events.CallbackQuery(data=b'help_next'))
-async def help_next_callback(event):
-    """Handle next page button"""
-    user_id = event.sender_id
-    if user_id not in help_sessions or not help_active.get(user_id):
-        await event.answer("Help session expired", alert=True)
-        return
-    
-    # Get plugin info and update page
-    plugins_info = get_plugin_info()
-    total_plugins = len(plugins_info)
-    total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
-    
-    plugins_per_page = 10
-    total_pages = math.ceil(len(plugins_info) / plugins_per_page)
-    
-    current_page = help_sessions[user_id]['page']
-    new_page = min(current_page + 1, total_pages - 1)
-    
-    if new_page != current_page:
-        help_sessions[user_id]['page'] = new_page
-        help_msg = await create_help_page(new_page, plugins_info, total_plugins, total_commands)
+    return help_content, page, total_pages
+
+@events.register(events.NewMessage(pattern=r'\.help'))
+async def help_handler(event):
+    """Main help command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        from client import vzoel_client
         
-        buttons = [
-            [Button.inline(f"{get_emoji('kuning')} Back", b"help_prev"), Button.inline(f"Next {get_emoji('biru')}", b"help_next")],
-            [Button.inline(f"{get_emoji('merah')} Close", b"help_close")]
-        ]
+        user_id = event.sender_id
         
-        await event.edit(help_msg, buttons=buttons)
-        await event.answer()
-    else:
-        await event.answer("Already at last page")
-
-@events.register(events.CallbackQuery(data=b'help_prev'))
-async def help_prev_callback(event):
-    """Handle previous page button"""
-    user_id = event.sender_id
-    if user_id not in help_sessions or not help_active.get(user_id):
-        await event.answer("Help session expired", alert=True)
-        return
-    
-    # Get plugin info and update page
-    plugins_info = get_plugin_info()
-    total_plugins = len(plugins_info)
-    total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
-    
-    current_page = help_sessions[user_id]['page']
-    new_page = max(current_page - 1, 0)
-    
-    if new_page != current_page:
-        help_sessions[user_id]['page'] = new_page
-        help_msg = await create_help_page(new_page, plugins_info, total_plugins, total_commands)
+        # Create first page
+        help_content, current_page, total_pages = create_help_page(0)
         
-        buttons = [
-            [Button.inline(f"{get_emoji('kuning')} Back", b"help_prev"), Button.inline(f"Next {get_emoji('biru')}", b"help_next")],
-            [Button.inline(f"{get_emoji('merah')} Close", b"help_close")]
-        ]
+        # Store session info
+        help_sessions[user_id] = {
+            'page': current_page,
+            'total_pages': total_pages
+        }
         
-        await event.edit(help_msg, buttons=buttons)
-        await event.answer()
-    else:
-        await event.answer("Already at first page")
+        await safe_edit_premium(event, help_content)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
-@events.register(events.CallbackQuery(data=b'help_close'))
-async def help_close_callback(event):
-    """Handle close help button"""
-    user_id = event.sender_id
-    if user_id in help_sessions:
-        help_active[user_id] = False
-        del help_sessions[user_id]
-    
-    close_msg = f"{get_emoji('centang')} Help closed. Use .help to open again."
-    await safe_edit_premium(event, close_msg)
-    await event.answer()
-
-# Alternative navigation commands for fallback
 @events.register(events.NewMessage(pattern=r'\.next'))
-async def help_next_handler(event):
-    """Alternative next command"""
+async def next_page_handler(event):
+    """Navigate to next help page"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        user_id = event.sender_id
-        
-        if user_id not in help_sessions or not help_active.get(user_id):
-            return  # Help not active
-        
         from client import vzoel_client
         
-        # Same logic as callback
-        plugins_info = get_plugin_info()
-        total_plugins = len(plugins_info)
-        total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
+        user_id = event.sender_id
         
-        plugins_per_page = 10
-        total_pages = math.ceil(len(plugins_info) / plugins_per_page)
-        
-        current_page = help_sessions[user_id]['page']
-        new_page = min(current_page + 1, total_pages - 1)
-        
-        if new_page != current_page:
-            help_sessions[user_id]['page'] = new_page
-            help_msg = await create_help_page(new_page, plugins_info, total_plugins, total_commands)
-            alternative_help = f"""{help_msg}
-
-{get_emoji('centang')} **Navigation Commands:**
-• `.next` - Next page
-• `.back` - Previous page  
-• `.exit` - Close help"""
-            await safe_edit_premium(event, alternative_help)
+        if user_id not in help_sessions:
+            # No active help session, show first page
+            help_content, current_page, total_pages = create_help_page(0)
+            help_sessions[user_id] = {
+                'page': current_page,
+                'total_pages': total_pages
+            }
         else:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Already at last page")
+            # Get current session
+            session = help_sessions[user_id]
+            next_page = (session['page'] + 1) % session['total_pages']  # Loop back to 0 after last page
+            
+            help_content, current_page, total_pages = create_help_page(next_page)
+            
+            # Update session
+            help_sessions[user_id] = {
+                'page': current_page,
+                'total_pages': total_pages
+            }
+        
+        await safe_edit_premium(event, help_content)
         
         if vzoel_client:
             vzoel_client.increment_command_count()
 
-@events.register(events.NewMessage(pattern=r'\.back'))
-async def help_back_handler(event):
-    """Alternative back command"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        user_id = event.sender_id
-        
-        if user_id not in help_sessions or not help_active.get(user_id):
-            return  # Help not active
-        
-        from client import vzoel_client
-        
-        plugins_info = get_plugin_info()
-        total_plugins = len(plugins_info)
-        total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
-        
-        current_page = help_sessions[user_id]['page']
-        new_page = max(current_page - 1, 0)
-        
-        if new_page != current_page:
-            help_sessions[user_id]['page'] = new_page
-            help_msg = await create_help_page(new_page, plugins_info, total_plugins, total_commands)
-            alternative_help = f"""{help_msg}
-
-{get_emoji('centang')} **Navigation Commands:**
-• `.next` - Next page
-• `.back` - Previous page  
-• `.exit` - Close help"""
-            await safe_edit_premium(event, alternative_help)
-        else:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Already at first page")
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
-
-@events.register(events.NewMessage(pattern=r'\.exit'))
-async def help_exit_handler(event):
-    """Alternative exit command"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        user_id = event.sender_id
-        
-        if user_id not in help_sessions or not help_active.get(user_id):
-            return  # Help not active
-        
-        from client import vzoel_client
-        
-        # Close help session
-        help_active[user_id] = False
-        del help_sessions[user_id]
-        
-        close_msg = f"{get_emoji('centang')} Help closed. Use .help to open again."
-        await safe_edit_premium(event, close_msg)
-        if vzoel_client:
-            vzoel_client.increment_command_count()
-
-# Register handlers
-
-
-
-
-@events.register(events.NewMessage(pattern=r'\.helprefresh'))
-async def help_refresh_handler(event):
-    """Refresh help plugin cache to detect new plugins"""
+@events.register(events.NewMessage(pattern=r'\.helpinfo'))
+async def help_info_handler(event):
+    """Show help system information"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        # Force refresh plugin cache
-        plugins_info = get_plugin_info(force_refresh=True)
-        total_plugins = len(plugins_info)
-        total_commands = sum(len(plugin.get('commands', [])) for plugin in plugins_info)
+        plugins = get_all_plugins()
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        refresh_msg = f"""**{get_emoji('centang')} HELP CACHE REFRESHED**
+        help_info = f"""{signature} **VzoelFox Help System**
 
-{get_emoji('utama')} **Plugins Detected:** {total_plugins}
-{get_emoji('telegram')} **Commands Found:** {total_commands}
-{get_emoji('aktif')} **Cache Status:** Updated
-{get_emoji('proses')} **Source:** Plugin Manager
+{get_emoji('utama')} **System Status:**
+{get_emoji('centang')} Loaded Plugins: {len(plugins)}
+{get_emoji('aktif')} Navigation: Simple (.next only)
+{get_emoji('proses')} Auto-refresh: Every .help call
+{get_emoji('telegram')} Premium Emojis: Enabled
 
-{get_emoji('petir')} **Auto-refresh:** Help akan otomatis detect plugin baru setelah .update force atau restart
+{get_emoji('kuning')} **Commands:**
+{get_emoji('petir')} .help - Show plugin list
+{get_emoji('loading')} .next - Next page (loops)
+{get_emoji('adder1')} .helpinfo - This information
 
-**Use .help to view updated plugin list**"""
+{get_emoji('biru')} **Features:**
+• Simple navigation without buttons
+• Auto-discovery of all plugins
+• Real-time command detection
+• Premium emoji integration
+• Auto-updating plugin list
+
+{get_emoji('adder2')} **By VzoelFox Assistant**"""
         
-        await safe_edit_premium(event, refresh_msg)
+        await safe_edit_premium(event, help_info)
+        
         if vzoel_client:
             vzoel_client.increment_command_count()
 
+# Auto-register event handlers
+def register_handlers(client):
+    """Register all event handlers"""
+    client.add_event_handler(help_handler)
+    client.add_event_handler(next_page_handler) 
+    client.add_event_handler(help_info_handler)

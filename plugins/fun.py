@@ -65,7 +65,7 @@ async def flip_handler(event):
         result = random.choice(['Heads', 'Tails'])
         emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
-        result_msg = f"{get_emoji('kuning')} **VzoelFox Coin Flip**\\n\\n{emoji} Result: **{result}**"
+        result_msg = f"{get_emoji('kuning')} **VzoelFox Coin Flip**\n\n{emoji} Result: **{result}**"
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
