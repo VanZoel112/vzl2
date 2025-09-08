@@ -8,10 +8,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-VzoelFox's Assistant Voice Chat Plugin
-Advanced voice chat management for userbot with PyTgCalls integration
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Voice Chat Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Voice chat management dengan PyTgCalls integration
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Voice Chat System
 """
 
 from telethon import events
@@ -19,8 +19,8 @@ import asyncio
 import logging
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variables for voice chat state
 vc_instances = {}
@@ -96,7 +96,12 @@ async def vc_join_handler(event):
                 'muted': False,
                 'chat_title': (await event.get_chat()).title
             }
-            success_msg = f"{get_emoji('centang')} **Voice Chat Joined**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Connected\nAudio: Ready"
+            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Joined**
+Chat: {vc_status[chat_id]['chat_title']}
+Status: Connected
+Audio: Ready"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to join voice chat: {str(e)}"
@@ -134,7 +139,11 @@ async def vc_leave_handler(event):
             await vc_instances[chat_id].leave_group_call(chat_id)
             # Update status
             vc_status[chat_id]['joined'] = False
-            success_msg = f"{get_emoji('centang')} **Left Voice Chat**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Disconnected"
+            success_msg = f"{get_emoji('centang')} {signature} **VZOEL Left Voice Chat**
+Chat: {vc_status[chat_id]['chat_title']}
+Status: Disconnected"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to leave voice chat: {str(e)}"
@@ -167,7 +176,11 @@ async def vc_mute_handler(event):
             # Mute stream
             await vc_instances[chat_id].mute_stream(chat_id)
             vc_status[chat_id]['muted'] = True
-            muted_msg = f"{get_emoji('proses')} **Voice Chat Muted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Muted"
+            muted_msg = f"{get_emoji('proses')} {signature} **VZOEL Voice Chat Muted**
+Chat: {vc_status[chat_id]['chat_title']}
+Status: Muted"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(muted_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to mute: {str(e)}"
@@ -200,7 +213,11 @@ async def vc_unmute_handler(event):
             # Unmute stream
             await vc_instances[chat_id].unmute_stream(chat_id)
             vc_status[chat_id]['muted'] = False
-            unmuted_msg = f"{get_emoji('centang')} **Voice Chat Unmuted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Speaking"
+            unmuted_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Unmuted**
+Chat: {vc_status[chat_id]['chat_title']}
+Status: Speaking"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(unmuted_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to unmute: {str(e)}"

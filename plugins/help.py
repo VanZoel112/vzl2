@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Help Plugin - Simple Navigation
-Simple help system with .next navigation and premium emoji support
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Help Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Simple help system dengan premium emoji dan navigation
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Help System
 """
 
 from telethon import events
@@ -19,7 +19,7 @@ from plugins.emoji_template import get_emoji, safe_send_premium, safe_edit_premi
 
 # Plugin info
 __version__ = "3.0.0"
-__author__ = "Vzoel Fox's"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variables for help navigation
 help_sessions = {}  # {user_id: {'page': int, 'total_pages': int}}
@@ -106,9 +106,9 @@ def create_help_page(page=0):
         plugin_num = start_idx + i
         commands_str = ', '.join(plugin['commands']) if plugin['commands'] else 'No commands'
         
-        help_content += f"{get_emoji('centang')} **{plugin_num}. {plugin['name'].title()}**\n"
-        help_content += f"{get_emoji('proses')} Version: {plugin['version']}\n"  
-        help_content += f"{get_emoji('kuning')} Commands: {commands_str}\n\n"
+        help_content += f"{get_emoji('centang')} **{plugin_num}. {plugin['name'].title()}**\\n"
+        help_content += f"{get_emoji('proses')} Version: {plugin['version']}\\n"  
+        help_content += f"{get_emoji('kuning')} Commands: {commands_str}\\n\\n"
     
     # Add footer
     help_content += f"""

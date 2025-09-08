@@ -7,10 +7,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-VzoelFox's Assistant Blacklist Plugin
-Advanced word filtering and automatic message deletion system
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Blacklist Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Advanced blacklist system dengan premium filtering
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Blacklist System
 """
 
 from telethon import events
@@ -21,8 +21,8 @@ import os
 import re
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variables
 blacklist_words = {}  # {chat_id: [words]}
@@ -254,7 +254,13 @@ async def lock_user_handler(event):
                     return
         
         if not target_user:
-            help_msg = f"{get_emoji('kuning')} **Lock Usage:**\n• `.lock @username` - Lock user by username\n• `.lock` (reply) - Lock user dari reply\n• `.unlock @username` - Unlock user\n• `.locked` - List locked users"
+            help_msg = f"{get_emoji('kuning')} {signature} **VZOEL Lock Usage:**
+• `.lock @username` - Lock user by username
+• `.lock` (reply) - Lock user dari reply
+• `.unlock @username` - Unlock user
+• `.locked` - List locked users"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(help_msg)
             return
         

@@ -7,18 +7,28 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-VzoelFox's Assistant Fun Plugin
-Entertainment and fun commands
-Created by: Vzoel Fox's
+Enhanced Fun Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Entertainment dan fun commands dengan premium emoji support
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Fun System
 """
 
 from telethon import events
 import random
 import asyncio
 
-# Plugin info
-__version__ = "1.0.0"
-__author__ = "Vzoel Fox's"
+# Plugin Info
+PLUGIN_INFO = {
+    "name": "fun",
+    "version": "3.0.0",
+    "description": "Entertainment dan fun commands dengan premium emoji support",
+    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "commands": [".dice", ".flip", ".quote"],
+    "features": ["dice rolling", "coin flipping", "VzoelFox quotes", "premium emoji"]
+}
+
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
@@ -43,7 +53,10 @@ async def dice_handler(event):
         result = random.randint(1, 6)
         dice_emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
         
-        result_msg = f"{get_emoji('utama')} **VzoelFox Dice Roll**\n\n{dice_emojis[result-1]} You rolled: **{result}**"
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        result_msg = f"{signature} **VZOEL DICE ROLL**\n\n{dice_emojis[result-1]} **Result:** {result}\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -65,7 +78,11 @@ async def flip_handler(event):
         result = random.choice(['Heads', 'Tails'])
         emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
-        result_msg = f"{get_emoji('kuning')} **VzoelFox Coin Flip**\n\n{emoji} Result: **{result}**"
+        result_msg = f"{get_emoji('kuning')} {signature} **VZOEL VzoelFox Coin Flip**
+
+{emoji} Result: **{result}**"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -93,7 +110,11 @@ async def quote_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        quote_msg = f"**{signature} VzoelFox Quote**\n\n*\"{quote}\"*\n\n— **Vzoel Fox's**"
+        quote_msg = f"**{signature} VzoelFox Quote**\
+\
+*\\"{quote}\\"*\
+\
+— **Vzoel Fox's**"
         
         
         msg = await event.edit(quote_msg)

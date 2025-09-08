@@ -7,10 +7,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-VzoelFox's Assistant ID Checker Plugin
-Advanced ID checker with animated process and unlimited loop display
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced ID Checker Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Advanced ID checking dengan premium display
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium ID Checker System
 """
 
 from telethon import events
@@ -19,8 +19,8 @@ import asyncio
 import random
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variable to control animation loops
 animation_tasks = {}

@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Alive Plugin
-Advanced alive display with 12-phase animation
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Alive Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Advanced alive display dengan 12-phase animation dan premium emoji
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Alive System
 """
 
 from telethon import events
@@ -17,9 +17,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import from central emoji template (VzoelFox style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
-# Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+# Plugin Info
+PLUGIN_INFO = {
+    "name": "alive",
+    "version": "3.0.0",
+    "description": "Enhanced alive display dengan 12-phase animation dan premium emoji",
+    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "commands": [".alive", ".ainfo"],
+    "features": ["12-phase animation", "premium emoji", "system status", "VzoelFox branding"]
+}
+
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -81,19 +90,23 @@ async def alive_handler(event):
         
         # Build final alive display with premium emojis
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        alive_display = f"""{get_emoji('utama')} **VzoelFox's Assistant v2**
+        alive_display = f"""{signature} **VZOEL ASSISTANT**
 
-{get_emoji('centang')} **Founder Userbot** : Vzoel Fox's (Lutpan) {get_emoji('utama')}
-{get_emoji('centang')} **Code** : python3, python2
-{get_emoji('centang')} **Fitur** : {plugin_count}
+{get_emoji('centang')} **Founder Userbot** : Vzoel Fox's Ltpn {get_emoji('utama')}
+{get_emoji('centang')} **Code** : Python 3.12+ Enhanced
+{get_emoji('centang')} **Plugins** : {plugin_count} Premium Modules
 {get_emoji('centang')} **Instagram** : vzoel.fox_s
 {get_emoji('centang')} **Zone** : Indonesia 🇮🇩
 
-{random_emoji1} **NOTE !!!** :
-Jangan diperjualbelikan atau dikomersilkan!
-Repo ini hanya untuk pembelajaran dan pengembangan.
+{random_emoji1} **PREMIUM FEATURES** :
+• Advanced Premium Emoji System
+• VzoelFox Branded Interface
+• Enhanced Performance & Stability
 
-{random_emoji2} **©2025 ~ VZOEL FOX'S ASSISTANT**"""
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+
+{random_emoji2} **©2025 ~ VZOEL FOX'S PREMIUM SYSTEM**"""
         
         # Display final result
         await safe_edit_premium(event, alive_display)

@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Tagall Plugin
-Advanced member tagging with animated feedback and loop control
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Tagall Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Advanced mention system dengan premium controls
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Tagall System
 """
 
 from telethon import events
@@ -19,8 +19,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variables for tagall state
 tagall_tasks = {}
@@ -192,7 +192,11 @@ async def stop_tagall_handler(event):
             # Cancel the tagall task
             tagall_tasks[chat_id].cancel()
             tagall_active[chat_id] = False
-            stop_msg = f"{get_emoji('centang')} **Tagall Dihentikan**\nProses tagall telah diberhentikan oleh pengguna\nStatus: Cancelled"
+            stop_msg = f"{get_emoji('centang')} {signature} **VZOEL Tagall Dihentikan**
+Proses tagall telah diberhentikan oleh pengguna
+Status: Cancelled"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(stop_msg)
         else:
             no_tagall_msg = f"{get_emoji('kuning')} Tidak ada proses tagall yang sedang berjalan"

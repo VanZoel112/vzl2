@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Limit Checker Plugin
-Advanced spam protection and account restriction checker via @spambot
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Limit Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Limit checking untuk spam prevention
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Limit System
 """
 
 from telethon import events
@@ -18,8 +18,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global variables for limit checking
 limit_active = {}

@@ -8,10 +8,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-VzoelFox's Assistant Pizol Plugin
-Extended alive display with 40-phase animation system
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Pizol Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Pizol command dengan premium branding
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Pizol System
 """
 
 from telethon import events
@@ -19,8 +19,8 @@ import asyncio
 import random
 
 # Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""

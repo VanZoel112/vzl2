@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Ping Plugin
-Advanced ping variants with latency detection and bot triggers
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Ping Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Advanced ping variants dengan premium emoji dan response time analysis
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Ping System
 """
 
 from telethon import events
@@ -17,9 +17,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import from central emoji template (VzoelFox style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
-# Plugin info
-__version__ = "2.0.0"
-__author__ = "Vzoel Fox's"
+# Plugin Info
+PLUGIN_INFO = {
+    "name": "ping",
+    "version": "3.0.0",
+    "description": "Enhanced ping dengan premium emoji dan latency analysis",
+    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "commands": [".ping", ".pink", ".pong", ".ponk"],
+    "features": ["premium emoji", "latency analysis", "uptime tracking"]
+}
+
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -34,7 +43,8 @@ async def vzoel_init(client, emoji_handler):
     vzoel_emoji = emoji_handler
     
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-    print(f"{signature} Ping Plugin loaded - 4 ping variants ready")
+    print(f"✅ [Ping] Premium system loaded v{PLUGIN_INFO['version']}")
+    print(f"✅ [Ping] VzoelFox branding: {signature} VZOEL ASSISTANT")
 
 @events.register(events.NewMessage(pattern=r'\.ping'))
 async def ping_handler(event):
@@ -52,8 +62,11 @@ async def ping_handler(event):
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
         
-        # Show ping with anti-delay message using premium emoji
-        ping_response = f"{get_emoji('utama')} PONG!!!! VzoelFox Assistant Anti Delay"
+        # Show VzoelFox ping result with signature
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        ping_response = f"{signature} **VZOEL ASSISTANT**\n\n{get_emoji('adder1')} **PONG !!!!!!**\n{get_emoji('centang')} **LATENCY:** {ping_time:.2f}ms\n{get_emoji('proses')} **Status:** Online & Active\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, ping_response)
         if vzoel_client:
@@ -79,8 +92,11 @@ async def pink_handler(event):
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
-        # Show pink response with latency using premium emoji
-        pink_response = f"{get_emoji('utama')} PONG!!!! Latency {latency:.2f}ms"
+        # Show VzoelFox pink result with signature
+        signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
+        pink_response = f"{signature} **VZOEL ASSISTANT**\n\n{get_emoji('adder1')} **PINK !!!!!!**\n{get_emoji('kuning')} **LATENCY:** {latency:.2f}ms\n{get_emoji('aktif')} **Status:** Pink Mode Active\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, pink_response)
         if vzoel_client:
@@ -124,21 +140,31 @@ async def pong_handler(event):
             except:
                 pass  # Ignore if spambot interaction fails
             # Send the PONG message with latency emoji
-            pong_response = f"**PONG {latency_emoji}**"
+            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             # If we can forward from spambot, do it, otherwise just show response
             try:
                 # Try to get recent message from spambot
                 async for message in event.client.iter_messages('@spambot', limit=1):
                     if message.text:
                         # Forward the message content style
-                        pong_response = f"**PONG {latency_emoji}**\n\n`Forwarded from @spambot to reduce limits`"
+                        pong_response = f"{signature} **VZOEL PONG {latency_emoji}**
+
+`Forwarded from @spambot to reduce limits`"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
                         break
             except:
                 pass
                 
         except Exception as e:
             # Fallback response if spambot interaction fails
-            pong_response = f"**PONG {latency_emoji}**\n\n`Failed to contact @spambot`"
+            pong_response = f"{signature} **VZOEL PONG {latency_emoji}**
+
+`Failed to contact @spambot`"
+{get_emoji('adder2')} **Powered by VzoelFox Technology**
+{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, pong_response)
         if vzoel_client:

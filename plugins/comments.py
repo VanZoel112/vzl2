@@ -1,8 +1,8 @@
 """
-VzoelFox's Assistant Comments Plugin
-Centralized comment system for easy customization of process and command responses
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn
+Enhanced Comments Plugin for VzoelFox Userbot - Premium Edition
+Fitur: Comment system dengan custom responses
+Founder Userbot: Vzoel Fox's Ltpn
+Version: 3.0.0 - Premium Comments System
 """
 
 from telethon import events
@@ -15,8 +15,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin info
-__version__ = "1.0.0"
-__author__ = "Vzoel Fox's"
+__version__ = "3.0.0"
+__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -120,7 +120,9 @@ class VzoelComments:
                 "tagline": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "creator": "Created by: Vzoel Fox's",
-                "repo_notice": "Userbot ini dibuat dengan repo murni oleh Vzoel Fox's..\nBukan hasil fork maupun beli dari seller manapun!!!\nHak cipta sepenuhnya milik Vzoel..",
+                "repo_notice": "Userbot ini dibuat dengan repo murni oleh Vzoel Fox's..
+Bukan hasil fork maupun beli dari seller manapun!!!
+Hak cipta sepenuhnya milik Vzoel..",
                 "zone": "Zone: ID 🇮🇩",
                 "ig": "IG: vzoel.fox_s"
             },
