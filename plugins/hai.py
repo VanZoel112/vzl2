@@ -82,48 +82,37 @@ async def hai_handler(event):
         all_premium_emojis = ['utama', 'centang', 'petir', 'loading', 'kuning', 'biru', 'merah', 'proses', 'aktif', 'adder1', 'adder2', 'telegram']
         color_emojis = ['merah', 'biru', 'kuning']
         
-        # Generate random emoji untuk looping unlimited
-        loop_emojis = []
-        for _ in range(15):  # 15 random emoji untuk efek looping
-            loop_emojis.append(get_emoji(random.choice(all_premium_emojis)))
+        # Hasil awal dengan format rapi (tanpa indentasi berlebih)
+        current_emoji_top = get_emoji(random.choice(all_premium_emojis))
+        current_emoji_nama = get_emoji(random.choice(color_emojis))
         
-        loop_color_emojis = []
-        for _ in range(8):  # 8 random color emoji untuk nama
-            loop_color_emojis.append(get_emoji(random.choice(color_emojis)))
+        hasil_template = f"""{current_emoji_top} Profil by Vzoel Assistant
+{current_emoji_nama} Nama : Vzoel Fox's
+{get_emoji('merah')} Zodiac sign : Cancer
+{get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
+{get_emoji('biru')} Umur : yg jelas bukan om²
+
+{get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
         
-        # Hasil akhir dengan emoji looping unlimited
-        hasil = f"""{''.join(loop_emojis)} Profil by Vzoel Assistant
-            {''.join(loop_color_emojis)} Nama : Vzoel Fox's
-            {get_emoji('merah')} Zodiac sign : Cancer
-            {get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
-            {get_emoji('biru')} Umur : yg jelas bukan om²
-            
-            {get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
+        # Tampilkan hasil awal
+        await safe_edit_premium(message, hasil_template)
         
-        # Tampilkan hasil akhir
-        await safe_edit_premium(message, hasil)
-        
-        # Optional: Looping animation untuk emoji diedit
-        for i in range(5):  # Loop 5 kali untuk efek visual
-            await asyncio.sleep(2)
+        # Looping unlimited untuk emoji di bagian paling atas
+        for i in range(20):  # Loop 20 kali untuk efek unlimited
+            await asyncio.sleep(1.5)
             
-            # Generate emoji baru untuk setiap loop
-            new_loop_emojis = []
-            for _ in range(15):
-                new_loop_emojis.append(get_emoji(random.choice(all_premium_emojis)))
+            # Generate emoji baru untuk setiap loop (1 per 1)
+            new_emoji_top = get_emoji(random.choice(all_premium_emojis))
+            new_emoji_nama = get_emoji(random.choice(color_emojis))
             
-            new_color_emojis = []
-            for _ in range(8):
-                new_color_emojis.append(get_emoji(random.choice(color_emojis)))
-            
-            # Update hasil dengan emoji baru
-            updated_hasil = f"""{''.join(new_loop_emojis)} Profil by Vzoel Assistant
-            {''.join(new_color_emojis)} Nama : Vzoel Fox's
-            {get_emoji('merah')} Zodiac sign : Cancer
-            {get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
-            {get_emoji('biru')} Umur : yg jelas bukan om²
-            
-            {get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
+            # Update hasil dengan emoji baru (format rapi dari ujung kiri)
+            updated_hasil = f"""{new_emoji_top} Profil by Vzoel Assistant
+{new_emoji_nama} Nama : Vzoel Fox's
+{get_emoji('merah')} Zodiac sign : Cancer
+{get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
+{get_emoji('biru')} Umur : yg jelas bukan om²
+
+{get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
             
             await safe_edit_premium(message, updated_hasil)
         
@@ -132,13 +121,13 @@ async def hai_handler(event):
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
         final_hasil = f"""{signature} Profil by Vzoel Assistant
-            {''.join([get_emoji(random.choice(color_emojis)) for _ in range(8)])} Nama : Vzoel Fox's
-            {get_emoji('merah')} Zodiac sign : Cancer
-            {get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
-            {get_emoji('biru')} Umur : yg jelas bukan om²
-            
-            {get_emoji('utama')} Developer Assistant : Vzoel Fox's
-            
+{get_emoji(random.choice(color_emojis))} Nama : Vzoel Fox's
+{get_emoji('merah')} Zodiac sign : Cancer
+{get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
+{get_emoji('biru')} Umur : yg jelas bukan om²
+
+{get_emoji('utama')} Developer Assistant : Vzoel Fox's
+
 {get_emoji('telegram')} ©2025 ~ VZOEL FOX'S PREMIUM SYSTEM"""
         
         await safe_edit_premium(message, final_hasil)
