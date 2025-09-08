@@ -70,45 +70,52 @@ def install_ytdlp():
         return False
 
 async def search_youtube_music(query):
-    """Search music on YouTube"""
+    """Search music on YouTube with timeout and better error handling"""
     try:
-        # Use yt-dlp to search
+        # Use yt-dlp to search with timeout
         cmd = [
             'yt-dlp', 
             '--dump-json', 
             '--no-download',
-            '--default-search', 'ytsearch5:',
+            '--socket-timeout', '30',
+            '--default-search', 'ytsearch3:',
             query
         ]
         
-        process = subprocess.run(cmd, capture_output=True, text=True)
+        # Run with timeout
+        process = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         
         if process.returncode != 0:
+            print(f"YT-DLP error: {process.stderr}")
             return []
         
         results = []
-        for line in process.stdout.strip().split('\n'):
-            if line:
-                try:
-                    data = json.loads(line)
-                    results.append({
-                        'title': data.get('title', 'Unknown'),
-                        'uploader': data.get('uploader', 'Unknown'),
-                        'duration': data.get('duration', 0),
-                        'url': data.get('webpage_url', ''),
-                        'id': data.get('id', '')
-                    })
-                except json.JSONDecodeError:
-                    continue
+        if process.stdout:
+            for line in process.stdout.strip().split('\n'):
+                if line.strip():
+                    try:
+                        data = json.loads(line)
+                        results.append({
+                            'title': data.get('title', 'Unknown')[:60],  # Limit title length
+                            'uploader': data.get('uploader', 'Unknown')[:30],
+                            'duration': data.get('duration', 0),
+                            'url': data.get('webpage_url', ''),
+                            'id': data.get('id', '')
+                        })
+                    except json.JSONDecodeError:
+                        continue
         
         return results[:3]  # Return top 3 results
         
+    except subprocess.TimeoutExpired:
+        print("Search timeout after 30 seconds")
+        return []
     except Exception as e:
         print(f"Search error: {e}")
         return []
 
 async def download_music(url, output_dir):
-    """Download music using yt-dlp"""
+    """Download music using yt-dlp with timeout and better error handling"""
     try:
         output_template = str(output_dir / "%(title)s.%(ext)s")
         
@@ -117,20 +124,27 @@ async def download_music(url, output_dir):
             '--extract-audio',
             '--audio-format', 'mp3',
             '--audio-quality', '0',
+            '--socket-timeout', '30',
             '--output', output_template,
             url
         ]
         
-        process = subprocess.run(cmd, capture_output=True, text=True)
+        # Run with timeout (max 5 minutes for download)
+        process = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         
         if process.returncode == 0:
             # Find downloaded file
             for file in output_dir.glob("*.mp3"):
-                if file.stat().st_mtime > time.time() - 60:  # File created in last minute
+                if file.stat().st_mtime > time.time() - 120:  # File created in last 2 minutes
                     return str(file)
+        else:
+            print(f"Download failed: {process.stderr}")
         
         return None
         
+    except subprocess.TimeoutExpired:
+        print("Download timeout after 5 minutes")
+        return None
     except Exception as e:
         print(f"Download error: {e}")
         return None
@@ -168,7 +182,15 @@ async def play_music_handler(event):
             await safe_edit_premium(event, install_msg)
             
             if not install_ytdlp():
-                error_msg = f"{get_emoji('merah')} Gagal install yt-dlp. Install manual: pip install yt-dlp"
+                error_msg = f"""{get_emoji('merah')} YT-DLP tidak tersedia
+
+{get_emoji('aktif')} Manual Installation:
+pip install yt-dlp
+
+{get_emoji('telegram')} Alternative:
+pkg install yt-dlp (Termux)
+
+{get_emoji('utama')} VzoelFox Music System"""
                 await safe_edit_premium(event, error_msg)
                 return
         
@@ -180,7 +202,18 @@ async def play_music_handler(event):
         results = await search_youtube_music(query)
         
         if not results:
-            not_found_msg = f"{get_emoji('merah')} Musik tidak ditemukan: {query}"
+            not_found_msg = f"""{get_emoji('merah')} Musik tidak ditemukan: {query}
+
+{get_emoji('kuning')} Tips:
+• Coba kata kunci yang lebih spesifik
+• Gunakan nama artis + judul lagu
+• Periksa koneksi internet
+
+{get_emoji('telegram')} Contoh:
+.play alan walker faded
+.play despacito luis fonsi
+
+{get_emoji('utama')} VzoelFox Music Search"""
             await safe_edit_premium(event, not_found_msg)
             return
         
@@ -236,7 +269,15 @@ async def download_music_handler(event):
             await safe_edit_premium(event, install_msg)
             
             if not install_ytdlp():
-                error_msg = f"{get_emoji('merah')} Gagal install yt-dlp. Install manual: pip install yt-dlp"
+                error_msg = f"""{get_emoji('merah')} YT-DLP tidak tersedia
+
+{get_emoji('aktif')} Manual Installation:
+pip install yt-dlp
+
+{get_emoji('telegram')} Alternative:
+pkg install yt-dlp (Termux)
+
+{get_emoji('utama')} VzoelFox Music System"""
                 await safe_edit_premium(event, error_msg)
                 return
         
