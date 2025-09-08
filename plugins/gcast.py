@@ -80,10 +80,8 @@ async def add_blacklist_handler(event):
         if chat_id:
             # Add to blacklist
             if Config.add_to_blacklist(chat_id):
-success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Added**\n\nChat: \nID: \nTotal Blacklisted: "
-""
+                success_msg = f"{get_emoji('centang')} Added to blacklist"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                     f"Chat: `{chat_title}`
 " + \
                     f"ID: `{chat_id}`
@@ -93,9 +91,7 @@ success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Added**\n\n
                 await safe_edit_premium(event, success_msg)
             else:
                 already_msg = f"{get_emoji('kuning')} {signature} **VZOEL Already Blacklisted**
-""
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                     f"Chat: `{chat_title}`
 " + \
                     f"ID: `{chat_id}`"
@@ -130,9 +126,7 @@ async def remove_blacklist_handler(event):
         
         if Config.remove_from_blacklist(chat_id):
             success_msg = f"{get_emoji('centang')} {signature} **VZOEL Blacklist Removed**
-""
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                 f"ID: `{chat_id}`
 " + \
                 f"Total Blacklisted: `{len(Config.GCAST_BLACKLIST)}`"
@@ -157,9 +151,7 @@ async def list_blacklist_handler(event):
             return
         
         blacklist_text = f"{signature} **VZOEL VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})**\n\n
-"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         for i, chat_id in enumerate(Config.GCAST_BLACKLIST, 1):
             try:
@@ -168,17 +160,13 @@ async def list_blacklist_handler(event):
                 blacklist_text += f"`{i}.` **{chat_title}**
    ID: `{chat_id}`
 
-"
             except:
                 blacklist_text += f"`{i}.` {signature} **VZOEL Unknown Chat**\n   ID: `{chat_id}`\n
 
-"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         blacklist_text += f"{signature} **VZOEL By VzoelFox Assistant**""
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
         
         await safe_edit_premium(event, blacklist_text)
         if vzoel_client:
@@ -218,7 +206,6 @@ async def gcast_handler(event):
         start_time = time.time()
         
         # Animation phase 1: Process setup
-        process_msg = f"{get_emoji('loading')} {get_emoji('telegram')} Mempersiapkan global cast..."
         
         await safe_edit_premium(event, process_msg)
         await asyncio.sleep(1)
@@ -240,9 +227,7 @@ async def gcast_handler(event):
         
         # Animation phase 2: Starting broadcast
         start_msg = f"{get_emoji('proses')} {signature} **VZOEL Broadcasting Started**
-""
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
             f"Target Chats: `{total_chats}`
 " + \
             f"Blacklisted: `{blacklisted_count}`
@@ -260,9 +245,7 @@ async def gcast_handler(event):
                 # Update progress every 5 chats or on last chat
                 if i % 5 == 0 or i == total_chats:
                     progress_msg = f"{get_emoji('aktif')} {signature} **VZOEL Broadcasting in Progress**
-""
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)** + \
                         f"Progress: `{i}/{total_chats}`
 " + \
                         f"Success: `{successful_sends}`
@@ -319,7 +302,6 @@ async def gcast_handler(event):
         complete_msg = f"""{get_emoji('utama')} **{get_emoji('centang')} Berhasil diselesaikan!**
 
 {get_emoji('centang')} **By {get_emoji('adder1')} VzoelFox's Assistant**
-{get_emoji('telegram')} **Groups Sent:** {successful_sends}
 {get_emoji('aktif')} **Duration:** {duration:.1f} seconds
 {get_emoji('proses')} **Success Rate:** {success_rate:.1f}%
 {get_emoji('petir')} **Ready for next command...**"""
@@ -362,7 +344,6 @@ async def gcast_info_handler(event):
 
 **Available Targets:**
 {get_emoji('centang')} Groups: `{total_groups}`
-{get_emoji('telegram')} Channels: `{total_channels}`
 {get_emoji('utama')} Total Available: `{total_available}`
 
 **Blacklist Status:**

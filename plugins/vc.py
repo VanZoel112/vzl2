@@ -96,11 +96,9 @@ async def vc_join_handler(event):
                 'muted': False,
                 'chat_title': (await event.get_chat()).title
             }
-success_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Joined**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Connected\nAudio: Ready"
-Audio: Ready
-"
+            success_msg = f"{get_emoji('centang')} Voice Chat Joined"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to join voice chat: {str(e)}"
@@ -137,11 +135,9 @@ async def vc_leave_handler(event):
             # Leave voice chat
             await vc_instances[chat_id].leave_group_call(chat_id)
             # Update status
-            vc_status[chat_id]['joined'] = False
+            success_msg = f"{get_emoji('centang')} Left Voice Chat"
             success_msg = f"{get_emoji('centang')} {signature} **VZOEL Left Voice Chat**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Disconnected
-"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to leave voice chat: {str(e)}"
@@ -175,9 +171,7 @@ async def vc_mute_handler(event):
             await vc_instances[chat_id].mute_stream(chat_id)
             vc_status[chat_id]['muted'] = True
             muted_msg = f"{get_emoji('proses')} {signature} **VZOEL Voice Chat Muted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Muted
-"
-
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+            muted_msg = f"{get_emoji('proses')} Voice Chat Muted"
             msg = await event.edit(muted_msg)
         except Exception as e:
             error_msg = f"{get_emoji('merah')} Failed to mute: {str(e)}"
@@ -211,11 +205,9 @@ async def vc_unmute_handler(event):
             await vc_instances[chat_id].unmute_stream(chat_id)
             vc_status[chat_id]['muted'] = False
             unmuted_msg = f"{get_emoji('centang')} {signature} **VZOEL Voice Chat Unmuted**\nChat: {vc_status[chat_id]['chat_title']}\nStatus: Speaking
-"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
             msg = await event.edit(unmuted_msg)
-        except Exception as e:
+            unmuted_msg = f"{get_emoji('centang')} Voice Chat Unmuted"
             error_msg = f"{get_emoji('merah')} Failed to unmute: {str(e)}"
             msg = await event.edit(error_msg)
         
@@ -253,7 +245,6 @@ async def vc_status_handler(event):
         
         status_text = f"""**{signature} Voice Chat Status**
 
-{get_emoji('telegram')} **Chat:** {chat.title}
 {get_emoji('utama')} **PyTgCalls:** {pytgcalls_status}
 {get_emoji('aktif')} **Connection:** {vc_connection}
 {get_emoji('proses')} **Audio:** {audio_status}
@@ -304,7 +295,6 @@ pkg install ffmpeg
 .restart
 ```
 
-{get_emoji('telegram')} **Features After Installation:**
 • Join voice chats in groups
 • Mute/unmute microphone
 • Professional voice chat management

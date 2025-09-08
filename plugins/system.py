@@ -52,13 +52,13 @@ async def update_handler(event):
         
         # If no updates and not force
         if not update_info.get("needs_update", False) and not force:
-up_to_date_msg = f"{get_emoji('centang')} Already up to date!"
+            up_to_date_msg = f"{get_emoji('centang')} Already up to date"
 Current: `{update_info['current_commit']}`"
             await safe_edit_premium(msg, up_to_date_msg)
             return
         
         # Show update progress
-        progress_msg = f"{get_emoji('proses')} Updating VzoelFox's Assistant...
+        progress_msg = f"{get_emoji('proses')} Updating..."
 " + \
             (f"Current: `{update_info['current_commit']}`
 Latest: `{update_info['remote_commit']}`" if not force else "Force updating...")

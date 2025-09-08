@@ -54,7 +54,6 @@ async def dice_handler(event):
         dice_emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        result_msg = f"{signature} **VZOEL DICE ROLL**\n\n{dice_emojis[result-1]} **Result:** {result}\n\n{get_emoji('adder2')} **Powered by VzoelFox Technology**\n{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**"
 
 
         
@@ -78,10 +77,9 @@ async def flip_handler(event):
         result = random.choice(['Heads', 'Tails'])
         emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
-        result_msg = f"{get_emoji('kuning')} {signature} **VZOEL VzoelFox Coin Flip**\n\n{emoji} Result: **{result}**
-"
+        result_msg = f"{get_emoji('kuning')} Coin Result: {result}"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:

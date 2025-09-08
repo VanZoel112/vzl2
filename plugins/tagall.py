@@ -55,14 +55,12 @@ async def tagall_handler(event):
         if event.reply_to_msg_id:
             # Reply mode - get replied message
             replied_msg = await event.get_reply_message()
-            message_text = replied_msg.message or f"{get_emoji('telegram')} Tagged by VzoelFox"
         else:
             # Text mode - get text after .tagall
             match = event.pattern_match
             if match and match.group(2):
                 message_text = match.group(2)
             else:
-                message_text = f"{get_emoji('telegram')} Tagged by VzoelFox"
         
         # Start tagall process
         tagall_active[chat_id] = True
@@ -139,7 +137,6 @@ async def perform_tagall(event, participants, message_text, chat_title):
             premium_emojis = ['utama', 'centang', 'petir', 'kuning', 'biru', 'merah', 'proses', 'aktif']
             random_emoji = get_emoji(random.choice(premium_emojis))
             # Create animated status message
-            animation_text = f"""**{get_emoji('telegram')} VZOEL TAGALL PROCESS**
 
 {get_emoji('aktif')} **Username:** {username}
 {get_emoji('utama')} **Nama:** {full_name}
@@ -172,7 +169,6 @@ async def perform_tagall(event, participants, message_text, chat_title):
         completion_msg = f"""**{get_emoji('centang')} TAGALL SELESAI**
 
 {get_emoji('utama')} **Total Member Tagged:** {user_count}
-{get_emoji('telegram')} **Grup:** {chat_title}
 {get_emoji('aktif')} **Pesan:** {message_text}
 {get_emoji('petir')} **Status:** Completed Successfully
 
@@ -192,10 +188,9 @@ async def stop_tagall_handler(event):
             # Cancel the tagall task
             tagall_tasks[chat_id].cancel()
             tagall_active[chat_id] = False
-stop_msg = f"{get_emoji('centang')} {signature} **VZOEL Tagall Dihentikan**\n\nProses tagall telah diberhentikan oleh pengguna\nStatus: Cancelled"
-"
+            stop_msg = f"{get_emoji('centang')} Tagall stopped"
 
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+
             msg = await event.edit(stop_msg)
         else:
             no_tagall_msg = f"{get_emoji('kuning')} Tidak ada proses tagall yang sedang berjalan"
@@ -229,7 +224,6 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 • Flood protection dengan auto-delay
 • Cancellation support dengan .stop
 
-{get_emoji('telegram')} **Animasi Display:**
 1. Username member di grup
 2. Nama lengkap member  
 3. Random premium emoji
