@@ -142,40 +142,40 @@ async def pizol_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        pizol_info = f"""**{signature} PIZOL System Information**
+        pizol_info = f"""{signature} PIZOL System Information
 
-{get_emoji('utama')} **What is PIZOL?**
+{get_emoji('utama')} What is PIZOL?
 PIZOL adalah sistem extended dari VzoelFox Assistant dengan animasi 40 fase yang menampilkan status sistem secara detail dan menyeluruh.
 
-{get_emoji('centang')} **40-Phase Animation Sequence:**
+{get_emoji('centang')} 40-Phase Animation Sequence:
 1-10: System Initialization & Core Loading
 11-20: Feature Loading & Security Setup  
 21-30: Plugin & Database Management
 31-40: Final Optimization & Deployment
 
-{get_emoji('aktif')} **PIZOL Features:**
+{get_emoji('aktif')} PIZOL Features:
 • Extended animation (40 phases vs 12 alive)
 • Comprehensive system status display
 • Advanced feature enumeration
 • Professional technology showcase
 • Premium VzoelFox branding
 
-{get_emoji('telegram')} **Display Elements:**
+{get_emoji('telegram')} Display Elements:
 • System operational status
 • Core engine version info
 • Power level indicators
 • Plugin count tracking
 • Feature highlights
 
-{get_emoji('proses')} **Animation Timing:**
+{get_emoji('proses')} Animation Timing:
 • Total Duration: ~24 seconds
 • Phase Interval: 0.6 seconds
 • Final Display: Comprehensive status
 
-{get_emoji('petir')} **Usage:**
-Simply type `.pizol` to activate the full 40-phase animation sequence and view comprehensive system status.
+{get_emoji('petir')} Usage:
+Simply type .pizol to activate the full 40-phase animation sequence and view comprehensive system status.
 
-**By VzoelFox Assistant**"""
+By VzoelFox Assistant"""
         
         # Display pizol info with premium emoji support
         await safe_edit_premium(event, pizol_info)

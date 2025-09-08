@@ -106,9 +106,9 @@ def create_help_page(page=0):
         plugin_num = start_idx + i
         commands_str = ', '.join(plugin['commands']) if plugin['commands'] else 'No commands'
         
-        help_content += f"{get_emoji('centang')} {plugin_num}. {plugin['name'].title()}\\n"
-        help_content += f"{get_emoji('proses')} Version: {plugin['version']}\\n"  
-        help_content += f"{get_emoji('kuning')} Commands: {commands_str}\\n\\n"
+        help_content += f"{get_emoji('centang')} {plugin_num}. {plugin['name'].title()}\n"
+        help_content += f"{get_emoji('proses')} Version: {plugin['version']}\n"  
+        help_content += f"{get_emoji('kuning')} Commands: {commands_str}\n\n"
     
     # Add footer
     help_content += f"""

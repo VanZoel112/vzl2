@@ -90,23 +90,23 @@ async def alive_handler(event):
         
         # Build final alive display with premium emojis
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        alive_display = f"""{signature} **VZOEL ASSISTANT**
+        alive_display = f"""{signature} VZOEL ASSISTANT
 
-{get_emoji('centang')} **Founder Userbot** : Vzoel Fox's Ltpn {get_emoji('utama')}
-{get_emoji('centang')} **Code** : Python 3.12+ Enhanced
-{get_emoji('centang')} **Plugins** : {plugin_count} Premium Modules
-{get_emoji('centang')} **Instagram** : vzoel.fox_s
-{get_emoji('centang')} **Zone** : Indonesia 🇮🇩
+{get_emoji('centang')} Founder Userbot : Vzoel Fox's Ltpn {get_emoji('utama')}
+{get_emoji('centang')} Code : Python 3.12+ Enhanced
+{get_emoji('centang')} Plugins : {plugin_count} Premium Modules
+{get_emoji('centang')} Instagram : vzoel.fox_s
+{get_emoji('centang')} Zone : Indonesia 🇮🇩
 
-{random_emoji1} **PREMIUM FEATURES** :
+{random_emoji1} PREMIUM FEATURES :
 • Advanced Premium Emoji System
 • VzoelFox Branded Interface
 • Enhanced Performance & Stability
 
-{get_emoji('adder2')} **Powered by VzoelFox Technology**
-{get_emoji('telegram')} **- 2025 Vzoel Fox's (LTPN)**
+{get_emoji('adder2')} Powered by VzoelFox Technology
+{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)
 
-{random_emoji2} **©2025 ~ VZOEL FOX'S PREMIUM SYSTEM**"""
+{random_emoji2} ©2025 ~ VZOEL FOX'S PREMIUM SYSTEM"""
         
         # Display final result
         await safe_edit_premium(event, alive_display)

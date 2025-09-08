@@ -36,11 +36,10 @@ async def id_checker_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
-        # Stop any existing animation for this chat
+        # Get chat ID for animation management
         chat_id = event.chat_id
-        if chat_id in animation_tasks:
-            animation_tasks[chat_id].cancel()
-            del animation_tasks[chat_id]
+        # Don't cancel existing animations - let them run permanently
+        # Users can only stop by using .stop command or restarting bot
         
         target_user = None
         args = event.pattern_match.group(1)

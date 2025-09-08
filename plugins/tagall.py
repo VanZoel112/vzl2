@@ -166,13 +166,13 @@ Pesan: {message_text}
     
     # Final completion message
     if tagall_active.get(chat_id, False):
-        completion_msg = f"""**{get_emoji('centang')} TAGALL SELESAI**
+        completion_msg = f"""{get_emoji('centang')} TAGALL SELESAI
 
-{get_emoji('utama')} **Total Member Tagged:** {user_count}
-{get_emoji('aktif')} **Pesan:** {message_text}
-{get_emoji('petir')} **Status:** Completed Successfully
+{get_emoji('utama')} Total Member Tagged: {user_count}
+{get_emoji('aktif')} Pesan: {message_text}
+{get_emoji('petir')} Status: Completed Successfully
 
-**By VzoelFox Assistant**"""
+By VzoelFox Assistant"""
         
         msg = await event.edit(completion_msg)
 
