@@ -192,10 +192,17 @@ async def gcast_handler(event):
         # Start gcast process with animation
         start_time = time.time()
         
-        # Animation phase 1: Process setup
-        process_msg = f"{get_emoji('loading')} Preparing global broadcast..."
-        await safe_edit_premium(event, process_msg)
-        await asyncio.sleep(1)
+        # Animation phase 1: Process setup dengan estetik lebih baik
+        setup_frames = [
+            f"{get_emoji('loading')} Memulai persiapan...",
+            f"{get_emoji('proses')} Memuat sistem broadcast...",
+            f"{get_emoji('aktif')} Menghitung target chat...",
+            f"{get_emoji('petir')} Menyiapkan pesan..."
+        ]
+        
+        for frame in setup_frames:
+            await safe_edit_premium(event, frame)
+            await asyncio.sleep(0.8)
         
         # Get all dialogs (groups and channels)
         dialogs = []
@@ -212,11 +219,19 @@ async def gcast_handler(event):
             await safe_edit_premium(event, no_chats_msg)
             return
         
-        # Animation phase 2: Starting broadcast
+        # Animation phase 2: Starting broadcast dengan estetik
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        start_msg = f"{get_emoji('proses')} Broadcasting Started\nTarget Chats: `{total_chats}`\nBlacklisted: `{blacklisted_count}`\nStatus: Processing..."
-        await safe_edit_premium(event, start_msg)
-        await asyncio.sleep(1)
+        
+        # Frame animasi startup yang lebih estetik
+        startup_frames = [
+            f"{signature} MEMULAI BROADCAST\n\n{get_emoji('centang')} Target Chat: `{total_chats}`\n{get_emoji('merah')} Blacklist: `{blacklisted_count}`\n{get_emoji('loading')} Menyiapkan engine...",
+            f"{signature} VZOEL BROADCAST ENGINE\n\n{get_emoji('aktif')} Target Chat: `{total_chats}`\n{get_emoji('kuning')} Blacklist: `{blacklisted_count}`\n{get_emoji('proses')} Mengaktifkan sistem...",
+            f"{signature} BROADCAST DIMULAI!\n\n{get_emoji('petir')} Target Chat: `{total_chats}`\n{get_emoji('biru')} Blacklist: `{blacklisted_count}`\n{get_emoji('telegram')} Status: ACTIVE"
+        ]
+        
+        for frame in startup_frames:
+            await safe_edit_premium(event, frame)
+            await asyncio.sleep(1.2)
         
         # Broadcast loop
         successful_sends = 0
@@ -224,9 +239,30 @@ async def gcast_handler(event):
         
         for i, dialog in enumerate(dialogs, 1):
             try:
-                # Update progress every 5 chats or on last chat
-                if i % 5 == 0 or i == total_chats:
-                    progress_msg = f"{get_emoji('aktif')} Broadcasting in Progress\nProgress: `{i}/{total_chats}`\nSuccess: `{successful_sends}`\nFailed: `{failed_sends}`\nCurrent: `{dialog.title or 'Unknown'}`"
+                # Update progress dengan animasi yang lebih estetik
+                if i % 3 == 0 or i == total_chats:
+                    # Progress bar estetik
+                    progress_percentage = int((i / total_chats) * 100)
+                    progress_bar = "█" * (progress_percentage // 10) + "░" * (10 - (progress_percentage // 10))
+                    
+                    # Emoji dinamis berdasarkan progress
+                    if progress_percentage < 30:
+                        status_emoji = get_emoji('loading')
+                        status_text = "MEMULAI"
+                    elif progress_percentage < 70:
+                        status_emoji = get_emoji('proses')
+                        status_text = "PROSES"
+                    else:
+                        status_emoji = get_emoji('aktif')
+                        status_text = "HAMPIR SELESAI"
+                    
+                    progress_msg = f"""{signature} VZOEL BROADCAST {status_text}
+                    
+{status_emoji} Progress: [{progress_bar}] {progress_percentage}%
+{get_emoji('centang')} Berhasil: `{successful_sends}`
+{get_emoji('merah')} Gagal: `{failed_sends}`
+{get_emoji('telegram')} Sedang: `{dialog.title[:25] or 'Unknown'}...`
+{get_emoji('petir')} Status: `{i}/{total_chats}` chat"""
                     await safe_edit_premium(event, progress_msg)
                 
                 # Send message
@@ -272,13 +308,37 @@ async def gcast_handler(event):
         duration = end_time - start_time
         success_rate = (successful_sends / total_chats * 100) if total_chats > 0 else 0
         
-        # Animation phase 3: Process completed
-        complete_msg = f"""{get_emoji('utama')} {get_emoji('centang')} Berhasil diselesaikan!
+        # Animation phase 3: Process completed dengan animasi akhir yang estetik
+        completion_frames = [
+            f"{signature} MENYELESAIKAN BROADCAST...\n\n{get_emoji('loading')} Menghitung hasil akhir...",
+            f"{signature} MENGANALISA HASIL...\n\n{get_emoji('proses')} Processing statistics...",
+            f"{signature} BROADCAST SELESAI!\n\n{get_emoji('centang')} Analisa hasil berhasil!"
+        ]
+        
+        for frame in completion_frames:
+            await safe_edit_premium(event, frame)
+            await asyncio.sleep(1)
+        
+        # Final result dengan format yang lebih estetik
+        final_progress_bar = "█" * 10  # Full bar
+        success_emoji = get_emoji('centang') if success_rate >= 70 else get_emoji('kuning') if success_rate >= 40 else get_emoji('merah')
+        
+        complete_msg = f"""{signature} VZOEL BROADCAST COMPLETED!
 
-{get_emoji('centang')} By {get_emoji('adder1')} VzoelFox's Assistant
-{get_emoji('aktif')} Duration: {duration:.1f} seconds
-{get_emoji('proses')} Success Rate: {success_rate:.1f}%
-{get_emoji('petir')} Ready for next command..."""
+{success_emoji} HASIL BROADCAST:
+├ Progress: [{final_progress_bar}] 100%
+├ Berhasil: `{successful_sends}` chat
+├ Gagal: `{failed_sends}` chat  
+├ Total Target: `{total_chats}` chat
+└ Success Rate: `{success_rate:.1f}%`
+
+{get_emoji('aktif')} STATISTIK WAKTU:
+├ Durasi: `{duration:.1f}` detik
+├ Rata-rata: `{(duration/total_chats):.2f}s` per chat
+└ Speed: {get_emoji('petir')} VZOEL ENGINE
+
+{get_emoji('adder2')} Ready for next broadcast!
+{get_emoji('telegram')} by VzoelFox Assistant"""
         await safe_edit_premium(event, complete_msg)
         
         if vzoel_client:
@@ -292,11 +352,17 @@ async def gcast_info_handler(event):
         from config import Config
 
         
-        # Animation phase 1: Loading info
-        loading_msg = f"{get_emoji('loading')} Loading gcast information..."
+        # Animation phase 1: Loading info dengan estetik
+        loading_frames = [
+            f"{get_emoji('loading')} Memuat informasi gcast...",
+            f"{get_emoji('proses')} Menghitung chat tersedia...",
+            f"{get_emoji('aktif')} Menganalisa blacklist...",
+            f"{get_emoji('petir')} Menyiapkan statistik..."
+        ]
         
-        await safe_edit_premium(event, loading_msg)
-        await asyncio.sleep(1)
+        for frame in loading_frames:
+            await safe_edit_premium(event, frame)
+            await asyncio.sleep(0.8)
         
         # Count available chats
         total_groups = 0
@@ -311,26 +377,36 @@ async def gcast_info_handler(event):
         total_available = total_groups + total_channels
         blacklisted_count = len(Config.GCAST_BLACKLIST)
         
-        # Animation phase 2: Show complete info
+        # Animation phase 2: Show complete info dengan format lebih estetik
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        info_text = f"""{signature} Gcast Information
+        info_text = f"""{signature} VZOEL GCAST INFORMATION
 
-Available Targets:
-{get_emoji('centang')} Groups: {total_groups}
-{get_emoji('utama')} Total Available: {total_available}
+{get_emoji('telegram')} TARGETS TERSEDIA:
+├ Groups: `{total_groups}` chat
+├ Channels: `{total_channels}` chat  
+└ Total Available: `{total_available}` chat
 
-Blacklist Status:
-{get_emoji('merah')} Blacklisted: {blacklisted_count}
-{get_emoji('aktif')} Will Broadcast To: {total_available}
+{get_emoji('merah')} BLACKLIST STATUS:
+├ Blacklisted: `{blacklisted_count}` chat
+├ Will Broadcast: `{total_available}` chat
+└ Protection: {get_emoji('centang')} ACTIVE
 
-Commands:
-{get_emoji('proses')} .gcast <text> - Broadcast text
-{get_emoji('kuning')} .gcast (reply) - Broadcast reply
-{get_emoji('adder1')} .addbl <id> - Add to blacklist
-{get_emoji('adder2')} .listbl - Show blacklist
+{get_emoji('petir')} COMMAND LIST:
+├ .gcast <text> - Broadcast pesan text
+├ .gcast (reply) - Broadcast dari reply
+├ .addbl <id> - Tambah ke blacklist  
+├ .rembl <id> - Hapus dari blacklist
+├ .listbl - Lihat daftar blacklist
+└ .ginfo - Info sistem gcast
 
-By VzoelFox Assistant"""
+{get_emoji('aktif')} ENGINE STATUS:
+├ System: VZOEL BROADCAST ENGINE
+├ Speed: {get_emoji('petir')} OPTIMIZED  
+├ Safety: {get_emoji('centang')} BLACKLIST PROTECTED
+└ Version: 3.0.0 PREMIUM
+
+{get_emoji('adder2')} Powered by VzoelFox Technology"""
         
         await safe_edit_premium(event, info_text)
         if vzoel_client:
