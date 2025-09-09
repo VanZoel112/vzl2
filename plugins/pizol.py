@@ -84,9 +84,9 @@ async def pizol_handler(event):
         # Start animation with first phase using safe_edit_premium
         await safe_edit_premium(event, animation_phases[0])
         
-        # Animate through all 40 phases
-        for i in range(1, 40):
-            await asyncio.sleep(0.6)  # 0.6 second delay between phases
+        # Animate through reduced phases to prevent flood wait
+        for i in range(1, 12):  # Reduced from 40 to 12 phases
+            await asyncio.sleep(2.5)  # Increased from 0.6s to 2.5s delay
             await safe_edit_premium(event, animation_phases[i])
         
         # Final delay before showing result

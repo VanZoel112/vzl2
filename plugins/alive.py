@@ -75,9 +75,9 @@ async def alive_handler(event):
         # Start animation with first phase using safe_edit_premium
         await safe_edit_premium(event, animation_phases[0])
         
-        # Animate through all 12 phases
-        for i in range(1, 12):
-            await asyncio.sleep(0.8)  # 0.8 second delay between phases
+        # Animate through reduced phases to prevent flood wait
+        for i in range(1, 7):  # Reduced from 12 to 7 phases
+            await asyncio.sleep(3.0)  # Increased from 0.8s to 3.0s delay
             await safe_edit_premium(event, animation_phases[i])
         
         # Final delay before showing result

@@ -90,9 +90,9 @@ async def hai_handler(event):
 
 {get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
         
-        # Looping unlimited untuk emoji di bagian paling atas SAJA
-        for i in range(20):  # Loop 20 kali untuk efek unlimited
-            await asyncio.sleep(1.5)
+        # Looping terbatas untuk mencegah flood wait
+        for i in range(6):  # Reduced from 20 to 6 loops
+            await asyncio.sleep(4.0)  # Increased from 1.5s to 4.0s delay
             
             # Generate emoji baru HANYA untuk bagian paling atas
             new_emoji_top = get_emoji(random.choice(all_premium_emojis))
