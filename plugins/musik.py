@@ -27,7 +27,7 @@ PLUGIN_INFO = {
     "version": "1.0.0",
     "description": "Music player dan downloader dengan YT-DLP dan Spotify support",
     "author": "Founder Userbot: Vzoel Fox's Ltpn",
-    "commands": [".play", ".download", ".minfo"],
+    "commands": [".play", ".download", ".minfo", ".pause", ".resume", ".stop", ".volume", ".mute", ".mstatus"],
     "features": ["YouTube music streaming", "Spotify integration", "music download", "premium emoji", "VzoelFox branding"]
 }
 
@@ -641,4 +641,504 @@ async def cookie_check_handler(event):
         if vzoel_client:
             vzoel_client.increment_command_count()
 
-# Handler automatically registered via @events.register decorator
+# Handler automatically registered via @events.register decorator# Music playback control state
+music_state = {
+    'current_track': None,
+    'is_playing': False,
+    'is_paused': False,
+    'volume': 50,
+    'playlist': [],
+    'current_index': 0,
+    'process': None
+}
+
+def get_audio_devices():
+    """Get available audio devices for playback"""
+    try:
+        result = subprocess.run(['pactl', 'list', 'short', 'sinks'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            devices = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        devices.append({
+                            'id': parts[0],
+                            'name': parts[1],
+                            'description': ' '.join(parts[2:]) if len(parts) > 2 else parts[1]
+                        })
+            return devices
+    except FileNotFoundError:
+        pass
+    
+    # Fallback to basic audio check
+    return [{'id': '0', 'name': 'default', 'description': 'Default Audio Device'}]
+
+def set_system_volume(volume_level):
+    """Set system volume using amixer or pactl"""
+    volume_level = max(0, min(100, volume_level))  # Clamp to 0-100
+    
+    try:
+        # Try pactl first (PulseAudio)
+        subprocess.run(['pactl', 'set-sink-volume', '@DEFAULT_SINK@', f'{volume_level}%'], 
+                      check=True, capture_output=True)
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        try:
+            # Try amixer (ALSA)
+            subprocess.run(['amixer', 'set', 'Master', f'{volume_level}%'], 
+                          check=True, capture_output=True)
+            return True
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            return False
+
+def get_system_volume():
+    """Get current system volume"""
+    try:
+        # Try pactl first
+        result = subprocess.run(['pactl', 'get-sink-volume', '@DEFAULT_SINK@'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            # Parse output like "Volume: front-left: 32768 /  50% / -18.06 dB"
+            for line in result.stdout.split('\n'):
+                if 'Volume:' in line and '%' in line:
+                    import re
+                    match = re.search(r'(\d+)%', line)
+                    if match:
+                        return int(match.group(1))
+    except FileNotFoundError:
+        pass
+    
+    try:
+        # Try amixer
+        result = subprocess.run(['amixer', 'get', 'Master'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            import re
+            match = re.search(r'\[(\d+)%\]', result.stdout)
+            if match:
+                return int(match.group(1))
+    except FileNotFoundError:
+        pass
+    
+    return music_state['volume']  # Return stored volume as fallback
+
+async def play_audio_file(file_path):
+    """Play audio file using available audio players"""
+    global music_state
+    
+    if not os.path.exists(file_path):
+        return False, "File not found"
+    
+    # List of audio players to try (in order of preference)
+    players = [
+        ['mpv', '--no-video', '--really-quiet'],
+        ['ffplay', '-nodisp', '-autoexit', '-loglevel', 'quiet'],
+        ['aplay'],  # For WAV files
+        ['paplay']  # PulseAudio player
+    ]
+    
+    for player_cmd in players:
+        try:
+            # Check if player is available
+            subprocess.run([player_cmd[0], '--help'], 
+                         capture_output=True, timeout=2)
+            
+            # Start playback process
+            cmd = player_cmd + [file_path]
+            process = subprocess.Popen(cmd, 
+                                     stdout=subprocess.PIPE, 
+                                     stderr=subprocess.PIPE)
+            
+            music_state['process'] = process
+            music_state['is_playing'] = True
+            music_state['is_paused'] = False
+            music_state['current_track'] = os.path.basename(file_path)
+            
+            return True, f"Playing with {player_cmd[0]}"
+            
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            continue
+    
+    return False, "No compatible audio player found"
+
+def pause_playback():
+    """Pause current playback"""
+    global music_state
+    
+    if music_state['process'] and music_state['is_playing']:
+        try:
+            # Send SIGSTOP to pause (works with most players)
+            music_state['process'].send_signal(19)  # SIGSTOP
+            music_state['is_paused'] = True
+            music_state['is_playing'] = False
+            return True
+        except:
+            return False
+    return False
+
+def resume_playback():
+    """Resume paused playback"""
+    global music_state
+    
+    if music_state['process'] and music_state['is_paused']:
+        try:
+            # Send SIGCONT to resume
+            music_state['process'].send_signal(18)  # SIGCONT
+            music_state['is_paused'] = False
+            music_state['is_playing'] = True
+            return True
+        except:
+            return False
+    return False
+
+def stop_playback():
+    """Stop current playback"""
+    global music_state
+    
+    if music_state['process']:
+        try:
+            music_state['process'].terminate()
+            music_state['process'].wait(timeout=5)
+        except:
+            try:
+                music_state['process'].kill()
+            except:
+                pass
+        
+        music_state['process'] = None
+        music_state['is_playing'] = False
+        music_state['is_paused'] = False
+        music_state['current_track'] = None
+        return True
+    return False
+
+def is_playback_active():
+    """Check if playback is currently active"""
+    global music_state
+    
+    if music_state['process']:
+        poll = music_state['process'].poll()
+        if poll is None:  # Process is still running
+            return True
+        else:
+            # Process ended, clean up
+            music_state['process'] = None
+            music_state['is_playing'] = False
+            music_state['is_paused'] = False
+            music_state['current_track'] = None
+    
+    return False
+@events.register(events.NewMessage(pattern=r'\.pause'))
+async def pause_music_handler(event):
+    """Pause music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not is_playback_active():
+            no_music_msg = f"""{get_emoji('kuning')} Tidak ada musik yang sedang diputar
+            
+{get_emoji('aktif')} Status musik saat ini:
+• Track: Tidak ada
+• Status: Idle
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .play [nama lagu] untuk mulai memutar musik
+{get_emoji('utama')} VzoelFox Music Player"""
+            await safe_edit_premium(event, no_music_msg)
+            return
+        
+        if music_state['is_paused']:
+            already_paused_msg = f"""{get_emoji('kuning')} Musik sudah dalam keadaan pause
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('aktif')} Status: PAUSED
+{get_emoji('adder1')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .resume untuk melanjutkan
+{get_emoji('utama')} VzoelFox Music Player"""
+            await safe_edit_premium(event, already_paused_msg)
+            return
+        
+        if pause_playback():
+            paused_msg = f"""{get_emoji('centang')} MUSIK DIPAUSE
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('kuning')} Status: PAUSED ⏸️
+{get_emoji('aktif')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Commands:
+• .resume - Lanjutkan pemutaran
+• .stop - Hentikan musik  
+• .volume [0-100] - Atur volume
+
+{get_emoji('utama')} VzoelFox Music Controller"""
+        else:
+            paused_msg = f"""{get_emoji('merah')} Gagal pause musik
+            
+{get_emoji('kuning')} Kemungkinan masalah:
+• Player tidak mendukung pause
+• Process sudah berhenti
+• System audio error
+
+{get_emoji('aktif')} Solusi:
+• Gunakan .stop dan .play ulang
+• Restart musik system
+• Check audio device
+
+{get_emoji('utama')} VzoelFox Music Player"""
+        
+        await safe_edit_premium(event, paused_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.resume'))
+async def resume_music_handler(event):
+    """Resume music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not music_state['is_paused']:
+            not_paused_msg = f"""{get_emoji('kuning')} Tidak ada musik yang di-pause
+            
+{get_emoji('aktif')} Status saat ini:
+• Playing: {'Ya' if music_state['is_playing'] else 'Tidak'}
+• Track: {music_state['current_track'] or 'Tidak ada'}
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Commands:
+• .play [lagu] - Putar musik baru
+• .pause - Pause musik
+• .stop - Hentikan musik
+
+{get_emoji('utama')} VzoelFox Music Player"""
+            await safe_edit_premium(event, not_paused_msg)
+            return
+        
+        if resume_playback():
+            resumed_msg = f"""{get_emoji('centang')} MUSIK DILANJUTKAN
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('aktif')} Status: PLAYING ▶️
+{get_emoji('adder1')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Music Controls:
+• .pause - Pause pemutaran
+• .stop - Hentikan musik
+• .volume [0-100] - Atur volume
+• .mstatus - Status detail
+
+{get_emoji('utama')} VzoelFox Music Controller"""
+        else:
+            resumed_msg = f"""{get_emoji('merah')} Gagal resume musik
+            
+{get_emoji('kuning')} Kemungkinan masalah:
+• Process musik sudah mati
+• Audio device error
+• Player crashed
+
+{get_emoji('aktif')} Solusi:
+• Gunakan .play untuk mulai ulang
+• Check audio system
+• Restart bot jika perlu
+
+{get_emoji('utama')} VzoelFox Music Player"""
+        
+        await safe_edit_premium(event, resumed_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.stop'))
+async def stop_music_handler(event):
+    """Stop music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not is_playback_active() and not music_state['is_paused']:
+            no_music_msg = f"""{get_emoji('kuning')} Tidak ada musik yang sedang diputar
+            
+{get_emoji('aktif')} Status musik:
+• Track: Tidak ada
+• Status: Idle
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .play [nama lagu] untuk mulai
+{get_emoji('utama')} VzoelFox Music Player"""
+            await safe_edit_premium(event, no_music_msg)
+            return
+        
+        current_track = music_state['current_track']
+        
+        if stop_playback():
+            stopped_msg = f"""{get_emoji('centang')} MUSIK DIHENTIKAN
+            
+{get_emoji('proses')} Last Track: {current_track or 'Unknown'}
+{get_emoji('kuning')} Status: STOPPED ⏹️
+{get_emoji('aktif')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Ready untuk track baru:
+• .play [nama lagu] - Putar musik
+• .download [lagu] - Download MP3
+• .minfo - Info sistem musik
+
+{get_emoji('utama')} VzoelFox Music Controller"""
+        else:
+            stopped_msg = f"""{get_emoji('merah')} Gagal stop musik
+            
+{get_emoji('kuning')} Musik mungkin sudah berhenti
+{get_emoji('aktif')} System telah direset
+
+{get_emoji('telegram')} Music system ready
+{get_emoji('utama')} VzoelFox Music Player"""
+        
+        await safe_edit_premium(event, stopped_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.volume (\d+)'))
+async def volume_control_handler(event):
+    """Volume control command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        volume_level = int(event.pattern_match.group(1))
+        volume_level = max(0, min(100, volume_level))  # Clamp to 0-100
+        
+        # Update music state
+        music_state['volume'] = volume_level
+        
+        # Try to set system volume
+        volume_set = set_system_volume(volume_level)
+        current_vol = get_system_volume()
+        
+        if volume_set:
+            volume_msg = f"""{get_emoji('centang')} VOLUME DIATUR
+            
+{get_emoji('aktif')} Volume: {volume_level}% 🔊
+{get_emoji('proses')} System Volume: {current_vol}%
+{get_emoji('telegram')} Status: {'Playing' if music_state['is_playing'] else 'Paused' if music_state['is_paused'] else 'Idle'}
+
+{get_emoji('adder1')} Volume Controls:
+• .volume 0 - Mute
+• .volume 50 - Medium  
+• .volume 100 - Maximum
+• .mute - Quick mute/unmute
+
+{get_emoji('utama')} VzoelFox Volume Controller"""
+        else:
+            volume_msg = f"""{get_emoji('kuning')} VOLUME DISIMPAN (SOFTWARE)
+            
+{get_emoji('aktif')} Bot Volume: {volume_level}% 🔊
+{get_emoji('merah')} System Volume: Tidak dapat diatur
+{get_emoji('telegram')} Status: {'Playing' if music_state['is_playing'] else 'Paused' if music_state['is_paused'] else 'Idle'}
+
+{get_emoji('adder2')} Note: 
+Audio system tidak mendukung volume control otomatis.
+Atur volume manual dari system audio.
+
+{get_emoji('utama')} VzoelFox Volume Controller"""
+        
+        await safe_edit_premium(event, volume_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.mute'))
+async def mute_toggle_handler(event):
+    """Mute/unmute toggle command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        current_volume = get_system_volume()
+        
+        if current_volume > 0:
+            # Mute
+            music_state['pre_mute_volume'] = current_volume
+            set_system_volume(0)
+            music_state['volume'] = 0
+            
+            mute_msg = f"""{get_emoji('kuning')} AUDIO DIMUTE
+            
+{get_emoji('merah')} Volume: 0% 🔇
+{get_emoji('proses')} Previous: {music_state['pre_mute_volume']}%
+{get_emoji('telegram')} Status: MUTED
+
+{get_emoji('aktif')} Gunakan .mute lagi untuk unmute
+{get_emoji('utama')} VzoelFox Mute Controller"""
+        else:
+            # Unmute
+            restore_vol = music_state.get('pre_mute_volume', 50)
+            set_system_volume(restore_vol)
+            music_state['volume'] = restore_vol
+            
+            mute_msg = f"""{get_emoji('centang')} AUDIO DIAKTIFKAN
+            
+{get_emoji('aktif')} Volume: {restore_vol}% 🔊
+{get_emoji('telegram')} Status: UNMUTED
+{get_emoji('proses')} Audio restored
+
+{get_emoji('adder1')} Volume controls ready
+{get_emoji('utama')} VzoelFox Volume Controller"""
+        
+        await safe_edit_premium(event, mute_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.mstatus'))
+async def music_status_handler(event):
+    """Show detailed music status"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        # Get system info
+        devices = get_audio_devices()
+        current_vol = get_system_volume()
+        is_active = is_playback_active()
+        
+        # Status emoji
+        if music_state['is_playing']:
+            status_emoji = "▶️"
+            status_text = "PLAYING"
+        elif music_state['is_paused']:
+            status_emoji = "⏸️"
+            status_text = "PAUSED"
+        else:
+            status_emoji = "⏹️"
+            status_text = "STOPPED"
+        
+        status_msg = f"""{get_emoji('utama')} VZOEL MUSIC STATUS
+        
+{get_emoji('proses')} PLAYBACK STATUS:
+• Current Track: {music_state['current_track'] or 'None'}
+• Status: {status_text} {status_emoji}
+• Active Process: {'Yes' if is_active else 'No'}
+
+{get_emoji('aktif')} AUDIO SETTINGS:
+• Bot Volume: {music_state['volume']}%
+• System Volume: {current_vol}%
+• Audio Devices: {len(devices)} found
+
+{get_emoji('telegram')} CONTROL COMMANDS:
+• .play [lagu] - Putar musik
+• .pause - Pause pemutaran  
+• .resume - Lanjut pemutaran
+• .stop - Hentikan musik
+• .volume [0-100] - Atur volume
+• .mute - Mute/unmute audio
+
+{get_emoji('centang')} SYSTEM INFO:
+• Music Directory: {MUSIC_DIR}
+• Downloaded: {len(list(MUSIC_DIR.glob('*.mp3')))} files
+• Primary Device: {devices[0]['description'] if devices else 'Default'}
+
+{get_emoji('petir')} VzoelFox Advanced Music System"""
+        
+        await safe_edit_premium(event, status_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
