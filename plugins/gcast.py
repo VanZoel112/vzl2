@@ -5,6 +5,8 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+import unicodedata
+from telethon.tl.types import MessageEntityCustomEmoji
 
 """
 Enhanced Gcast Plugin for VzoelFox Userbot - Premium Edition
@@ -24,12 +26,72 @@ import re
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+def create_unlimited_premium_entities(text):
+    """Create premium emoji entities for ALL unicode emojis (unlimited support)"""
+    try:
+        import re
+        entities = []
+        
+        # Regex pattern untuk mendeteksi semua emoji unicode
+        emoji_pattern = re.compile(
+            "["
+            "\U0001F600-\U0001F64F"  # emoticons
+            "\U0001F300-\U0001F5FF"  # symbols & pictographs
+            "\U0001F680-\U0001F6FF"  # transport & map
+            "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+            "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+            "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+            "\U00002600-\U000026FF"  # Miscellaneous Symbols
+            "\U00002700-\U000027BF"  # Dingbats
+            "\U0000FE00-\U0000FE0F"  # Variation Selectors
+            "\U0001F170-\U0001F251"  # Enclosed characters
+            "]+", 
+            re.UNICODE
+        )
+        
+        # Default premium emoji ID untuk semua emoji yang tidak ada di mapping
+        DEFAULT_PREMIUM_ID = "6156784006194009426"  # Gunakan ID dari 'utama'
+        
+        offset = 0
+        for match in emoji_pattern.finditer(text):
+            emoji_char = match.group()
+            start_pos = match.start()
+            
+            # Cek apakah emoji ini ada di mapping premium kita
+            premium_id = None
+            for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
+                if emoji_data['char'] == emoji_char:
+                    premium_id = emoji_data['id']
+                    break
+            
+            # Jika tidak ada di mapping, gunakan default premium ID
+            if not premium_id:
+                premium_id = DEFAULT_PREMIUM_ID
+            
+            # Calculate proper UTF-16 offset
+            text_before = text[:start_pos]
+            utf16_offset = len(text_before.encode('utf-16-le')) // 2
+            
+            # Calculate UTF-16 length of emoji
+            emoji_utf16_length = len(emoji_char.encode('utf-16-le')) // 2
+            
+            entities.append(MessageEntityCustomEmoji(
+                offset=utf16_offset,
+                length=emoji_utf16_length,
+                document_id=int(premium_id)
+            ))
+        
+        return entities
+    except Exception as e:
+        print(f"Error creating unlimited premium entities: {e}")
+        return []
+
 async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
     from config import Config
     Config.load_blacklist()
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-    print(f"{signature} Gcast & Blacklist Plugin loaded - Broadcast system ready")
+    print(f"{signature} Gcast & Blacklist Plugin loaded - Unlimited premium emoji broadcast ready")
 
 @events.register(events.NewMessage(pattern=r'\.addbl(?: (.+))?'))
 async def add_blacklist_handler(event):
@@ -265,32 +327,61 @@ async def gcast_handler(event):
 {get_emoji('petir')} Status: `{i}/{total_chats}` chat"""
                     await safe_edit_premium(event, progress_msg)
                 
-                # Send message
+                # Send message with premium emoji support
                 if reply_message and reply_message.media:
-                    # Forward media message
-                    await event.client.send_message(
-                        dialog.id, 
-                        reply_message.text or "", 
-                        file=reply_message.media
-                    )
-                else:
-                    # Send text message (supports unlimited premium emojis)
-                    await event.client.send_message(dialog.id, message_text)
-                
-                successful_sends += 1
-                
-            except FloodWaitError as e:
-                # Handle flood wait
-                await asyncio.sleep(e.seconds)
-                try:
-                    if reply_message and reply_message.media:
+                    # Forward media message with premium emoji support
+                    if reply_message.text:
+                        # Create unlimited premium entities for media caption
+                        entities = create_unlimited_premium_entities(reply_message.text)
+                        await event.client.send_message(
+                            dialog.id, 
+                            reply_message.text, 
+                            file=reply_message.media,
+                            formatting_entities=entities
+                        )
+                    else:
                         await event.client.send_message(
                             dialog.id, 
                             reply_message.text or "", 
                             file=reply_message.media
                         )
+                else:
+                    # Send text message with unlimited premium emoji support
+                    entities = create_unlimited_premium_entities(message_text)
+                    await event.client.send_message(
+                        dialog.id, 
+                        message_text, 
+                        formatting_entities=entities
+                    )
+                
+                successful_sends += 1
+                
+            except FloodWaitError as e:
+                # Handle flood wait dengan premium emoji support
+                await asyncio.sleep(e.seconds)
+                try:
+                    if reply_message and reply_message.media:
+                        if reply_message.text:
+                            entities = create_unlimited_premium_entities(reply_message.text)
+                            await event.client.send_message(
+                                dialog.id, 
+                                reply_message.text, 
+                                file=reply_message.media,
+                                formatting_entities=entities
+                            )
+                        else:
+                            await event.client.send_message(
+                                dialog.id, 
+                                reply_message.text or "", 
+                                file=reply_message.media
+                            )
                     else:
-                        await event.client.send_message(dialog.id, message_text)
+                        entities = create_unlimited_premium_entities(message_text)
+                        await event.client.send_message(
+                            dialog.id, 
+                            message_text, 
+                            formatting_entities=entities
+                        )
                     successful_sends += 1
                 except:
                     failed_sends += 1
