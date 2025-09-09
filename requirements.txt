@@ -1,15 +1,29 @@
+# Core Telegram Bot Dependencies
 telethon>=1.41.0
 aiofiles>=23.2.1
 cryptg>=0.4.0
-pillow>=10.0.0
-requests>=2.31.0
+
+# Database & Storage
 aiosqlite>=0.19.0
 python-dotenv>=1.0.0
+
+# Image Processing (for profil.py and qr.py plugins)
+pillow>=10.0.0
+qrcode[pil]>=7.4.2
+
+# Network & API
+requests>=2.31.0
+
+# Version Control
 gitpython>=3.1.0
+
+# Audio & Music (for musik.py plugin) 
 py-tgcalls>=1.2.5
 yt-dlp>=2024.12.13
 spotipy>=2.24.0
 mutagen>=1.47.0
 ffmpeg-python>=0.2.0
-asyncio
-pathlib
+
+# Built-in Python modules (no install needed)
+# asyncio - Built-in
+# pathlib - Built-in
