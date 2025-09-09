@@ -72,12 +72,13 @@ def install_ytdlp():
 async def search_youtube_music(query):
     """Search music on YouTube with timeout and better error handling"""
     try:
-        # Use yt-dlp to search with timeout
+        # Use yt-dlp to search with timeout and authentication
         cmd = [
             'yt-dlp', 
             '--dump-json', 
             '--no-download',
             '--socket-timeout', '30',
+            '--no-warnings',
             '--default-search', 'ytsearch3:',
             query
         ]
@@ -125,6 +126,7 @@ async def download_music(url, output_dir):
             '--audio-format', 'mp3',
             '--audio-quality', '0',
             '--socket-timeout', '30',
+            '--no-warnings',
             '--output', output_template,
             url
         ]
@@ -184,11 +186,19 @@ async def play_music_handler(event):
             if not install_ytdlp():
                 error_msg = f"""{get_emoji('merah')} YT-DLP tidak tersedia
 
-{get_emoji('aktif')} Manual Installation:
-pip install yt-dlp
+{get_emoji('aktif')} Instalasi Manual:
+• pip install yt-dlp
+• pkg install yt-dlp (Termux)
 
-{get_emoji('telegram')} Alternative:
-pkg install yt-dlp (Termux)
+{get_emoji('kuning')} Error kemungkinan:
+• Koneksi internet bermasalah
+• Permission denied
+• Storage tidak cukup
+
+{get_emoji('telegram')} Solusi alternatif:
+• Coba restart aplikasi
+• Clear cache dan coba lagi
+• Update system packages
 
 {get_emoji('utama')} VzoelFox Music System"""
                 await safe_edit_premium(event, error_msg)
@@ -204,14 +214,21 @@ pkg install yt-dlp (Termux)
         if not results:
             not_found_msg = f"""{get_emoji('merah')} Musik tidak ditemukan: {query}
 
-{get_emoji('kuning')} Tips:
-• Coba kata kunci yang lebih spesifik
-• Gunakan nama artis + judul lagu
-• Periksa koneksi internet
+{get_emoji('kuning')} Kemungkinan masalah:
+• Koneksi internet lemah/timeout
+• Kata kunci terlalu umum
+• Content restriction/geo-block
+• Server YouTube sedang down
 
-{get_emoji('telegram')} Contoh:
-.play alan walker faded
-.play despacito luis fonsi
+{get_emoji('telegram')} Tips pencarian:
+• .play alan walker faded
+• .play despacito luis fonsi  
+• .play [artis] [judul lagu]
+
+{get_emoji('aktif')} Solusi:
+• Coba kata kunci berbeda
+• Check koneksi internet
+• Tunggu beberapa menit dan coba lagi
 
 {get_emoji('utama')} VzoelFox Music Search"""
             await safe_edit_premium(event, not_found_msg)
@@ -271,11 +288,19 @@ async def download_music_handler(event):
             if not install_ytdlp():
                 error_msg = f"""{get_emoji('merah')} YT-DLP tidak tersedia
 
-{get_emoji('aktif')} Manual Installation:
-pip install yt-dlp
+{get_emoji('aktif')} Instalasi Manual:
+• pip install yt-dlp
+• pkg install yt-dlp (Termux)
 
-{get_emoji('telegram')} Alternative:
-pkg install yt-dlp (Termux)
+{get_emoji('kuning')} Error kemungkinan:
+• Koneksi internet bermasalah
+• Permission denied
+• Storage tidak cukup
+
+{get_emoji('telegram')} Solusi alternatif:
+• Coba restart aplikasi
+• Clear cache dan coba lagi
+• Update system packages
 
 {get_emoji('utama')} VzoelFox Music System"""
                 await safe_edit_premium(event, error_msg)
@@ -335,7 +360,23 @@ pkg install yt-dlp (Termux)
             except Exception as e:
                 print(f"Error sending file: {e}")
         else:
-            error_msg = f"{get_emoji('merah')} Gagal mendownload musik. Coba lagi nanti."
+            error_msg = f"""{get_emoji('merah')} Gagal mendownload musik
+
+{get_emoji('kuning')} Kemungkinan masalah:
+• File terlalu besar (>50MB)
+• Koneksi timeout/lambat
+• Format tidak didukung
+• Storage penuh
+
+{get_emoji('aktif')} Solusi:
+• Coba lagu yang lebih pendek
+• Check storage space
+• Restart aplikasi dan coba lagi
+• Gunakan koneksi WiFi yang stabil
+
+{get_emoji('telegram')} Coba lagi dalam beberapa menit
+
+{get_emoji('utama')} VzoelFox Downloader"""
             await safe_edit_premium(event, error_msg)
         
         if vzoel_client:
