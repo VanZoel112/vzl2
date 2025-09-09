@@ -150,8 +150,16 @@ def add_vzoel_branding(qr_img, style, url):
         # Draw title
         title = "VzoelFox QR Generator"
         if title_font:
-            title_bbox = draw.textbbox((0, 0), title, font=title_font)
-            title_width = title_bbox[2] - title_bbox[0]
+            try:
+                # Try modern textbbox method first
+                title_bbox = draw.textbbox((0, 0), title, font=title_font)
+                title_width = title_bbox[2] - title_bbox[0]
+            except:
+                # Fallback to textsize for older PIL versions
+                try:
+                    title_width, _ = draw.textsize(title, font=title_font)
+                except:
+                    title_width = len(title) * 12  # Rough estimate
             title_x = (canvas_width - title_width) // 2
             draw.text((title_x, 10), title, fill=accent_color, font=title_font)
         
@@ -163,16 +171,28 @@ def add_vzoel_branding(qr_img, style, url):
             
         url_text = f"Link: {display_url}"
         if subtitle_font:
-            url_bbox = draw.textbbox((0, 0), url_text, font=subtitle_font)
-            url_width = url_bbox[2] - url_bbox[0]
+            try:
+                url_bbox = draw.textbbox((0, 0), url_text, font=subtitle_font)
+                url_width = url_bbox[2] - url_bbox[0]
+            except:
+                try:
+                    url_width, _ = draw.textsize(url_text, font=subtitle_font)
+                except:
+                    url_width = len(url_text) * 10
             url_x = (canvas_width - url_width) // 2
             draw.text((url_x, qr_y + qr_img.height + 20), url_text, fill=text_color, font=subtitle_font)
         
         # Draw style info
         style_text = f"Style: {style['name']}"
         if small_font:
-            style_bbox = draw.textbbox((0, 0), style_text, font=small_font)
-            style_width = style_bbox[2] - style_bbox[0]
+            try:
+                style_bbox = draw.textbbox((0, 0), style_text, font=small_font)
+                style_width = style_bbox[2] - style_bbox[0]
+            except:
+                try:
+                    style_width, _ = draw.textsize(style_text, font=small_font)
+                except:
+                    style_width = len(style_text) * 8
             style_x = (canvas_width - style_width) // 2
             draw.text((style_x, qr_y + qr_img.height + 50), style_text, fill=text_color, font=small_font)
         
@@ -181,13 +201,25 @@ def add_vzoel_branding(qr_img, style, url):
         author = "Founder: Vzoel Fox's Lutpan"
         
         if small_font:
-            footer_bbox = draw.textbbox((0, 0), footer, font=small_font)
-            footer_width = footer_bbox[2] - footer_bbox[0]
+            try:
+                footer_bbox = draw.textbbox((0, 0), footer, font=small_font)
+                footer_width = footer_bbox[2] - footer_bbox[0]
+            except:
+                try:
+                    footer_width, _ = draw.textsize(footer, font=small_font)
+                except:
+                    footer_width = len(footer) * 8
             footer_x = (canvas_width - footer_width) // 2
             draw.text((footer_x, canvas_height - 35), footer, fill=accent_color, font=small_font)
             
-            author_bbox = draw.textbbox((0, 0), author, font=small_font)
-            author_width = author_bbox[2] - author_bbox[0]
+            try:
+                author_bbox = draw.textbbox((0, 0), author, font=small_font)
+                author_width = author_bbox[2] - author_bbox[0]
+            except:
+                try:
+                    author_width, _ = draw.textsize(author, font=small_font)
+                except:
+                    author_width = len(author) * 8
             author_x = (canvas_width - author_width) // 2
             draw.text((author_x, canvas_height - 20), author, fill=text_color, font=small_font)
         
