@@ -99,7 +99,7 @@ async def add_blacklist_handler(event):
 • `.wl <kata>` - Hapus dari blacklist
 • `.lock @user` - Lock user (hapus semua pesan)
 • `.blinfo` - Info blacklist system"""
-            msg = await event.edit(help_msg)
+            await safe_edit_premium(event, help_msg)
             return
         
         # Initialize chat blacklist if not exists
@@ -134,8 +134,7 @@ async def add_blacklist_handler(event):
         else:
             success_msg = f"{get_emoji('kuning')} Semua kata sudah ada di blacklist"
         
-        
-        msg = await event.edit(success_msg)
+        await safe_edit_premium(event, success_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.wl( (.+))?'))
@@ -174,7 +173,7 @@ async def remove_blacklist_handler(event):
             else:
                 current_msg = f"{get_emoji('kuning')} Blacklist kosong di chat ini"
                 
-            msg = await event.edit(current_msg)
+            await safe_edit_premium(event, current_msg)
             return
         
         if chat_id not in blacklist_words:
@@ -192,7 +191,7 @@ async def remove_blacklist_handler(event):
 {get_emoji('proses')} **Auto-delete:** Non-aktif
 
 **VzoelFox Blacklist System**"""
-            msg = await event.edit(clear_msg)
+            await safe_edit_premium(event, clear_msg)
             return
         
         # Process words to remove
@@ -221,8 +220,7 @@ async def remove_blacklist_handler(event):
         else:
             success_msg = f"{get_emoji('kuning')} Kata tidak ditemukan di blacklist"
         
-        
-        msg = await event.edit(success_msg)
+        await safe_edit_premium(event, success_msg)
         vzoel_client.increment_command_count()
 
 @events.register(events.NewMessage(pattern=r'\.lock( (.+))?'))
@@ -250,7 +248,7 @@ async def lock_user_handler(event):
                     target_user = user_entity.id
                 except Exception:
                     error_msg = f"{get_emoji('merah')} User @{username} tidak ditemukan"
-                    msg = await event.edit(error_msg)
+                    await safe_edit_premium(event, error_msg)
                     return
         
         if not target_user:
@@ -261,7 +259,7 @@ Commands: .lock @user, .unlock @user, .locked
 • `.locked` - List locked users
 
 {get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"""
-            msg = await event.edit(help_msg)
+            await safe_edit_premium(event, help_msg)
             return
         
         # Initialize chat locked users if not exists
@@ -288,10 +286,10 @@ Commands: .lock @user, .unlock @user, .locked
 {get_emoji('centang')} **Perintah unlock:** `.unlock {user_display}`
 
 **VzoelFox Lock System**"""
-            msg = await event.edit(lock_msg)
+            await safe_edit_premium(event, lock_msg)
         else:
             already_msg = f"{get_emoji('kuning')} User sudah di-lock sebelumnya"
-            msg = await event.edit(already_msg)
+            await safe_edit_premium(event, already_msg)
         
         vzoel_client.increment_command_count()
 
@@ -317,7 +315,7 @@ async def unlock_user_handler(event):
                     target_user = user_entity.id
                 except Exception:
                     error_msg = f"{get_emoji('merah')} User @{username} tidak ditemukan"
-                    msg = await event.edit(error_msg)
+                    await safe_edit_premium(event, error_msg)
                     return
         
         if not target_user:
@@ -343,7 +341,7 @@ async def unlock_user_handler(event):
 **VzoelFox Lock System**"""
             else:
                 locked_msg = f"{get_emoji('kuning')} Tidak ada user yang di-lock"
-                msg = await event.edit(locked_msg)
+            await safe_edit_premium(event, locked_msg)
             return
         
         if chat_id not in locked_users:
@@ -365,10 +363,10 @@ async def unlock_user_handler(event):
 {get_emoji('proses')} **Sisa Locked:** {len(locked_users[chat_id])} user
 
 **VzoelFox Unlock System**"""
-            msg = await event.edit(unlock_msg)
+            await safe_edit_premium(event, unlock_msg)
         else:
             not_locked_msg = f"{get_emoji('kuning')} User tidak dalam daftar lock"
-            msg = await event.edit(not_locked_msg)
+            await safe_edit_premium(event, not_locked_msg)
         
         vzoel_client.increment_command_count()
 
@@ -445,5 +443,5 @@ Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari us
 
 **VzoelFox Blacklist System**"""
         
-        msg = await event.edit(blacklist_info)
+        await safe_edit_premium(event, blacklist_info)
         vzoel_client.increment_command_count()

@@ -40,7 +40,7 @@ async def tagall_handler(event):
         # Check if we're in a group
         if event.is_private:
             error_msg = f"{get_emoji('merah')} Tagall hanya bisa digunakan di grup"
-            msg = await event.edit(error_msg)
+            await safe_edit_premium(event, error_msg)
             return
         
         chat_id = event.chat_id
@@ -68,7 +68,7 @@ async def tagall_handler(event):
         
         # Initial process message
         process_msg = f"{get_emoji('loading')} Memulai proses tagall..."
-        msg = await event.edit(process_msg)
+        msg = await safe_edit_premium(event, process_msg)
         
         # Get chat info
         try:
@@ -152,13 +152,13 @@ Pesan: {message_text}
             # Send the actual tag
             await event.client.send_message(chat_id, tag_message)
             # Show animation in original message  
-            await safe_edit_premium(msg, status_msg)
+            await safe_edit_premium(event, status_msg)
             # Delay to avoid flood
             await asyncio.sleep(2)
         except FloodWaitError as e:
             # Handle flood wait
             wait_msg = f"{get_emoji('kuning')} Flood wait {e.seconds} detik, menunggu..."
-            msg = await event.edit(wait_msg)
+            await safe_edit_premium(event, wait_msg)
             await asyncio.sleep(e.seconds)
         except Exception as e:
             # Skip problematic users
@@ -174,7 +174,7 @@ Pesan: {message_text}
 
 By VzoelFox Assistant"""
         
-        msg = await event.edit(completion_msg)
+        await safe_edit_premium(event, completion_msg)
 
 @events.register(events.NewMessage(pattern=r'\.stop'))
 async def stop_tagall_handler(event):
@@ -190,11 +190,10 @@ async def stop_tagall_handler(event):
             tagall_active[chat_id] = False
             stop_msg = f"{get_emoji('centang')} Tagall stopped"
 
-
-            msg = await event.edit(stop_msg)
+            await safe_edit_premium(event, stop_msg)
         else:
             no_tagall_msg = f"{get_emoji('kuning')} Tidak ada proses tagall yang sedang berjalan"
-            msg = await event.edit(no_tagall_msg)
+            await safe_edit_premium(event, no_tagall_msg)
         
         vzoel_client.increment_command_count()
 
@@ -245,5 +244,5 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 
 **By VzoelFox Assistant**"""
         
-        msg = await event.edit(tagall_info)
+        await safe_edit_premium(event, tagall_info)
         vzoel_client.increment_command_count()
