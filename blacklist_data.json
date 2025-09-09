@@ -1,0 +1,13 @@
+{
+  "blacklist_words": {
+    "-1003016680224": [
+      "woy"
+    ]
+  },
+  "locked_users": {
+    "-1003016680224": []
+  },
+  "blacklist_active": {
+    "-1003016680224": true
+  }
+}

@@ -43,6 +43,10 @@ PLUGIN_INFO = {
 __version__ = "1.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Lutpan"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 # Profile card directory
 PROFILE_DIR = Path("downloads/profil")
 PROFILE_DIR.mkdir(parents=True, exist_ok=True)
@@ -140,7 +144,13 @@ BORDER_TEMPLATES = [
     }
 ]
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
+    """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
     """Plugin initialization"""
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Profile Card Plugin loaded - Profile card generator ready")
@@ -404,7 +414,7 @@ async def create_profile_card(user_info, photo_path=None, border_template=None):
 async def card_handler(event):
     """Generate profile card command"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client
         
         # Check dependencies
         if not PIL_AVAILABLE:
@@ -581,7 +591,7 @@ async def card_handler(event):
 async def profile_info_handler(event):
     """Show profile plugin information"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         

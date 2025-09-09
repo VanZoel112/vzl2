@@ -102,7 +102,7 @@ def install_ytdlp():
 
 def validate_cookies():
     """Validate if cookies file is working"""
-    cookie_file = '/data/data/com.termux/files/home/cookies.txt'
+    cookie_file = '/home/ubuntu/vzl2/cookies.txt'
     
     if not os.path.exists(cookie_file):
         return False, "Cookies file not found"
@@ -152,7 +152,7 @@ def validate_cookies():
 async def search_youtube_music(query):
     """Search music on YouTube with cookies authentication"""
     
-    cookie_file = '/data/data/com.termux/files/home/cookies.txt'
+    cookie_file = '/home/ubuntu/vzl2/cookies.txt'
     
     try:
         # Simple search strategy - get video info directly
@@ -218,7 +218,7 @@ async def download_music(url, output_dir):
         print(f"URL may not be a valid YouTube video: {url}")
     
     output_template = str(output_dir / "%(title)s.%(ext)s")
-    cookie_file = '/data/data/com.termux/files/home/cookies.txt'
+    cookie_file = '/home/ubuntu/vzl2/cookies.txt'
     
     # Check if cookies file exists
     if not os.path.exists(cookie_file):
@@ -596,12 +596,12 @@ async def cookie_check_handler(event):
             status_msg = f"""{get_emoji('centang')} COOKIES STATUS: VALID
             
 {get_emoji('aktif')} Status: {message}
-{get_emoji('utama')} File: /data/data/com.termux/files/home/cookies.txt
+{get_emoji('utama')} File: /home/ubuntu/vzl2/cookies.txt
 {get_emoji('telegram')} YouTube authentication: ACTIVE
 {get_emoji('biru')} Bot detection bypass: ENABLED
 
 {get_emoji('proses')} Cookie Details:
-• File size: {os.path.getsize('/data/data/com.termux/files/home/cookies.txt')} bytes
+• File size: {os.path.getsize('/home/ubuntu/vzl2/cookies.txt')} bytes
 • YouTube domain: Detected
 • Essential cookies: Present
 • Test download: PASSED
@@ -615,7 +615,7 @@ async def cookie_check_handler(event):
             status_msg = f"""{get_emoji('merah')} COOKIES STATUS: INVALID
             
 {get_emoji('kuning')} Problem: {message}
-{get_emoji('aktif')} File: /data/data/com.termux/files/home/cookies.txt
+{get_emoji('aktif')} File: /home/ubuntu/vzl2/cookies.txt
 
 {get_emoji('telegram')} Solusi untuk fix cookies:
 1. Export fresh cookies dari browser
