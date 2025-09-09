@@ -1,5 +1,0 @@
-# HTTP Cookie File
-# This is a dummy cookie file for YT-DLP authentication
-# Replace with real cookies if needed
-.youtube.com	TRUE	/	FALSE	0	VISITOR_INFO1_LIVE	dummy_visitor_info
-.youtube.com	TRUE	/	FALSE	0	YSC	dummy_ysc
