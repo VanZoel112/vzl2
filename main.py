@@ -297,32 +297,8 @@ async def list_emojis_handler(event):
         await event.edit(emoji_list)
         vzoel_client.increment_command_count()
 
-@events.register(events.NewMessage(pattern=r'\.help'))
-async def help_handler(event):
-    """Help command"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        help_text = f"""**{vzoel_emoji.get_vzoel_signature()} VzoelFox's Assistant v2 Commands**
-
-{vzoel_emoji.get_emoji('centang')} **Basic Commands:**
-`.ping` - Check assistant speed
-`.alive` - Assistant status
-`.vzoel` - Special VzoelFox command
-
-{vzoel_emoji.get_emoji('telegram')} **Emoji Commands:**
-`.emo <name>` - Get emoji info
-`.emojis` - List all emojis
-`.help` - Show this help
-
-{vzoel_emoji.get_emoji('utama')} **Premium Features:**
-• Custom premium emoji support
-• VzoelFox signature collection
-• Enhanced assistant integration
-
-**Created by Vzoel Fox's**
-**Enhanced by Vzoel Fox's Ltpn**"""
-        
-        await event.edit(help_text)
-        vzoel_client.increment_command_count()
+# Help handler removed - now handled by plugins/help.py
+# This prevents duplicate help responses
 
 def show_usage():
     """Show usage instructions"""
@@ -368,7 +344,7 @@ async def main():
         vzoel_client.client.add_event_handler(vzoel_handler)
         vzoel_client.client.add_event_handler(emoji_info_handler)
         vzoel_client.client.add_event_handler(list_emojis_handler)
-        vzoel_client.client.add_event_handler(help_handler)
+        # help_handler now handled by plugins/help.py
         
         logger.info("🎚 Built-in event handlers registered")
         
