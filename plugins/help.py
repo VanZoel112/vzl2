@@ -172,9 +172,9 @@ async def animate_help_display(message, base_content, page_plugins):
     descriptions = get_plugin_descriptions()
     
     try:
-        # Loop unlimited untuk emoji di depan setiap plugin
-        for _ in range(50):  # 50 iterations untuk efek unlimited
-            await asyncio.sleep(1.2)  # 1.2 detik per perubahan
+        # Loop terbatas untuk menghindari FloodWaitError
+        for _ in range(8):  # Hanya 8 iterations untuk menghindari flood
+            await asyncio.sleep(3.5)  # 3.5 detik per perubahan untuk safety
             
             # Generate content dengan emoji yang berubah
             animated_content = base_content.split('\n')
