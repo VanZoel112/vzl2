@@ -155,78 +155,78 @@ async def search_youtube_music(query):
     cookie_file = '/data/data/com.termux/files/home/cookies.txt'
     
     try:
-        # Strategy 1: Use yt-dlp search with cookies
-        print(f"🔍 Searching YouTube for: {query}")
+        # Simple search strategy - get video info directly
+        print(f"Searching YouTube for: {query}")
         cmd = [
             'yt-dlp',
             '--quiet',
             '--no-warnings',
             '--cookies', cookie_file,
-            '--extract-flat',
-            '--playlist-end', '5',  # Get max 5 results
-            f'ytsearch5:{query}'
+            '--flat-playlist',  # Fixed: was --extract-flat (deprecated)
+            '--print', '%(title)s|%(id)s|%(uploader)s',  # Simple format: title|id|uploader
+            f'ytsearch3:{query}'  # Search for 3 results
         ]
         
         # Run with timeout
         process = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         
-        if process.returncode == 0:
-            # Parse results (basic parsing)
+        if process.returncode == 0 and process.stdout.strip():
             results = []
             lines = process.stdout.strip().split('\n')
             
             for line in lines:
-                if line and 'youtube.com/watch?v=' in line:
-                    # Extract basic info
-                    url_match = line.split('youtube.com/watch?v=')[1].split()[0]
-                    video_id = url_match.split('&')[0] if '&' in url_match else url_match
-                    
-                    results.append({
-                        'title': f'Found: {query}',
-                        'uploader': 'YouTube',
-                        'duration': 180,  # Default duration
-                        'url': f'https://www.youtube.com/watch?v={video_id}',
-                        'id': video_id
-                    })
+                if line.strip() and '|' in line:
+                    parts = line.split('|')
+                    if len(parts) >= 2:
+                        title = parts[0].strip()
+                        video_id = parts[1].strip()
+                        uploader = parts[2].strip() if len(parts) > 2 else 'YouTube'
+                        
+                        results.append({
+                            'title': title[:60] + "..." if len(title) > 60 else title,
+                            'uploader': uploader,
+                            'duration': 180,  # Default duration
+                            'url': f'https://www.youtube.com/watch?v={video_id}',
+                            'id': video_id
+                        })
             
             if results:
-                print(f"✅ Found {len(results)} results")
+                print(f"Found {len(results)} results")
                 return results
         
-        print(f"❌ Search failed: {process.stderr}")
+        print(f"Search failed: {process.stderr}")
         
     except subprocess.TimeoutExpired:
-        print("⏱️ Search timeout after 30 seconds")
+        print("Search timeout after 30 seconds")
     except Exception as e:
-        print(f"💥 Search error: {e}")
+        print(f"Search error: {e}")
     
-    # Fallback: Return mock result to prevent total failure
-    print("🔄 Using fallback search result")
-    mock_results = [
-        {
-            'title': f'Fallback Search: {query}',
-            'uploader': 'VzoelFox Music',
-            'duration': 212,
-            'url': f'https://www.youtube.com/results?search_query={query.replace(" ", "+")}',
-            'id': 'fallback'
-        }
-    ]
-    
-    return mock_results
+    # No fallback - return empty results if search fails
+    print("Search completely failed - no results found")
+    return []
 
 async def download_music(url, output_dir):
     """Download music using yt-dlp with enhanced cookie handling"""
+    
+    # Validate URL first - prevent downloading search pages
+    if 'youtube.com/results?' in url or 'search_query=' in url:
+        print("Cannot download search results page")
+        print("URL appears to be search results, not a video")
+        return None
+    
+    if not ('youtube.com/watch?v=' in url or 'youtu.be/' in url):
+        print(f"URL may not be a valid YouTube video: {url}")
     
     output_template = str(output_dir / "%(title)s.%(ext)s")
     cookie_file = '/data/data/com.termux/files/home/cookies.txt'
     
     # Check if cookies file exists
     if not os.path.exists(cookie_file):
-        print(f"⚠️ Cookies file not found: {cookie_file}")
-        print("🔄 Attempting download without cookies...")
+        print(f"Cookies file not found: {cookie_file}")
+        print("Attempting download without cookies...")
     
     try:
-        print(f"🎵 Starting download from: {url}")
+        print(f"Starting download from: {url}")
         
         # Build command with enhanced options
         cmd = [
@@ -258,38 +258,38 @@ async def download_music(url, output_dir):
         process = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         
         if process.returncode == 0:
-            print("✅ Download command executed successfully")
+            print("Download command executed successfully")
             
             # Find downloaded file
             for file in output_dir.glob("*.*"):
                 if file.stat().st_mtime > time.time() - 180:  # File created in last 3 minutes
                     file_size = file.stat().st_size / (1024 * 1024)  # MB
-                    print(f"📁 Found downloaded file: {file.name} ({file_size:.1f}MB)")
+                    print(f"Found downloaded file: {file.name} ({file_size:.1f}MB)")
                     return str(file)
             
-            print("⚠️ Download completed but file not found")
+            print("Download completed but file not found")
         else:
             error_msg = process.stderr.strip()
-            print(f"❌ Download failed with code {process.returncode}")
-            print(f"📋 Error details: {error_msg[:200]}...")
+            print(f"Download failed with code {process.returncode}")
+            print(f"Error details: {error_msg[:200]}...")
             
             # Check for specific error types
             if "Sign in to confirm" in error_msg or "not a bot" in error_msg:
-                print("🤖 Bot detection triggered - cookies may be expired")
+                print("Bot detection triggered - cookies may be expired")
             elif "Video unavailable" in error_msg:
-                print("📹 Video is unavailable or restricted")
+                print("Video is unavailable or restricted")
             elif "Private video" in error_msg:
-                print("🔒 Video is private")
+                print("Video is private")
             
     except subprocess.TimeoutExpired:
-        print("⏱️ Download timeout after 5 minutes")
+        print("Download timeout after 5 minutes")
     except FileNotFoundError:
-        print("❌ yt-dlp not found - please install it")
+        print("yt-dlp not found - please install it")
         return None
     except Exception as e:
-        print(f"💥 Unexpected download error: {e}")
+        print(f"Unexpected download error: {e}")
     
-    print("💔 Download failed completely")
+    print("Download failed completely")
     return None
 
 def format_duration(seconds):
