@@ -7,9 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced Profile Card Plugin for VzoelFox Userbot - Premium Edition
+Profile Card Plugin for Vzoel Fox's Userbot
 Fitur: Generate profile card seperti cardd.co dengan template random
-Founder Userbot: Vzoel Fox's Ltpn
+Founder Userbot: Vzoel Fox's Lutpan
 Version: 1.0.0 - Profile Card Generator
 """
 
@@ -35,13 +35,13 @@ PLUGIN_INFO = {
     "name": "profil",
     "version": "1.0.0",
     "description": "Generate profile card seperti cardd.co dengan template random",
-    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "author": "Founder Userbot: Vzoel Fox's Lutpan",
     "commands": [".card", ".pinfo"],
-    "features": ["Profile card generation", "Random border templates", "cardd.co style", "Premium emoji", "VzoelFox branding"]
+    "features": ["Profile card generation", "Random border templates", "cardd.co style", "Premium emoji", "Vzoel Fox's branding"]
 }
 
 __version__ = "1.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__author__ = "Founder Userbot: Vzoel Fox's Lutpan"
 
 # Profile card directory
 PROFILE_DIR = Path("downloads/profil")
@@ -242,10 +242,10 @@ async def get_profile_photo(client, user_id):
         print(f"Error downloading profile photo: {e}")
         return None
 
-def create_default_avatar(name):
+def create_default_avatar(name, size=200):
     """Create default avatar with initials"""
-    size = (200, 200)
-    img = Image.new('RGB', size, (64, 64, 64))
+    img_size = (size, size)
+    img = Image.new('RGB', img_size, (64, 64, 64))
     draw = ImageDraw.Draw(img)
     
     # Get initials
@@ -279,11 +279,15 @@ def create_default_avatar(name):
     return img
 
 async def create_profile_card(user_info, photo_path=None, border_template=None):
-    """Create profile card like cardd.co"""
+    """Create profile card like cardd.co with 85% photo, 15% text layout"""
     
-    # Card dimensions
+    # Card dimensions - optimized for mobile viewing
     card_width = 400
     card_height = 600
+    
+    # Layout: 85% for photo area, 15% for text area
+    photo_area_height = int(card_height * 0.85)  # 510px
+    text_area_height = int(card_height * 0.15)   # 90px
     
     # Create base card
     card = Image.new('RGB', (card_width, card_height), (255, 255, 255))
@@ -293,129 +297,102 @@ async def create_profile_card(user_info, photo_path=None, border_template=None):
     if photo_path and os.path.exists(photo_path):
         try:
             profile_img = Image.open(photo_path)
-            # Resize and crop to circle
-            profile_img = profile_img.resize((150, 150))
+            # Resize to fill 85% of card (much larger photo)
+            photo_size = min(card_width - 40, photo_area_height - 40)  # Leave 20px margin
+            profile_img = profile_img.resize((photo_size, photo_size))
             
             # Create circular mask
-            mask = Image.new('L', (150, 150), 0)
+            mask = Image.new('L', (photo_size, photo_size), 0)
             mask_draw = ImageDraw.Draw(mask)
-            mask_draw.ellipse((0, 0, 150, 150), fill=255)
+            mask_draw.ellipse((0, 0, photo_size, photo_size), fill=255)
             
             # Apply mask
             profile_img.putalpha(mask)
             
             # Create new image with circle
-            circle_img = Image.new('RGBA', (150, 150), (255, 255, 255, 0))
+            circle_img = Image.new('RGBA', (photo_size, photo_size), (255, 255, 255, 0))
             circle_img.paste(profile_img, (0, 0), profile_img)
             
             # Convert to RGB for pasting
-            temp_img = Image.new('RGB', (150, 150), (255, 255, 255))
+            temp_img = Image.new('RGB', (photo_size, photo_size), (255, 255, 255))
             temp_img.paste(circle_img, (0, 0), circle_img)
             profile_img = temp_img
             
         except Exception as e:
             print(f"Error processing profile photo: {e}")
-            profile_img = create_default_avatar(user_info.get('first_name', 'User'))
+            profile_img = create_default_avatar(user_info.get('first_name', 'User'), size=photo_size)
     else:
-        profile_img = create_default_avatar(user_info.get('first_name', 'User'))
+        photo_size = min(card_width - 40, photo_area_height - 40)
+        profile_img = create_default_avatar(user_info.get('first_name', 'User'), size=photo_size)
     
-    # Paste profile photo
-    photo_x = (card_width - 150) // 2
-    photo_y = 50
+    # Center profile photo in the photo area (85% of card)
+    photo_x = (card_width - photo_size) // 2
+    photo_y = (photo_area_height - photo_size) // 2
     card.paste(profile_img, (photo_x, photo_y))
     
-    # Try to load fonts
+    # Try to load smaller fonts for compact text area (15% only)
     try:
-        title_font = ImageFont.truetype("/system/fonts/Roboto-Bold.ttf", 28)
-        subtitle_font = ImageFont.truetype("/system/fonts/Roboto-Regular.ttf", 18)
-        text_font = ImageFont.truetype("/system/fonts/Roboto-Regular.ttf", 14)
+        title_font = ImageFont.truetype("/system/fonts/Roboto-Bold.ttf", 18)  # Smaller title
+        subtitle_font = ImageFont.truetype("/system/fonts/Roboto-Regular.ttf", 12)  # Smaller subtitle
     except:
         try:
             title_font = ImageFont.load_default()
             subtitle_font = ImageFont.load_default()
-            text_font = ImageFont.load_default()
         except:
-            title_font = subtitle_font = text_font = None
+            title_font = subtitle_font = None
     
-    # Draw name
+    # Text area starts at photo_area_height (510px) and goes to 600px (90px total)
+    text_start_y = photo_area_height + 10  # 520px with 10px margin
+    
+    # Draw name (truncate if too long)
     name = user_info.get('first_name', '')
     if user_info.get('last_name'):
         name += f" {user_info['last_name']}"
     
+    if len(name) > 25:
+        name = name[:25] + "..."
+    
     if title_font:
-        name_bbox = draw.textbbox((0, 0), name, font=title_font)
-        name_width = name_bbox[2] - name_bbox[0]
+        try:
+            name_bbox = draw.textbbox((0, 0), name, font=title_font)
+            name_width = name_bbox[2] - name_bbox[0]
+        except:
+            try:
+                name_width, _ = draw.textsize(name, font=title_font)
+            except:
+                name_width = len(name) * 10
         name_x = (card_width - name_width) // 2
-        draw.text((name_x, 220), name, fill=(33, 37, 41), font=title_font)
+        draw.text((name_x, text_start_y), name, fill=(33, 37, 41), font=title_font)
     
-    # Draw username
-    username = user_info.get('username', '')
-    if username:
-        username_text = f"@{username}"
-        if subtitle_font:
-            username_bbox = draw.textbbox((0, 0), username_text, font=subtitle_font)
-            username_width = username_bbox[2] - username_bbox[0]
-            username_x = (card_width - username_width) // 2
-            draw.text((username_x, 260), username_text, fill=(108, 117, 125), font=subtitle_font)
-    
-    # Draw bio
-    bio = user_info.get('about', '')
-    if bio:
-        # Word wrap bio
-        max_width = card_width - 40
-        if text_font:
-            words = bio.split()
-            lines = []
-            current_line = []
-            
-            for word in words:
-                test_line = ' '.join(current_line + [word])
-                bbox = draw.textbbox((0, 0), test_line, font=text_font)
-                if bbox[2] - bbox[0] <= max_width:
-                    current_line.append(word)
-                else:
-                    if current_line:
-                        lines.append(' '.join(current_line))
-                        current_line = [word]
-                    else:
-                        lines.append(word)
-            
-            if current_line:
-                lines.append(' '.join(current_line))
-            
-            # Limit to 4 lines
-            lines = lines[:4]
-            
-            # Draw bio lines
-            bio_y = 300
-            for i, line in enumerate(lines):
-                if i >= 4:
-                    break
-                line_bbox = draw.textbbox((0, 0), line, font=text_font)
-                line_width = line_bbox[2] - line_bbox[0]
-                line_x = (card_width - line_width) // 2
-                draw.text((line_x, bio_y + (i * 20)), line, fill=(73, 80, 87), font=text_font)
-    
-    # Draw user ID
+    # Draw user ID below name
     user_id = user_info.get('id', '')
     if user_id:
         id_text = f"ID: {user_id}"
-        if text_font:
-            id_bbox = draw.textbbox((0, 0), id_text, font=text_font)
-            id_width = id_bbox[2] - id_bbox[0]
+        if subtitle_font:
+            try:
+                id_bbox = draw.textbbox((0, 0), id_text, font=subtitle_font)
+                id_width = id_bbox[2] - id_bbox[0]
+            except:
+                try:
+                    id_width, _ = draw.textsize(id_text, font=subtitle_font)
+                except:
+                    id_width = len(id_text) * 8
             id_x = (card_width - id_width) // 2
-            draw.text((id_x, 450), id_text, fill=(108, 117, 125), font=text_font)
+            draw.text((id_x, text_start_y + 25), id_text, fill=(108, 117, 125), font=subtitle_font)
     
-    # Draw watermark
-    watermark = "VzoelFox Card Generator"
-    if text_font:
-        watermark_bbox = draw.textbbox((0, 0), watermark, font=text_font)
-        watermark_width = watermark_bbox[2] - watermark_bbox[0]
+    # Draw watermark at bottom of text area
+    watermark = "Vzoel Fox's Userbot"
+    if subtitle_font:
+        try:
+            watermark_bbox = draw.textbbox((0, 0), watermark, font=subtitle_font)
+            watermark_width = watermark_bbox[2] - watermark_bbox[0]
+        except:
+            try:
+                watermark_width, _ = draw.textsize(watermark, font=subtitle_font)
+            except:
+                watermark_width = len(watermark) * 8
         watermark_x = (card_width - watermark_width) // 2
-        draw.text((watermark_x, 520), watermark, fill=(206, 212, 218), font=text_font)
-    
-    # Add decorative elements
-    draw.rectangle([50, 480, card_width-50, 482], fill=(0, 123, 255))
+        draw.text((watermark_x, text_start_y + 50), watermark, fill=(206, 212, 218), font=subtitle_font)
     
     # Apply border if provided
     if border_template:
@@ -479,7 +456,7 @@ async def card_handler(event):
 .card @vzoel_fox
 .card (balas pesan user)
 
-{get_emoji('utama')} VzoelFox Card Generator"""
+{get_emoji('utama')} Vzoel Fox's Card Generator"""
                     await safe_edit_premium(event, error_msg)
                     return
             else:
@@ -494,7 +471,7 @@ async def card_handler(event):
 • .card (reply ke pesan user)
 • .card (untuk profile sendiri)
 
-{get_emoji('utama')} VzoelFox Card Generator"""
+{get_emoji('utama')} Vzoel Fox's Card Generator"""
             await safe_edit_premium(event, error_msg)
             return
         
