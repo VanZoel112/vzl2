@@ -397,14 +397,15 @@ async def play_music_handler(event):
         await safe_edit_premium(event, search_results)
         
         # Play first result (in Telegram, we can't actually play, so we show info)
-        await asyncio.sleep(2)
+        # Download music file        downloaded_file = await download_music(results[0]["url"], MUSIC_DIR)        if downloaded_file:            success, play_msg = await play_audio_file(downloaded_file)        else:            success = False            play_msg = "Download failed"
         
         playing_msg = f"""{get_emoji('utama')} SEDANG MEMUTAR
 
 {get_emoji('proses')} Judul: {results[0]['title']}
 {get_emoji('telegram')} Channel: {results[0]['uploader']}
 {get_emoji('aktif')} Durasi: {format_duration(results[0]['duration'])}
-{get_emoji('kuning')} Status: STREAMING
+{get_emoji("kuning")} Status: {"PLAYING ▶️" if success else "STREAMING"}
+{get_emoji("adder1")} Info: {play_msg if success else results[0]["url"]}
 
 {get_emoji('adder1')} Link: {results[0]['url']}
 

@@ -212,8 +212,10 @@ def add_vzoel_branding(qr_img, style, url):
         
         if small_font:
             try:
-                footer_bbox = draw.textbbox((0, 0), footer, font=small_font)
-                footer_width = footer_bbox[2] - footer_bbox[0]
+                try:
+                    footer_bbox = draw.textbbox((0, 0), footer, font=small_font)
+                except:
+                    footer_width = len(footer) * 8
             except:
                 try:
                     footer_width, _ = draw.textsize(footer, font=small_font)
