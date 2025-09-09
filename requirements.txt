@@ -24,6 +24,9 @@ spotipy>=2.24.0
 mutagen>=1.47.0
 ffmpeg-python>=0.2.0
 
+# System Monitoring (for daemon.py)
+psutil>=5.9.0
+
 # Built-in Python modules (no install needed)
 # asyncio - Built-in
 # pathlib - Built-in
