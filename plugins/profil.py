@@ -540,6 +540,7 @@ async def card_handler(event):
                 event.chat_id,
                 card_path,
                 caption=caption,
+                formatting_entities=create_premium_entities(caption),
                 reply_to=event.id
             )
             
