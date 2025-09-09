@@ -71,85 +71,179 @@ def install_ytdlp():
 
 async def search_youtube_music(query):
     """Search music on YouTube with timeout and better error handling"""
-    try:
-        # Use yt-dlp to search with timeout and authentication
-        cmd = [
+    
+    cookie_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'cookies', 'youtube_cookies.txt')
+    
+    # Try multiple strategies to bypass anti-bot detection
+    strategies = [
+        # Strategy 1: Cookie-based with Chrome (most effective)
+        [
             'yt-dlp', 
             '--dump-json', 
             '--no-download',
-            '--socket-timeout', '30',
+            '--socket-timeout', '20',
             '--no-warnings',
-            '--default-search', 'ytsearch3:',
+            '--cookies', cookie_file,
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            '--sleep-interval', '1',
+            '--max-sleep-interval', '3',
+            '--default-search', 'ytsearch2:',
+            query
+        ],
+        # Strategy 2: Alternative extractor with mobile UA
+        [
+            'yt-dlp', 
+            '--dump-json', 
+            '--no-download',
+            '--socket-timeout', '20',
+            '--no-warnings',
+            '--use-extractors', 'youtube:search',
+            '--user-agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+            '--extractor-retries', '1',
+            '--default-search', 'ytsearch2:',
+            query
+        ],
+        # Strategy 3: Basic fallback with minimal options
+        [
+            'yt-dlp', 
+            '--dump-json', 
+            '--no-download',
+            '--socket-timeout', '15',
+            '--no-warnings',
+            '--ignore-errors',
+            '--default-search', 'ytsearch2:',
+            query
+        ],
+        # Strategy 4: Alternative search method
+        [
+            'youtube-dl', 
+            '--dump-json', 
+            '--skip-download',
+            '--socket-timeout', '15',
+            '--no-warnings',
+            '--default-search', 'ytsearch2:',
             query
         ]
-        
-        # Run with timeout
-        process = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        
-        if process.returncode != 0:
-            print(f"YT-DLP error: {process.stderr}")
-            return []
-        
-        results = []
-        if process.stdout:
-            for line in process.stdout.strip().split('\n'):
-                if line.strip():
-                    try:
-                        data = json.loads(line)
-                        results.append({
-                            'title': data.get('title', 'Unknown')[:60],  # Limit title length
-                            'uploader': data.get('uploader', 'Unknown')[:30],
-                            'duration': data.get('duration', 0),
-                            'url': data.get('webpage_url', ''),
-                            'id': data.get('id', '')
-                        })
-                    except json.JSONDecodeError:
-                        continue
-        
-        return results[:3]  # Return top 3 results
-        
-    except subprocess.TimeoutExpired:
-        print("Search timeout after 30 seconds")
-        return []
-    except Exception as e:
-        print(f"Search error: {e}")
-        return []
+    ]
+    
+    for strategy_num, cmd in enumerate(strategies, 1):
+        try:
+            print(f"Trying strategy {strategy_num}...")
+            
+            # Run with timeout
+            process = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            
+            if process.returncode == 0 and process.stdout:
+                print(f"Strategy {strategy_num} successful!")
+                results = []
+                for line in process.stdout.strip().split('\n'):
+                    if line.strip():
+                        try:
+                            data = json.loads(line)
+                            results.append({
+                                'title': data.get('title', 'Unknown')[:60],
+                                'uploader': data.get('uploader', 'Unknown')[:30],
+                                'duration': data.get('duration', 0),
+                                'url': data.get('webpage_url', ''),
+                                'id': data.get('id', '')
+                            })
+                        except json.JSONDecodeError:
+                            continue
+                
+                if results:
+                    return results[:3]
+            else:
+                print(f"Strategy {strategy_num} failed: {process.stderr}")
+                # Continue to next strategy
+                continue
+                
+        except subprocess.TimeoutExpired:
+            print(f"Strategy {strategy_num} timeout after 30 seconds")
+            continue
+        except Exception as e:
+            print(f"Strategy {strategy_num} error: {e}")
+            continue
+    
+    # All strategies failed
+    print("All strategies failed")
+    return []
 
 async def download_music(url, output_dir):
     """Download music using yt-dlp with timeout and better error handling"""
-    try:
-        output_template = str(output_dir / "%(title)s.%(ext)s")
-        
-        cmd = [
+    
+    output_template = str(output_dir / "%(title)s.%(ext)s")
+    
+    # Try multiple strategies for download
+    download_strategies = [
+        # Strategy 1: Latest Chrome with high quality
+        [
             'yt-dlp',
             '--extract-audio',
             '--audio-format', 'mp3',
             '--audio-quality', '0',
             '--socket-timeout', '30',
             '--no-warnings',
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+            '--extractor-retries', '3',
+            '--fragment-retries', '3',
+            '--retry-sleep', '3',
+            '--output', output_template,
+            url
+        ],
+        # Strategy 2: Mobile user agent with reduced quality
+        [
+            'yt-dlp',
+            '--extract-audio',
+            '--audio-format', 'mp3',
+            '--audio-quality', '2',  # Slightly lower quality
+            '--socket-timeout', '30',
+            '--no-warnings',
+            '--user-agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1',
+            '--extractor-retries', '2',
+            '--output', output_template,
+            url
+        ],
+        # Strategy 3: Firefox with geo bypass
+        [
+            'yt-dlp',
+            '--extract-audio',
+            '--audio-format', 'mp3',
+            '--audio-quality', '0',
+            '--socket-timeout', '30',
+            '--no-warnings',
+            '--user-agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0',
+            '--geo-bypass',
             '--output', output_template,
             url
         ]
-        
-        # Run with timeout (max 5 minutes for download)
-        process = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        
-        if process.returncode == 0:
-            # Find downloaded file
-            for file in output_dir.glob("*.mp3"):
-                if file.stat().st_mtime > time.time() - 120:  # File created in last 2 minutes
-                    return str(file)
-        else:
-            print(f"Download failed: {process.stderr}")
-        
-        return None
-        
-    except subprocess.TimeoutExpired:
-        print("Download timeout after 5 minutes")
-        return None
-    except Exception as e:
-        print(f"Download error: {e}")
-        return None
+    ]
+    
+    for strategy_num, cmd in enumerate(download_strategies, 1):
+        try:
+            print(f"Download strategy {strategy_num}...")
+            
+            # Run with timeout (max 5 minutes for download)
+            process = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            
+            if process.returncode == 0:
+                # Find downloaded file
+                for file in output_dir.glob("*.mp3"):
+                    if file.stat().st_mtime > time.time() - 120:  # File created in last 2 minutes
+                        print(f"Download strategy {strategy_num} successful!")
+                        return str(file)
+            else:
+                print(f"Download strategy {strategy_num} failed: {process.stderr}")
+                continue
+                
+        except subprocess.TimeoutExpired:
+            print(f"Download strategy {strategy_num} timeout after 5 minutes")
+            continue
+        except Exception as e:
+            print(f"Download strategy {strategy_num} error: {e}")
+            continue
+    
+    print("All download strategies failed")
+    return None
 
 def format_duration(seconds):
     """Format duration to readable format"""
@@ -215,22 +309,29 @@ async def play_music_handler(event):
             not_found_msg = f"""{get_emoji('merah')} Musik tidak ditemukan: {query}
 
 {get_emoji('kuning')} Kemungkinan masalah:
+• YouTube Anti-Bot Detection aktif
 • Koneksi internet lemah/timeout
-• Kata kunci terlalu umum
 • Content restriction/geo-block
-• Server YouTube sedang down
+• Rate limiting dari server YouTube
 
-{get_emoji('telegram')} Tips pencarian:
-• .play alan walker faded
-• .play despacito luis fonsi  
-• .play [artis] [judul lagu]
+{get_emoji('telegram')} VzoelFox telah mencoba:
+• Multiple User-Agent strategies
+• Cookie-based authentication
+• Alternative extractors (yt-dlp, youtube-dl)
+• Different timeout configurations
 
-{get_emoji('aktif')} Solusi:
-• Coba kata kunci berbeda
-• Check koneksi internet
-• Tunggu beberapa menit dan coba lagi
+{get_emoji('aktif')} Solusi yang bisa dicoba:
+• Tunggu 5-10 menit sebelum coba lagi
+• Gunakan kata kunci yang lebih spesifik
+• Coba dengan koneksi internet berbeda
+• Restart bot jika masalah persist
 
-{get_emoji('utama')} VzoelFox Music Search"""
+{get_emoji('biru')} Format yang disarankan:
+.play [artist name] [song title]
+.play alan walker faded
+.play ed sheeran perfect
+
+{get_emoji('utama')} VzoelFox Advanced Music Search"""
             await safe_edit_premium(event, not_found_msg)
             return
         
