@@ -229,23 +229,23 @@ async def limit_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        limit_info = f"""**{signature} Limit Checker Information**
+        limit_info = f"""{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Limit Checker Information
 
-{get_emoji('utama')} **Apa itu Limit Checker?**
+{get_emoji('utama')} Apa itu Limit Checker?
 Sistem untuk memeriksa status akun dan pembatasan melalui @spambot dengan mengirim perintah /start berulang.
 
-{get_emoji('centang')} **Cara Kerja:**
+{get_emoji('centang')} Cara Kerja:
 • Mengirim /start ke @spambot 3x berturut-turut
 • Menganalisis respons untuk deteksi pembatasan
 • Memberikan feedback dengan emoji sesuai status
 • Anti-flood protection dengan delay otomatis
 
-{get_emoji('aktif')} **Status Response:**
-• {get_emoji('merah')} **Merah** - Akun dibatasi/restricted
-• {get_emoji('centang')} **Hijau** - "Vzoel Fox's Aman" (kabar baik)
-• {get_emoji('kuning')} **Kuning** - Status tidak jelas
+{get_emoji('aktif')} Status Response:
+• {get_emoji('merah')} Merah - Akun dibatasi/restricted
+• {get_emoji('centang')} Hijau - Status aman (kabar baik)
+• {get_emoji('kuning')} Kuning - Status tidak jelas
 
-{get_emoji('telegram')} **Deteksi Pembatasan:**
+{get_emoji('telegram')} Deteksi Pembatasan:
 • Flood wait restrictions
 • Spam detection alerts  
 • Account temporary bans
@@ -257,10 +257,12 @@ Sistem untuk memeriksa status akun dan pembatasan melalui @spambot dengan mengir
 • Privacy restriction handling
 • Multiple attempt system
 
-{get_emoji('petir')} **Usage:**
-Simply type `.limit` to start comprehensive account restriction check via @spambot interaction.
+{get_emoji('petir')} Usage:
+Simply type .limit to start comprehensive account restriction check via @spambot interaction.
 
-**By Vzoel Fox's Assistant**"""
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
         
         
         msg = await event.edit(limit_info)
