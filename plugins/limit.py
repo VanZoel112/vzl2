@@ -110,12 +110,12 @@ async def perform_limit_check(event, msg):
         # Phase 4: Final result
         if account_status['restricted']:
             # Account is restricted - use red emoji
-            restriction_msg = f"""**{get_emoji('merah')} AKUN DIBATASI**
+            restriction_msg = f"""{get_emoji('merah')} AKUN DIBATASI
 
-{get_emoji('merah')} **Status:** Account Restricted
-{get_emoji('petir')} **Tipe:** {account_status['restriction_type']}
-{get_emoji('telegram')} **Durasi:** {account_status['duration']}
-{get_emoji('proses')} **Pesan Bot:** {account_status['bot_message']}
+{get_emoji('merah')} Status: Account Restricted
+{get_emoji('petir')} Tipe: {account_status['restriction_type']}
+{get_emoji('telegram')} Durasi: {account_status['duration']}
+{get_emoji('proses')} Pesan Bot: {account_status['bot_message']}
 
 {get_emoji('kuning')} **Saran:**
 • Tunggu hingga pembatasan berakhir
@@ -123,18 +123,18 @@ async def perform_limit_check(event, msg):
 • Gunakan delay lebih lama antar pesan
 • Hindari broadcast massal
 
-**Vzoel Fox's Limit Checker**"""
+Vzoel Fox's Limit Checker"""
             await safe_edit_premium(msg, restriction_msg)
         elif account_status['good_news']:
             # Good news from spambot - account is safe
-            safe_msg = f"""**{get_emoji('centang')} VZOEL FOX'S AMAN**
+            safe_msg = f"""{get_emoji('centang')} VZOEL FOX'S AMAN
 
-{get_emoji('utama')} **Status:** Account Clear
-{get_emoji('aktif')} **Anti-Flood:** Active
-{get_emoji('telegram')} **Spam Protection:** Enabled
-{get_emoji('petir')} **Limit Status:** No Restrictions
+{get_emoji('utama')} Status: Account Clear
+{get_emoji('aktif')} Anti-Flood: Active
+{get_emoji('telegram')} Spam Protection: Enabled
+{get_emoji('petir')} Limit Status: No Restrictions
 
-{get_emoji('centang')} **Vzoel Fox's Features:**
+{get_emoji('centang')} Vzoel Fox's Features:
 • Flood protection aktif
 • Spam detection enabled
 • Account dalam kondisi baik
@@ -146,11 +146,11 @@ async def perform_limit_check(event, msg):
             await safe_edit_premium(msg, safe_msg)
         else:
             # Unclear response or other status
-            unclear_msg = f"""**{get_emoji('kuning')} STATUS TIDAK JELAS**
+            unclear_msg = f"""{get_emoji('kuning')} STATUS TIDAK JELAS
 
-{get_emoji('loading')} **Status:** Unknown
-{get_emoji('proses')} **Respons Bot:** {account_status['bot_message']}
-{get_emoji('telegram')} **Saran:** Coba lagi dalam beberapa menit
+{get_emoji('loading')} Status: Unknown
+{get_emoji('proses')} Respons Bot: {account_status['bot_message']}
+{get_emoji('telegram')} Saran: Coba lagi dalam beberapa menit
 
 {get_emoji('utama')} **Kemungkinan:**
 • @spambot sedang maintenance
@@ -251,7 +251,7 @@ Sistem untuk memeriksa status akun dan pembatasan melalui @spambot dengan mengir
 • Account temporary bans
 • General limitations
 
-{get_emoji('proses')} **Anti-Flood Features:**
+{get_emoji('proses')} Anti-Flood Features:
 • 2 detik delay antar perintah
 • Flood wait error handling
 • Privacy restriction handling
