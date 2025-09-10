@@ -33,7 +33,7 @@ PLUGIN_INFO = {
     "version": "0.0.0.𝟼𝟿",
     "description": "Music player dan downloader menggunakan PyTube (lebih stabil dari yt-dlp)",
     "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
-    "commands": [".play", ".download", ".search", ".minfo"],
+    "commands": [".play", ".download", ".search", ".minfo", ".pause", ".resume", ".stop"],
     "features": ["YouTube music streaming", "PyTube integration", "music download", "premium emoji", "𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 branding"]
 }
 
@@ -47,6 +47,18 @@ vzoel_emoji = None
 # Music directory
 MUSIC_DIR = Path("downloads/musik")
 MUSIC_DIR.mkdir(parents=True, exist_ok=True)
+
+# Music playback state
+music_state = {
+    'current_track': None,
+    'is_playing': False,
+    'is_paused': False,
+    'volume': 50,
+    'playlist': [],
+    'current_index': 0,
+    'process': None,
+    'last_played_url': None
+}
 
 async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
@@ -167,6 +179,113 @@ async def download_music_file(url, output_dir):
     except Exception as e:
         return None, f"Download error: {e}"
 
+async def play_audio_file(file_path):
+    """Play audio file using available audio players"""
+    global music_state
+    
+    if not os.path.exists(file_path):
+        return False, "File not found"
+    
+    # List of audio players to try (in order of preference)
+    players = [
+        ['mpv', '--no-video', '--really-quiet'],
+        ['ffplay', '-nodisp', '-autoexit', '-loglevel', 'quiet'],
+        ['aplay'],  # For WAV files
+        ['paplay']  # PulseAudio player
+    ]
+    
+    for player_cmd in players:
+        try:
+            # Check if player is available
+            subprocess.run([player_cmd[0], '--help'], 
+                         capture_output=True, timeout=2)
+            
+            # Start playback process
+            cmd = player_cmd + [file_path]
+            process = subprocess.Popen(cmd, 
+                                     stdout=subprocess.PIPE, 
+                                     stderr=subprocess.PIPE)
+            
+            music_state['process'] = process
+            music_state['is_playing'] = True
+            music_state['is_paused'] = False
+            music_state['current_track'] = os.path.basename(file_path)
+            
+            return True, f"Playing with {player_cmd[0]}"
+            
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            continue
+    
+    return False, "No compatible audio player found"
+
+def pause_playback():
+    """Pause current playback"""
+    global music_state
+    
+    if music_state['process'] and music_state['is_playing']:
+        try:
+            # Send SIGSTOP to pause (works with most players)
+            music_state['process'].send_signal(19)  # SIGSTOP
+            music_state['is_paused'] = True
+            music_state['is_playing'] = False
+            return True
+        except:
+            return False
+    return False
+
+def resume_playback():
+    """Resume paused playback"""
+    global music_state
+    
+    if music_state['process'] and music_state['is_paused']:
+        try:
+            # Send SIGCONT to resume
+            music_state['process'].send_signal(18)  # SIGCONT
+            music_state['is_paused'] = False
+            music_state['is_playing'] = True
+            return True
+        except:
+            return False
+    return False
+
+def stop_playback():
+    """Stop current playback"""
+    global music_state
+    
+    if music_state['process']:
+        try:
+            music_state['process'].terminate()
+            music_state['process'].wait(timeout=5)
+        except:
+            try:
+                music_state['process'].kill()
+            except:
+                pass
+        
+        music_state['process'] = None
+        music_state['is_playing'] = False
+        music_state['is_paused'] = False
+        music_state['current_track'] = None
+        return True
+    return False
+
+def is_playback_active():
+    """Check if playback is currently active"""
+    global music_state
+    
+    if music_state['process']:
+        poll = music_state['process'].poll()
+        if poll is None:  # Process is still running
+            return True
+        else:
+            # Process ended, clean up
+            music_state['process'] = None
+            music_state['is_playing'] = False
+            music_state['is_paused'] = False
+            music_state['current_track'] = None
+    
+    return False
+
 @events.register(events.NewMessage(pattern=r'\.play (.+)'))
 async def play_music_handler(event):
     """Play music using PyTube search"""
@@ -248,24 +367,247 @@ async def play_music_handler(event):
         
         await safe_edit_premium(event, search_results)
         
-        # Show now playing info (in Telegram we can't actually play audio)
+        # Try to download and play the first result
         first_result = results[0]
         duration_str = format_duration(first_result['duration'])
         
-        playing_msg = f"""{get_emoji('utama')} SEDANG MEMUTAR
+        # Update music state
+        music_state['last_played_url'] = first_result['url']
+        
+        # Show downloading message
+        download_msg = f"""{get_emoji('loading')} Mendownload dan memutar...
+        
+{get_emoji('proses')} {first_result['title']}
+{get_emoji('aktif')} Channel: {first_result['uploader']}
+{get_emoji('telegram')} Durasi: {duration_str}
+        
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Player"""
+        
+        await safe_edit_premium(event, download_msg)
+        
+        # Try to download the audio
+        file_path, download_status = await download_music_file(first_result['url'], MUSIC_DIR)
+        
+        if file_path and os.path.exists(file_path):
+            # Try to play the downloaded file
+            play_success, play_status = await play_audio_file(file_path)
+            
+            if play_success:
+                playing_msg = f"""{get_emoji('utama')} SEDANG MEMUTAR ▶️
         
 {get_emoji('proses')} {first_result['title']}
 {get_emoji('telegram')} Channel: {first_result['uploader']}
 {get_emoji('aktif')} Durasi: {duration_str}
-{get_emoji('centang')} Status: STREAMING ▶️
+{get_emoji('centang')} Status: PLAYING (Audio Active)
+{get_emoji('kuning')} Player: {play_status}
+        
+{get_emoji('adder1')} Controls: .pause .stop
+        
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+            else:
+                playing_msg = f"""{get_emoji('kuning')} DOWNLOAD BERHASIL, AUDIO TIDAK BISA DIPUTAR
+        
+{get_emoji('proses')} {first_result['title']}
+{get_emoji('telegram')} Channel: {first_result['uploader']}
+{get_emoji('aktif')} Durasi: {duration_str}
+{get_emoji('merah')} Audio Error: {play_status}
         
 {get_emoji('adder1')} URL: {first_result['url']}
+{get_emoji('centang')} File: {os.path.basename(file_path)}
+        
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+        else:
+            playing_msg = f"""{get_emoji('merah')} DOWNLOAD GAGAL
+        
+{get_emoji('kuning')} Error: {download_status}
+{get_emoji('proses')} {first_result['title']}
+{get_emoji('aktif')} URL: {first_result['url']}
+        
+{get_emoji('telegram')} Showing as streaming mode instead:
         
 𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
 
 ©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
         
         await safe_edit_premium(event, playing_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.pause'))
+async def pause_music_handler(event):
+    """Pause music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not is_playback_active():
+            no_music_msg = f"""{get_emoji('kuning')} Tidak ada musik yang sedang diputar
+            
+{get_emoji('aktif')} Status musik saat ini:
+• Track: {music_state['current_track'] or 'Tidak ada'}
+• Status: Idle
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .play [nama lagu] untuk mulai memutar musik
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+            await safe_edit_premium(event, no_music_msg)
+            return
+        
+        if music_state['is_paused']:
+            already_paused_msg = f"""{get_emoji('kuning')} Musik sudah dalam keadaan pause
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('aktif')} Status: PAUSED ⏸️
+{get_emoji('adder1')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .resume untuk melanjutkan
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+            await safe_edit_premium(event, already_paused_msg)
+            return
+        
+        success = pause_playback()
+        
+        if success:
+            paused_msg = f"""{get_emoji('centang')} MUSIK DIPAUSE ⏸️
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('kuning')} Status: PAUSED
+{get_emoji('aktif')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Commands:
+• .resume - Lanjutkan pemutaran
+• .stop - Hentikan musik  
+
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+        else:
+            paused_msg = f"""{get_emoji('merah')} Gagal pause musik
+            
+{get_emoji('kuning')} Kemungkinan masalah:
+• Player tidak mendukung pause
+• Process sudah berhenti
+• System audio error
+
+{get_emoji('aktif')} Solusi:
+• Gunakan .stop dan .play ulang
+• Restart musik system
+
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+        
+        await safe_edit_premium(event, paused_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.resume'))
+async def resume_music_handler(event):
+    """Resume music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not music_state['is_paused']:
+            not_paused_msg = f"""{get_emoji('kuning')} Tidak ada musik yang di-pause
+            
+{get_emoji('aktif')} Status saat ini:
+• Playing: {'Ya' if music_state['is_playing'] else 'Tidak'}
+• Track: {music_state['current_track'] or 'Tidak ada'}
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Commands:
+• .play [lagu] - Putar musik baru
+• .pause - Pause musik
+• .stop - Hentikan musik
+
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+            await safe_edit_premium(event, not_paused_msg)
+            return
+        
+        success = resume_playback()
+        
+        if success:
+            resumed_msg = f"""{get_emoji('centang')} MUSIK DILANJUTKAN ▶️
+            
+{get_emoji('proses')} Track: {music_state['current_track']}
+{get_emoji('aktif')} Status: PLAYING
+{get_emoji('adder1')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Music Controls:
+• .pause - Pause pemutaran
+• .stop - Hentikan musik
+
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+        else:
+            resumed_msg = f"""{get_emoji('merah')} Gagal resume musik
+            
+{get_emoji('kuning')} Kemungkinan masalah:
+• Process musik sudah mati
+• Audio device error
+• Player crashed
+
+{get_emoji('aktif')} Solusi:
+• Gunakan .play untuk mulai ulang
+• Check audio system
+
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+        
+        await safe_edit_premium(event, resumed_msg)
+        
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.stop'))
+async def stop_music_handler(event):
+    """Stop music playback command"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji, music_state
+        
+        if not is_playback_active() and not music_state['is_paused']:
+            no_music_msg = f"""{get_emoji('kuning')} Tidak ada musik yang sedang diputar
+            
+{get_emoji('aktif')} Status musik:
+• Track: Tidak ada
+• Status: Idle
+• Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Gunakan .play [nama lagu] untuk mulai
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+            await safe_edit_premium(event, no_music_msg)
+            return
+        
+        current_track = music_state['current_track']
+        success = stop_playback()
+        
+        if success or current_track:  # Show success even if stop fails but we had a track
+            stopped_msg = f"""{get_emoji('centang')} MUSIK DIHENTIKAN ⏹️
+            
+{get_emoji('proses')} Last Track: {current_track or 'Unknown'}
+{get_emoji('kuning')} Status: STOPPED
+{get_emoji('aktif')} Volume: {music_state['volume']}%
+
+{get_emoji('telegram')} Ready untuk track baru:
+• .play [nama lagu] - Putar musik
+• .download [lagu] - Download MP3
+
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+        else:
+            stopped_msg = f"""{get_emoji('centang')} MUSIK SYSTEM RESET
+            
+{get_emoji('kuning')} Musik telah dihentikan
+{get_emoji('aktif')} System telah direset
+
+{get_emoji('telegram')} Music system ready
+{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Music Player"""
+        
+        await safe_edit_premium(event, stopped_msg)
         
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -419,23 +761,37 @@ async def music_info_handler(event):
         
         total_size_mb = total_size / 1024 / 1024
         
+        # Get playback status info
+        is_active = is_playback_active()
+        status_emoji = "▶️" if music_state['is_playing'] else "⏸️" if music_state['is_paused'] else "⏹️"
+        status_text = "PLAYING" if music_state['is_playing'] else "PAUSED" if music_state['is_paused'] else "STOPPED"
+        
         info_msg = f"""{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 MUSIC INFO
         
 {get_emoji('centang')} SYSTEM STATUS:
 • Engine: PyTube (Stable)
 • Status: {'✅ Ready' if PYTUBE_AVAILABLE else '❌ Not Available'}
 • Version: {__version__}
+
+{get_emoji('proses')} PLAYBACK STATUS:
+• Current Track: {music_state['current_track'] or 'None'}
+• Status: {status_text} {status_emoji}
+• Active Process: {'Yes' if is_active else 'No'}
+• Volume: {music_state['volume']}%
         
-{get_emoji('proses')} DOWNLOAD STATISTICS:
+{get_emoji('kuning')} DOWNLOAD STATISTICS:
 • MP3 Files: {len(mp3_files)}
 • MP4 Files: {len(mp4_files)}
 • Total Files: {total_files}
 • Total Size: {total_size_mb:.1f} MB
         
 {get_emoji('aktif')} AVAILABLE COMMANDS:
-• .play [song] - Search and show music
-• .download [song/url] - Download audio
-• .search [song] - Search only
+• .play [song] - Search, download and play music
+• .download [song/url] - Download audio only
+• .search [song] - Search without download
+• .pause - Pause current playback
+• .resume - Resume paused playback
+• .stop - Stop playback completely
 • .minfo - Show this info
         
 {get_emoji('telegram')} DIRECTORY INFO:
@@ -444,10 +800,12 @@ async def music_info_handler(event):
 • Supported: MP3, MP4
         
 {get_emoji('adder1')} FEATURES:
+• Real audio playback (mpv/ffplay)
+• Proper pause/resume/stop controls
 • No cookies required
-• Stable downloads
-• High quality audio
-• Fast search results
+• Stable downloads with PyTube
+• High quality audio with MP3 conversion
+• Success/failure status tracking
         
 𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
 
