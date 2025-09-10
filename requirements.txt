@@ -17,9 +17,10 @@ requests>=2.31.0
 # Version Control
 gitpython>=3.1.0
 
-# Audio & Music (for musik.py plugin) 
+# Audio & Music (for musik.py and musik_pytube.py plugins) 
 py-tgcalls>=1.2.5
 yt-dlp>=2024.12.13
+pytube>=15.0.0
 spotipy>=2.24.0
 mutagen>=1.47.0
 ffmpeg-python>=0.2.0
