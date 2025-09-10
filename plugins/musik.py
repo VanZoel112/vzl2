@@ -97,7 +97,8 @@ def sanitize_filename(filename):
     return filename[:100]  # Limit length
 
 async def search_youtube_music(query, limit=5):
-    """Search YouTube using PyTube"""
+    """Search YouTube using PyTube with yt-dlp fallback"""
+    # Try PyTube first
     try:
         print(f"Searching YouTube with PyTube: {query}")
         
@@ -125,13 +126,78 @@ async def search_youtube_music(query, limit=5):
                 count += 1
                 
             except Exception as e:
-                print(f"Error processing video: {e}")
+                print(f"Error processing video with PyTube: {e}")
                 continue
         
-        return results
-        
+        if results:
+            return results
+            
     except Exception as e:
-        print(f"PyTube search error: {e}")
+        print(f"PyTube search failed: {e}")
+    
+    # Fallback to yt-dlp
+    print(f"Falling back to yt-dlp for search: {query}")
+    return await search_youtube_ytdlp(query, limit)
+
+async def search_youtube_ytdlp(query, limit=5):
+    """Fallback search using yt-dlp"""
+    try:
+        # Simplified approach for reliability
+        cmd = [
+            'yt-dlp',
+            '--quiet',
+            '--no-warnings', 
+            '--flat-playlist',
+            '--print', 'title:%(title)s id:%(id)s uploader:%(uploader)s duration:%(duration)s',
+            f'ytsearch{limit}:{query}'
+        ]
+        
+        process = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+        
+        if process.returncode == 0 and process.stdout.strip():
+            results = []
+            lines = process.stdout.strip().split('\n')
+            
+            for line in lines:
+                if line.strip():
+                    # Parse formatted output
+                    try:
+                        # Extract info from formatted line
+                        title_match = re.search(r'title:([^]+?) id:', line)
+                        id_match = re.search(r'id:([^\s]+)', line)
+                        uploader_match = re.search(r'uploader:([^]+?) duration:', line)
+                        duration_match = re.search(r'duration:(\d+)', line)
+                        
+                        if title_match and id_match:
+                            title = title_match.group(1).strip()
+                            video_id = id_match.group(1).strip()
+                            uploader = uploader_match.group(1).strip() if uploader_match else 'YouTube'
+                            duration = int(duration_match.group(1)) if duration_match else 180
+                            
+                            results.append({
+                                'title': title[:60] + "..." if len(title) > 60 else title,
+                                'uploader': uploader[:20] + "..." if len(uploader) > 20 else uploader,
+                                'duration': duration,
+                                'url': f'https://www.youtube.com/watch?v={video_id}',
+                                'video_id': video_id,
+                                'views': 0  # yt-dlp flat mode doesn't provide views easily
+                            })
+                    except Exception as parse_err:
+                        print(f"Error parsing yt-dlp output: {parse_err}")
+                        continue
+            
+            return results
+        
+        print(f"yt-dlp search failed. Return code: {process.returncode}")
+        if process.stderr:
+            print(f"yt-dlp stderr: {process.stderr}")
+        return []
+        
+    except subprocess.TimeoutExpired:
+        print("yt-dlp search timeout after 20 seconds")
+        return []
+    except Exception as e:
+        print(f"yt-dlp search error: {e}")
         return []
 
 async def download_music_file(url, output_dir):
