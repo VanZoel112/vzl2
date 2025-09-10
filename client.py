@@ -387,8 +387,8 @@ class AutoUpdater:
                 logger.error(f"Auto update check error: {e}")
                 await asyncio.sleep(300)  # Wait 5 minutes on error
 
-class Vzoel Fox'sClient:
-    """Vzoel Fox's's Advanced Assistant Client"""
+class VzoelFoxClient:
+    """𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Advanced Client"""
     
     def __init__(self):
         self.client: Optional[TelegramClient] = None
@@ -529,4 +529,4 @@ class Vzoel Fox'sClient:
         self.stats['commands_executed'] += 1
 
 # Global client instance
-vzoel_client = Vzoel Fox'sClient()
+vzoel_client = VzoelFoxClient()
