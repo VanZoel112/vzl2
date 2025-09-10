@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 async def main():
     """Main test function"""
-    print("🦊 VzoelFox's Assistant v2 - Quick Test")
+    print("🦊 Vzoel Fox's's Assistant v2 - Quick Test")
     print("=" * 50)
     
     try:
@@ -35,7 +35,7 @@ async def main():
         print(f"✅ getemoji('utama'): {test_emoji}")
         
         # Test client initialization (mock)
-        print(f"✅ VzoelFoxClient instance created")
+        print(f"✅ Vzoel Fox'sClient instance created")
         print(f"✅ Client version: {Config.VZOEL_VERSION}")
         
         # Test plugin structure
@@ -48,7 +48,7 @@ async def main():
             print(f"   📝 {plugin_file.name}")
         
         print(f"\n🎉 All systems ready!")
-        print(f"🚀 VzoelFox's Assistant v2 is ready to launch!")
+        print(f"🚀 Vzoel Fox's's Assistant v2 is ready to launch!")
         
         # Show usage instructions
         print(f"\n📋 USAGE:")

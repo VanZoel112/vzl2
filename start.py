@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-VzoelFox's Assistant v2 - Easy Starter
+Vzoel Fox's's Assistant v2 - Easy Starter
 User-friendly launcher with automatic session handling
 Created by: Vzoel Fox's
 """
@@ -14,7 +14,7 @@ def show_banner():
     """Show startup banner"""
     print("""
 ╔══════════════════════════════════════════════════════════╗
-║          🦊 VzoelFox's Assistant v2 Easy Starter        ║
+║          🦊 Vzoel Fox's's Assistant v2 Easy Starter        ║
 ║        Automatic Session Management & Easy Setup        ║
 ║            Created by: Vzoel Fox's                       ║
 ╚══════════════════════════════════════════════════════════╝
@@ -49,7 +49,7 @@ def main():
     
     if check_session():
         print("✅ Session ditemukan!")
-        print("🚀 Memulai VzoelFox's Assistant v2...")
+        print("🚀 Memulai Vzoel Fox's's Assistant v2...")
         
         # Start the main bot
         try:
@@ -85,7 +85,7 @@ def main():
                             choice2 = input("🚀 Jalankan bot sekarang? (y/n): ").lower().strip()
                             
                             if choice2 in ['y', 'yes', 'ya']:
-                                print("🔄 Memulai VzoelFox's Assistant v2...")
+                                print("🔄 Memulai Vzoel Fox's's Assistant v2...")
                                 result2 = subprocess.run([sys.executable, 'main.py'], 
                                                         cwd=os.getcwd())
                                 return result2.returncode

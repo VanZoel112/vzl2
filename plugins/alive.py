@@ -1,8 +1,8 @@
 """
-Enhanced Alive Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Alive Plugin for 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition
 Fitur: Advanced alive display dengan 12-phase animation dan premium emoji
-Founder Userbot: Vzoel Fox's Ltpn
-Version: 3.0.0 - Premium Alive System
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 0.0.0.𝟼𝟿 - Premium Alive System
 """
 
 from telethon import events
@@ -14,21 +14,21 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from central emoji template (VzoelFox style)
+# Import from central emoji template (Vzoel Fox's style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
     "name": "alive",
-    "version": "3.0.0",
+    "version": "0.0.0.𝟼𝟿",
     "description": "Enhanced alive display dengan 12-phase animation dan premium emoji",
-    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
     "commands": [".alive", ".ainfo"],
-    "features": ["12-phase animation", "premium emoji", "system status", "VzoelFox branding"]
+    "features": ["12-phase animation", "premium emoji", "system status", "Vzoel Fox's branding"]
 }
 
-__version__ = "3.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -56,9 +56,9 @@ async def alive_handler(event):
         # Get plugin count for features display  
         plugin_count = 13  # Static count since vzoel_client might not be available
         
-        # 12-phase animation with VzoelFox emojis
+        # 12-phase animation with Vzoel Fox's emojis
         animation_phases = [
-            f"{get_emoji('loading')} Initializing VzoelFox's Assistant...",
+            f"{get_emoji('loading')} Initializing Vzoel Fox's's Assistant...",
             f"{get_emoji('proses')} Loading premium systems...",
             f"{get_emoji('petir')} Activating power modules...",
             f"{get_emoji('aktif')} Configuring features...",
@@ -69,7 +69,7 @@ async def alive_handler(event):
             f"{get_emoji('adder1')} Applying enhancements...",
             f"{get_emoji('adder2')} Finalizing configuration...",
             f"{get_emoji('centang')} System ready...",
-            f"{get_emoji('utama')} VzoelFox's Assistant ONLINE!"
+            f"{get_emoji('utama')} Vzoel Fox's's Assistant ONLINE!"
         ]
         
         # Start animation with first phase using safe_edit_premium
@@ -90,9 +90,9 @@ async def alive_handler(event):
         
         # Build final alive display with premium emojis
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        alive_display = f"""{signature} VZOEL ASSISTANT
+        alive_display = f"""{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧
 
-{get_emoji('centang')} Founder Userbot : Vzoel Fox's Ltpn {get_emoji('utama')}
+{get_emoji('centang')} 𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠 {get_emoji('utama')}
 {get_emoji('centang')} Code : Python 3.12+ Enhanced
 {get_emoji('centang')} Plugins : {plugin_count} Premium Modules
 {get_emoji('centang')} Instagram : vzoel.fox_s
@@ -100,13 +100,13 @@ async def alive_handler(event):
 
 {random_emoji1} PREMIUM FEATURES :
 • Advanced Premium Emoji System
-• VzoelFox Branded Interface
+• Vzoel Fox's Branded Interface
 • Enhanced Performance & Stability
 
-{get_emoji('adder2')} Powered by VzoelFox Technology
-{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)
+{get_emoji('adder2')} Powered by Vzoel Fox's Technology
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
 
-{random_emoji2} ©2025 ~ VZOEL FOX'S PREMIUM SYSTEM"""
+{random_emoji2} ©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
         
         # Display final result
         await safe_edit_premium(event, alive_display)
@@ -125,7 +125,7 @@ async def alive_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        alive_info = f"""{signature} VzoelFox Alive System
+        alive_info = f"""{signature} Vzoel Fox's Alive System
 
 {get_emoji('utama')} Features:
 • 12-phase animated loading sequence
@@ -135,17 +135,17 @@ async def alive_info_handler(event):
 • Random emoji selection for notices
 
 {get_emoji('centang')} Animation Phases:
-1. Initializing VzoelFox Assistant
+1. Initializing Vzoel Fox's Assistant
 2. Loading premium components
-3. Connecting to VzoelFox servers
+3. Connecting to Vzoel Fox's servers
 4. Validating premium emojis
 5. Scanning installed plugins
 6. Checking system integrity
-7. Verifying VzoelFox credentials
+7. Verifying Vzoel Fox's credentials
 8. Loading assistant profile
 9. Preparing display interface
 10. Finalizing system status
-11. VzoelFox Assistant ready
+11. Vzoel Fox's Assistant ready
 12. Generating status display
 
 {get_emoji('telegram')} Display Info:
@@ -155,7 +155,7 @@ async def alive_info_handler(event):
 • Social: vzoel.fox_s (Instagram)
 • Location: Indonesia 🇮🇩
 
-By VzoelFox Assistant"""
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝"""
         
         # Display alive info with premium emoji support
         await safe_edit_premium(event, alive_info)

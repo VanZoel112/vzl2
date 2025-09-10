@@ -1,5 +1,5 @@
 """
-Enhanced Comments Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Comments Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Comment system dengan custom responses
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Comments System
@@ -22,7 +22,7 @@ __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 vzoel_client = None
 
 class VzoelComments:
-    """Centralized comment system untuk VzoelFox Assistant"""
+    """Centralized comment system untuk Vzoel Fox's Assistant"""
     
     def __init__(self):
         self.comments = self.load_comments()
@@ -76,22 +76,22 @@ class VzoelComments:
             "commands": {
                 "ping": {
                     "testing": f"{get_emoji('telegram')} Testing latency...",
-                    "result": f"{get_emoji('kuning')} PONG!!!! VzoelFox Assistant Anti Delay",
+                    "result": f"{get_emoji('kuning')} PONG!!!! Vzoel Fox's Assistant Anti Delay",
                     "with_latency": f"{get_emoji('kuning')} PONG!!!! Latency {{latency}}ms"
                 },
                 "alive": {
                     "phases": [
-                        f"{get_emoji('loading')} Initializing VzoelFox Assistant...",
+                        f"{get_emoji('loading')} Initializing Vzoel Fox's Assistant...",
                         f"{get_emoji('adder2')} Loading premium components...",
-                        f"{get_emoji('telegram')} Connecting to VzoelFox servers...",
+                        f"{get_emoji('telegram')} Connecting to Vzoel Fox's servers...",
                         f"{get_emoji('biru')} Validating premium emojis...",
                         f"{get_emoji('aktif')} Scanning installed plugins...",
                         f"{get_emoji('utama')} Checking system integrity...",
-                        f"{get_emoji('aktif')} Verifying VzoelFox credentials...",
+                        f"{get_emoji('aktif')} Verifying Vzoel Fox's credentials...",
                         f"{get_emoji('utama')} Loading assistant profile...",
                         f"{get_emoji('biru')} Preparing display interface...",
                         f"{get_emoji('aktif')} Finalizing system status...",
-                        f"{get_emoji('utama')} VzoelFox Assistant ready!",
+                        f"{get_emoji('utama')} Vzoel Fox's Assistant ready!",
                         f"{get_emoji('telegram')} Generating status display..."
                     ]
                 },
@@ -116,18 +116,18 @@ class VzoelComments:
             },
             # ==== CUSTOM VZOEL MESSAGES ====
             "vzoel": {
-                "signature": f"{get_emoji('adder1')} VzoelFox's Assistant",
+                "signature": f"{get_emoji('adder1')} Vzoel Fox's's Assistant",
                 "tagline": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "creator": "Created by: Vzoel Fox's",
-                "repo_notice": "VzoelFox Userbot",
+                "repo_notice": "Vzoel Fox's Userbot",
                 "info": "Created by Vzoel Fox's\nHak cipta sepenuhnya milik Vzoel..",
                 "zone": "Zone: ID 🇮🇩",
                 "ig": "IG: vzoel.fox_s"
             },
             # ==== SYSTEM MESSAGES ====
             "system": {
-                "restarting": f"{get_emoji('loading')} Restarting VzoelFox Assistant...",
+                "restarting": f"{get_emoji('loading')} Restarting Vzoel Fox's Assistant...",
                 "updating": f"{get_emoji('petir')} Updating system...",
                 "maintenance": f"{get_emoji('loading')} System maintenance...",
                 "backup": f"{get_emoji('adder2')} Creating backup...",
@@ -172,7 +172,7 @@ class VzoelComments:
         return self.get("status", key)
     
     def get_vzoel(self, key: str) -> str:
-        """Get VzoelFox specific message"""
+        """Get Vzoel Fox's specific message"""
         return self.get("vzoel", key)
     
     def get_system(self, key: str) -> str:
@@ -210,7 +210,7 @@ async def comments_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        comments_info = f"""{signature} VzoelFox Comments System
+        comments_info = f"""{signature} Vzoel Fox's Comments System
 
 {get_emoji('utama')} Available Categories:
 
@@ -219,7 +219,7 @@ async def comments_info_handler(event):
 {get_emoji('merah')} error - Failed, timeout, connection errors
 {get_emoji('telegram')} commands - Command-specific responses
 {get_emoji('aktif')} status - Online, offline, busy indicators
-{get_emoji('petir')} vzoel - VzoelFox branded messages
+{get_emoji('petir')} vzoel - Vzoel Fox's branded messages
 {get_emoji('proses')} system - System maintenance messages
 
 {get_emoji('adder1')} Usage Examples:

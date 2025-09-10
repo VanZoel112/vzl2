@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced Fun Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Fun Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Entertainment dan fun commands dengan premium emoji support
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Fun System
@@ -24,7 +24,7 @@ PLUGIN_INFO = {
     "description": "Entertainment dan fun commands dengan premium emoji support",
     "author": "Founder Userbot: Vzoel Fox's Ltpn",
     "commands": [".dice", ".flip", ".quote"],
-    "features": ["dice rolling", "coin flipping", "VzoelFox quotes", "premium emoji"]
+    "features": ["dice rolling", "coin flipping", "Vzoel Fox's quotes", "premium emoji"]
 }
 
 __version__ = "3.0.0"
@@ -37,7 +37,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 
 @events.register(events.NewMessage(pattern=r'\.dice'))
 async def dice_handler(event):
-    """Roll a dice with VzoelFox style"""
+    """Roll a dice with Vzoel Fox's style"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
@@ -54,7 +54,7 @@ async def dice_handler(event):
         dice_emojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        result_msg = f"{signature} DICE ROLLED!\n\n{dice_emojis[result-1]} Result: {result}\n\nBy VzoelFox Assistant"
+        result_msg = f"{signature} DICE ROLLED!\n\n{dice_emojis[result-1]} Result: {result}\n\nBy Vzoel Fox's Assistant"
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -76,7 +76,7 @@ async def flip_handler(event):
         result = random.choice(['Heads', 'Tails'])
         emoji = get_emoji('utama') if result == 'Heads' else get_emoji('kuning')
         
-        result_msg = f"{emoji} Coin Result: {result}\n\nBy VzoelFox Assistant"
+        result_msg = f"{emoji} Coin Result: {result}\n\nBy Vzoel Fox's Assistant"
         
         await safe_edit_premium(msg, result_msg)
         if vzoel_client:
@@ -84,19 +84,19 @@ async def flip_handler(event):
 
 @events.register(events.NewMessage(pattern=r'\.quote'))
 async def quote_handler(event):
-    """Send a random VzoelFox quote"""
+    """Send a random Vzoel Fox's quote"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         from client import vzoel_client
         
         vzoel_quotes = [
             f"The fox always finds a way {get_emoji('adder1')}",
             f"Premium emojis make everything better {get_emoji('utama')}",
-            f"VzoelFox's domain knows no limits {get_emoji('petir')}",
+            f"Vzoel Fox's's domain knows no limits {get_emoji('petir')}",
             f"Enhanced by Vzoel Fox's Ltpn {get_emoji('aktif')}",
             f"Every command is a work of art {get_emoji('adder2')}",
             f"The storm follows the fox {get_emoji('petir')}{get_emoji('adder1')}",
             f"Premium features for premium users {get_emoji('adder1')}",
-            f"VzoelFox's Assistant at your service {get_emoji('proses')}"
+            f"Vzoel Fox's's Assistant at your service {get_emoji('proses')}"
         ]
         
         quote = random.choice(vzoel_quotes)
@@ -104,7 +104,7 @@ async def quote_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        quote_msg = f"{signature} VzoelFox Quote\n\n\"{quote}\"\n\n— Vzoel Fox's"
+        quote_msg = f"{signature} Vzoel Fox's Quote\n\n\"{quote}\"\n\n— Vzoel Fox's"
         
         
         msg = await event.edit(quote_msg)

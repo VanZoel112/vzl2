@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Batch Update All Plugins with Comment System and Premium Emojis
-Updates all VzoelFox plugins to use the new comment system and premium emojis
+Updates all Vzoel Fox's plugins to use the new comment system and premium emojis
 """
 
 import os
@@ -110,11 +110,11 @@ def update_premium_emojis(content):
     return content
 
 def update_vzoel_branding(content):
-    """Update VzoelFox branding to use comment system"""
+    """Update Vzoel Fox's branding to use comment system"""
     
-    # Replace common VzoelFox text with comment system
+    # Replace common Vzoel Fox's text with comment system
     branding_replacements = [
-        (r'"VzoelFox\'s Assistant"', 'vzoel_comments.get_vzoel("signature")'),
+        (r'"Vzoel Fox's\'s Assistant"', 'vzoel_comments.get_vzoel("signature")'),
         (r'"Vzoel Fox\'s Assistant"', 'vzoel_comments.get_vzoel("signature")'),
         (r'"©2025 ~ Vzoel Fox\'s \(LTPN\)"', 'vzoel_comments.get_vzoel("copyright")'),
         (r'"Enhanced by Vzoel Fox\'s Ltpn"', 'vzoel_comments.get_vzoel("tagline")'),
@@ -162,7 +162,7 @@ def update_plugin_file(file_path):
 
 def main():
     """Main update function"""
-    print("🦊 VzoelFox Plugin Update System")
+    print("🦊 Vzoel Fox's Plugin Update System")
     print("=================================")
     print("Updating all plugins with comment system and premium emojis...\n")
     
@@ -193,7 +193,7 @@ def main():
         print("All plugins now support:")
         print("• 📝 Centralized comment system")
         print("• 🎭 Premium emoji integration")
-        print("• 🦊 VzoelFox branding via comment system")
+        print("• 🦊 Vzoel Fox's branding via comment system")
     else:
         print("\n✅ All plugins are already up to date!")
 

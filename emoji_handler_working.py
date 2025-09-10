@@ -1,5 +1,5 @@
 """
-VzoelFox Premium Emoji Handler - Working Implementation
+Vzoel Fox's Premium Emoji Handler - Working Implementation
 Based on successful VanZoel112/vzoelfox structure but adapted for vzl2
 Maintains existing premium emoji IDs while using proven implementation approach
 Created by: Vzoel Fox's
@@ -21,12 +21,12 @@ except ImportError:
     logging.warning("Telethon not available - premium emoji features limited")
 
 class VzoelEmojiHandler:
-    """Working premium emoji handler for VzoelFox's Assistant"""
+    """Working premium emoji handler for Vzoel Fox's's Assistant"""
     
     def __init__(self, mapping_file: str = "emoji_mapping.json"):
         self.mapping_file = Path(mapping_file)
         self.emojis = {}
-        self.quick_emojis = {}  # Simple format like VzoelFox
+        self.quick_emojis = {}  # Simple format like Vzoel Fox's
         self.client = None
         self.load_mapping()
         self._create_quick_mapping()
@@ -38,7 +38,7 @@ class VzoelEmojiHandler:
                 data = json.load(f)
                 
             self.emojis = data.get('emojis', {})
-            logging.info(f"Loaded {len(self.emojis)} VzoelFox premium emojis")
+            logging.info(f"Loaded {len(self.emojis)} Vzoel Fox's premium emojis")
             return True
             
         except Exception as e:
@@ -46,7 +46,7 @@ class VzoelEmojiHandler:
             return False
     
     def _create_quick_mapping(self):
-        """Create simple mapping format like VzoelFox"""
+        """Create simple mapping format like Vzoel Fox's"""
         for name, data in self.emojis.items():
             self.quick_emojis[name] = {
                 'id': data.get('custom_emoji_id'),
@@ -58,7 +58,7 @@ class VzoelEmojiHandler:
         self.client = client
     
     def get_emoji(self, name: str, premium: bool = True) -> str:
-        """Get emoji with working implementation like VzoelFox"""
+        """Get emoji with working implementation like Vzoel Fox's"""
         if name not in self.quick_emojis:
             return "🔸"  # Fallback
         
@@ -99,7 +99,7 @@ class VzoelEmojiHandler:
         return None
     
     def format_message_with_premium(self, text: str, emoji_replacements: Dict[str, str]) -> str:
-        """Format message with premium emoji like VzoelFox"""
+        """Format message with premium emoji like Vzoel Fox's"""
         formatted_text = text
         
         for placeholder, emoji_name in emoji_replacements.items():

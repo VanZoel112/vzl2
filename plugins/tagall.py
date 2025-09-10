@@ -1,5 +1,5 @@
 """
-Enhanced Tagall Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Tagall Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Advanced mention system dengan premium controls
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Tagall System
@@ -172,7 +172,7 @@ Pesan: {message_text}
 {get_emoji('aktif')} Pesan: {message_text}
 {get_emoji('petir')} Status: Completed Successfully
 
-By VzoelFox Assistant"""
+By Vzoel Fox's Assistant"""
         
         await safe_edit_premium(event, completion_msg)
 
@@ -242,7 +242,7 @@ Tagall adalah sistem untuk mention seluruh member grup dengan animasi real-time 
 • Real-time progress display
 • Automatic cleanup setelah selesai
 
-**By VzoelFox Assistant**"""
+**By Vzoel Fox's Assistant**"""
         
         await safe_edit_premium(event, tagall_info)
         vzoel_client.increment_command_count()

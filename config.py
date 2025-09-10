@@ -1,5 +1,5 @@
 """
-VzoelFox's Assistant v2 Configuration
+Vzoel Fox's Assistant v2 Configuration
 Environment variables and settings management
 """
 
@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Configuration class for VzoelFox's Assistant"""
+    """Configuration class for Vzoel Fox's Assistant"""
     
     # API Configuration
     API_ID: int = int(os.getenv("API_ID", "29919905"))
@@ -24,7 +24,7 @@ class Config:
     # Database Configuration
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///vzl2.db")
     
-    # VzoelFox Specific Settings
+    # Vzoel Fox's Specific Settings
     VZOEL_PREFIX: str = os.getenv("VZOEL_PREFIX", ".")
     
     @classmethod
@@ -60,7 +60,7 @@ class Config:
     HEROKU_APP_NAME: Optional[str] = os.getenv("HEROKU_APP_NAME")
     HEROKU_API_KEY: Optional[str] = os.getenv("HEROKU_API_KEY")
     
-    # VzoelFox Branding
+    # Vzoel Fox's Branding
     VZOEL_VERSION: str = "v2.0.0-vzoel"
     VZOEL_CREATOR: str = "Vzoel Fox's"
     VZOEL_ENHANCED_BY: str = "Vzoel Fox's Ltpn"
@@ -152,7 +152,7 @@ class Config:
     def print_config(cls):
         """Print current configuration (hide sensitive data)"""
         print(f"""
-🦊 VzoelFox's Assistant v2 Configuration
+🦊 Vzoel Fox's Assistant v2 Configuration
 
 📱 API Settings:
    API_ID: {'✅ Set' if cls.API_ID else '❌ Not Set'}
@@ -164,7 +164,7 @@ class Config:
    Workers: {cls.WORKERS}
    Gcast Blacklist: {len(cls.GCAST_BLACKLIST)} chats
 
-🎭 VzoelFox Info:
+🎭 Vzoel Fox's Info:
    Version: {cls.VZOEL_VERSION}
    Creator: {cls.VZOEL_CREATOR}
    Enhanced by: {cls.VZOEL_ENHANCED_BY}
@@ -172,7 +172,7 @@ class Config:
 
 # Environment template for easy setup
 ENV_TEMPLATE = """
-# VzoelFox's Assistant v2 Environment Configuration
+# Vzoel Fox's Assistant v2 Environment Configuration
 # Copy this to .env and fill in your values
 
 # API Configuration (Required)
@@ -183,7 +183,7 @@ API_HASH=your_api_hash_here
 BOT_TOKEN=your_bot_token_if_using_bot_mode
 STRING_SESSION=your_string_session_if_available
 
-# VzoelFox Specific
+# Vzoel Fox's Specific
 VZOEL_PREFIX=.
 # VZOEL_OWNER_ID=123456789
 # VZOEL_LOG_CHAT=-1001234567890

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Update All Plugins to use Working Systems
-Mass update script to apply VzoelFox working implementation to all plugins
+Mass update script to apply Vzoel Fox's working implementation to all plugins
 Created by: Vzoel Fox's
 """
 
@@ -95,7 +95,7 @@ def update_plugin_imports(file_path):
 
 def main():
     """Main update process"""
-    print("🦊 VzoelFox Working Systems Update")
+    print("🦊 Vzoel Fox's Working Systems Update")
     print("=" * 50)
     
     # Get plugins directory
@@ -126,7 +126,7 @@ def main():
     print(f"🎉 Update completed!")
     print(f"📊 Updated {updated_count} out of {len(python_files)} files")
     print()
-    print("✨ All plugins now use VzoelFox working systems:")
+    print("✨ All plugins now use Vzoel Fox's working systems:")
     print("   - emoji_handler_working.py for premium emojis")
     print("   - vzoel_comments_working.py for comments")
     print()

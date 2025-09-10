@@ -51,7 +51,7 @@ QR_DIR.mkdir(parents=True, exist_ok=True)
 # QR Code styling templates
 QR_STYLES = [
     {
-        "name": "VzoelFox Classic",
+        "name": "Vzoel Fox's Classic",
         "fill_color": "#1a1a1a",
         "back_color": "#ffffff",
         "border": 4,
@@ -121,7 +121,7 @@ def validate_telegram_link(url):
     return False
 
 def add_vzoel_branding(qr_img, style, url):
-    """Add VzoelFox branding to QR code"""
+    """Add Vzoel Fox's branding to QR code"""
     try:
         # Convert to RGB if needed
         if qr_img.mode != 'RGB':
@@ -262,7 +262,7 @@ def generate_qr_code(url, style):
         
         qr_img = qr.make_image(fill_color=style['fill_color'], back_color=style['back_color'])
         
-        # Add VzoelFox branding
+        # Add Vzoel Fox's branding
         branded_img = add_vzoel_branding(qr_img, style, url)
         
         return branded_img

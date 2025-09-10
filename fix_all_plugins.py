@@ -119,7 +119,7 @@ def main():
         print("❌ Plugins directory not found")
         return
     
-    print("🦊 VzoelFox Plugin Import Fixer")
+    print("🦊 Vzoel Fox's Plugin Import Fixer")
     print("=" * 50)
     
     plugin_files = list(plugins_dir.glob("*.py"))

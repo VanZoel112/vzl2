@@ -1,6 +1,6 @@
 """
-VzoelFox Premium Emoji Handler
-Enhanced emoji management for VzoelFox's Assistant v2
+Vzoel Fox's Premium Emoji Handler
+Enhanced emoji management for Vzoel Fox's's Assistant v2
 """
 
 import json
@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 from pathlib import Path
 
 class VzoelEmojiHandler:
-    """Premium emoji handler for VzoelFox's Assistant"""
+    """Premium emoji handler for Vzoel Fox's's Assistant"""
     
     def __init__(self, mapping_file: str = "emoji_mapping.json"):
         self.mapping_file = Path(mapping_file)
@@ -30,7 +30,7 @@ class VzoelEmojiHandler:
             self.usage_patterns = data.get('usage_patterns', {})
             self.quick_access = data.get('quick_access', {})
             
-            logging.info(f"Loaded {len(self.emojis)} VzoelFox premium emojis")
+            logging.info(f"Loaded {len(self.emojis)} Vzoel Fox's premium emojis")
             return True
             
         except Exception as e:

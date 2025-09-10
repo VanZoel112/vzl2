@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced Voice Chat Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Voice Chat Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Voice chat management dengan PyTgCalls integration
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Voice Chat System
@@ -254,7 +254,7 @@ async def vc_status_handler(event):
 • `.vcunmute` - Unmute microphone
 • `.vcstatus` - Show this status
 
-**By VzoelFox Assistant**"""
+**By Vzoel Fox's Assistant**"""
         
         msg = await event.edit(status_text)
         if vzoel_client:
@@ -270,7 +270,7 @@ async def vc_install_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        install_text = f"""**{signature} VzoelFox Voice Chat Setup**
+        install_text = f"""**{signature} Vzoel Fox's Voice Chat Setup**
 
 {get_emoji('loading')} **Installation Required:**
 
@@ -288,7 +288,7 @@ apt install ffmpeg
 pkg install ffmpeg
 ```
 
-{get_emoji('aktif')} **Step 3:** Restart VzoelFox Assistant
+{get_emoji('aktif')} **Step 3:** Restart Vzoel Fox's Assistant
 ```bash
 .restart
 ```
@@ -300,7 +300,7 @@ pkg install ffmpeg
 
 {get_emoji('petir')} **Note:** Voice chat requires user account (not bot)
 
-**By VzoelFox Assistant**"""
+**By Vzoel Fox's Assistant**"""
         
         msg = await event.edit(install_text)
         if vzoel_client:

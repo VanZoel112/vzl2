@@ -1,8 +1,8 @@
 """
-Enhanced Ping Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Ping Plugin for 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition
 Fitur: Advanced ping variants dengan premium emoji dan response time analysis
-Founder Userbot: Vzoel Fox's Ltpn
-Version: 3.0.0 - Premium Ping System
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 0.0.0.𝟼𝟿 - Premium Ping System
 """
 
 from telethon import events
@@ -14,21 +14,21 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from central emoji template (VzoelFox style)
+# Import from central emoji template (Vzoel Fox's style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
     "name": "ping",
-    "version": "3.0.0",
+    "version": "0.0.0.𝟼𝟿",
     "description": "Enhanced ping dengan premium emoji dan latency analysis",
-    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
     "commands": [".ping", ".pink", ".pong", ".ponk"],
     "features": ["premium emoji", "latency analysis", "uptime tracking"]
 }
 
-__version__ = "3.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -44,7 +44,7 @@ async def vzoel_init(client, emoji_handler):
     
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"✅ [Ping] Premium system loaded v{PLUGIN_INFO['version']}")
-    print(f"✅ [Ping] VzoelFox branding: {signature} VZOEL ASSISTANT")
+    print(f"✅ [Ping] 𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠 branding: {signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧")
 
 @events.register(events.NewMessage(pattern=r'\.ping'))
 async def ping_handler(event):
@@ -62,9 +62,9 @@ async def ping_handler(event):
         end_time = time.time()
         ping_time = (end_time - start_time) * 1000
         
-        # Show VzoelFox ping result with signature
+        # Show Vzoel Fox's ping result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms\n\nVzoelFox Anti-Delay System"
+        ping_response = f"{get_emoji('utama')} PONG: {ping_time:.2f}ms\n\n𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝"
         await safe_edit_premium(event, ping_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -89,9 +89,9 @@ async def pink_handler(event):
         end_time = time.time()
         latency = (end_time - start_time) * 1000
         
-        # Show VzoelFox pink result with signature
+        # Show Vzoel Fox's pink result with signature
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        pink_response = f"{signature} PINK: {latency:.2f}ms\n\nVzoelFox Latency Test"
+        pink_response = f"{signature} PINK: {latency:.2f}ms\n\n𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝"
         await safe_edit_premium(event, pink_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -135,7 +135,7 @@ async def pong_handler(event):
                 pass  # Ignore if spambot interaction fails
             # Send the PONG message with latency emoji
             signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-            pong_response = f"{signature} VZOEL PONG {latency_emoji}"
+            pong_response = f"{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 PONG {latency_emoji}"
 
             # If we can forward from spambot, do it, otherwise just show response
             try:
@@ -143,14 +143,14 @@ async def pong_handler(event):
                 async for message in event.client.iter_messages('@spambot', limit=1):
                     if message.text:
                         # Forward the message content style
-                        pong_response = f"{signature} VZOEL PONG {latency_emoji}\n\nForwarded from @spambot to reduce limits"
+                        pong_response = f"{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 PONG {latency_emoji}\n\nForwarded from @spambot to reduce limits"
                         break
             except:
                 pass
                 
         except Exception as e:
             # Fallback response if spambot interaction fails
-            pong_response = f"{signature} VZOEL PONG {latency_emoji}\n\nFailed to contact @spambot"
+            pong_response = f"{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 PONG {latency_emoji}\n\nFailed to contact @spambot"
         await safe_edit_premium(event, pong_response)
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -181,12 +181,13 @@ async def ponk_handler(event):
         except Exception as e:
             # Fallback to simple alive display if plugin loading fails
             signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-            alive_text = f"""VzoelFox's Assistant v2
+            alive_text = f"""𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 v2
 {signature} Status: ALIVE & RUNNING
-{get_emoji('aktif')} Version: v2.0.0-vzoel
+{get_emoji('aktif')} Version: 0.0.0.𝟼𝟿
 {get_emoji('centang')} Premium Emojis: Loaded
-Created by: Vzoel Fox's
-Enhanced by: Vzoel Fox's Ltpn"""
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
             await safe_edit_premium(event, alive_text)
         
         if vzoel_client:
@@ -204,7 +205,7 @@ async def pings_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        pings_info = f"""{signature} VzoelFox Ping Commands
+        pings_info = f"""{signature} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Ping Commands
 
 {get_emoji('utama')} Available Commands:
 
@@ -218,7 +219,9 @@ async def pings_info_handler(event):
 • @spambot integration for limit reduction
 • Automatic .alive command triggering
 
-By VzoelFox Assistant"""
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
         await safe_edit_premium(event, pings_info)
         if vzoel_client:
             vzoel_client.increment_command_count()

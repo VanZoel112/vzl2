@@ -1,5 +1,5 @@
 """
-VzoelFox Premium Emoji Handler - Telegram API Compliant
+Vzoel Fox's Premium Emoji Handler - Telegram API Compliant
 Enhanced emoji management with proper Telegram Premium emoji support
 Created by: Vzoel Fox's
 Enhanced with proper Telegram API integration
@@ -20,7 +20,7 @@ except ImportError:
     logging.warning("Telethon not available - premium emoji features limited")
 
 class VzoelEmojiHandler:
-    """Premium emoji handler for VzoelFox's Assistant with Telegram API compliance"""
+    """Premium emoji handler for Vzoel Fox's's Assistant with Telegram API compliance"""
     
     def __init__(self, mapping_file: str = "emoji_mapping.json"):
         self.mapping_file = Path(mapping_file)
@@ -46,7 +46,7 @@ class VzoelEmojiHandler:
             self.usage_patterns = data.get('usage_patterns', {})
             self.quick_access = data.get('quick_access', {})
             
-            logging.info(f"Loaded {len(self.emojis)} VzoelFox premium emojis")
+            logging.info(f"Loaded {len(self.emojis)} Vzoel Fox's premium emojis")
             return True
             
         except Exception as e:

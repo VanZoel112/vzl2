@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Update All Plugins to Simple Mapping
-Mass update to VzoelFox simple internal mapping
+Mass update to Vzoel Fox's simple internal mapping
 Created by: Vzoel Fox's
 """
 
@@ -47,7 +47,7 @@ def update_plugin_to_simple(file_path):
 
 def main():
     """Main update process"""
-    print("🦊 VzoelFox Simple Mapping Update")
+    print("🦊 Vzoel Fox's Simple Mapping Update")
     print("=" * 50)
     
     # Update client.py first
@@ -95,9 +95,9 @@ def main():
     print(f"🎉 Update completed!")
     print(f"📊 Updated {updated_count} out of {len(python_files)} plugin files")
     print()
-    print("✨ All files now use VzoelFox simple mapping:")
+    print("✨ All files now use Vzoel Fox's simple mapping:")
     print("   - Internal emoji mapping with premium support")
-    print("   - Simple comment system with VzoelFox branding")
+    print("   - Simple comment system with Vzoel Fox's branding")
     print("   - No external dependencies")
     print()
     print("🔄 Restart vzl2 to apply changes")

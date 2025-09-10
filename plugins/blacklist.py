@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced Blacklist Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Blacklist Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Advanced blacklist system dengan premium filtering
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Blacklist System
@@ -130,7 +130,7 @@ async def add_blacklist_handler(event):
 
 {get_emoji('proses')} **Pesan yang mengandung kata ini akan otomatis dihapus**
 
-**VzoelFox Blacklist System**"""
+**Vzoel Fox's Blacklist System**"""
         else:
             success_msg = f"{get_emoji('kuning')} Semua kata sudah ada di blacklist"
         
@@ -169,7 +169,7 @@ async def remove_blacklist_handler(event):
 {get_emoji('centang')} **Untuk menghapus:** `.wl <kata>`
 {get_emoji('kuning')} **Clear semua:** `.wl clear`
 
-**VzoelFox Blacklist**"""
+**Vzoel Fox's Blacklist**"""
             else:
                 current_msg = f"{get_emoji('kuning')} Blacklist kosong di chat ini"
                 
@@ -190,7 +190,7 @@ async def remove_blacklist_handler(event):
 {get_emoji('telegram')} **Status:** Blacklist kosong
 {get_emoji('proses')} **Auto-delete:** Non-aktif
 
-**VzoelFox Blacklist System**"""
+**Vzoel Fox's Blacklist System**"""
             await safe_edit_premium(event, clear_msg)
             return
         
@@ -216,7 +216,7 @@ async def remove_blacklist_handler(event):
 
 {get_emoji('centang')} **Kata ini tidak akan dihapus lagi**
 
-**VzoelFox Whitelist System**"""
+**Vzoel Fox's Whitelist System**"""
         else:
             success_msg = f"{get_emoji('kuning')} Kata tidak ditemukan di blacklist"
         
@@ -285,7 +285,7 @@ Commands: .lock @user, .unlock @user, .locked
 
 {get_emoji('centang')} **Perintah unlock:** `.unlock {user_display}`
 
-**VzoelFox Lock System**"""
+**Vzoel Fox's Lock System**"""
             await safe_edit_premium(event, lock_msg)
         else:
             already_msg = f"{get_emoji('kuning')} User sudah di-lock sebelumnya"
@@ -338,7 +338,7 @@ async def unlock_user_handler(event):
 {get_emoji('centang')} **Untuk unlock:** `.unlock @username`
 {get_emoji('kuning')} **Clear semua:** `.unlock clear`
 
-**VzoelFox Lock System**"""
+**Vzoel Fox's Lock System**"""
             else:
                 locked_msg = f"{get_emoji('kuning')} Tidak ada user yang di-lock"
             await safe_edit_premium(event, locked_msg)
@@ -362,7 +362,7 @@ async def unlock_user_handler(event):
 {get_emoji('telegram')} **Status:** Pesan tidak akan dihapus lagi
 {get_emoji('proses')} **Sisa Locked:** {len(locked_users[chat_id])} user
 
-**VzoelFox Unlock System**"""
+**Vzoel Fox's Unlock System**"""
             await safe_edit_premium(event, unlock_msg)
         else:
             not_locked_msg = f"{get_emoji('kuning')} User tidak dalam daftar lock"
@@ -441,7 +441,7 @@ async def blacklist_info_handler(event):
 {get_emoji('petir')} **How it works:**
 Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari user yang di-lock, bahkan jika hanya sebagian kata yang match.
 
-**VzoelFox Blacklist System**"""
+**Vzoel Fox's Blacklist System**"""
         
         await safe_edit_premium(event, blacklist_info)
         vzoel_client.increment_command_count()

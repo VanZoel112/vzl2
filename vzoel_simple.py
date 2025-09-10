@@ -1,6 +1,6 @@
 """
 Template Premium Emoji untuk Semua Plugin VZL2 ASSISTANT
-Sistem mapping yang sama persis dengan VzoelFox
+Sistem mapping yang sama persis dengan Vzoel Fox's
 Author: Vzoel Fox's (Enhanced by Morgan) 
 Version: 1.0.0
 """
@@ -120,10 +120,10 @@ async def is_owner(client, user_id):
         return False
 
 class VzoelSimpleEmoji:
-    """Simple emoji mapping like VzoelFox"""
+    """Simple emoji mapping like Vzoel Fox's"""
     
     def __init__(self):
-        # Simple internal mapping like VzoelFox using the same PREMIUM_EMOJIS
+        # Simple internal mapping like Vzoel Fox's using the same PREMIUM_EMOJIS
         self.emojis = PREMIUM_EMOJIS
     
     def get_emoji(self, name, premium=True):
@@ -142,7 +142,7 @@ class VzoelSimpleEmoji:
         return self.get_emoji(name, premium)
     
     def get_vzoel_signature(self, premium=True):
-        """VzoelFox signature"""
+        """Vzoel Fox's signature"""
         # utama + adder1 + petir
         sig_parts = [
             self.get_emoji('utama', premium),
@@ -176,9 +176,9 @@ class VzoelSimpleComments:
     """Simple comment system"""
     
     def __init__(self):
-        # Simple internal comments - adopted VzoelFox branding for vzl2
+        # Simple internal comments - adopted Vzoel Fox's branding for vzl2
         self.comments = {
-            "ping": "🏓 PONG!!!! VzoelFox Assistant Anti Delay",
+            "ping": "🏓 PONG!!!! Vzoel Fox's Assistant Anti Delay",
             "ping_testing": "📡 Testing latency...", 
             "ping_latency": "🏓 PONG!!!! Latency {latency}ms",
             "loading": "⚙️ Sedang memproses...",
@@ -193,16 +193,16 @@ class VzoelSimpleComments:
             "failed": "❌ Gagal diproses!",
             "timeout": "⏱️ Waktu habis!",
             "connection_error": "🌐 Error koneksi!",
-            "signature": "🦊 VzoelFox's Assistant",
+            "signature": "🦊 Vzoel Fox's's Assistant",
             "creator": "Created by: Vzoel Fox's",
             "enhanced": "Enhanced by Vzoel Fox's Ltpn",
             "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
             "repo_notice": "Userbot ini dibuat dengan repo murni oleh Vzoel Fox's..\nBukan hasil fork maupun beli dari seller manapun!!!\nHak cipta sepenuhnya milik Vzoel..",
             "zone": "Zone: ID 🇮🇩",
             "ig": "IG: vzoel.fox_s",
-            "alive_start": "🔧 Initializing VzoelFox Assistant...",
-            "alive_ready": "✨ VzoelFox Assistant ready!",
-            "help": "📚 VzoelFox Help System",
+            "alive_start": "🔧 Initializing Vzoel Fox's Assistant...",
+            "alive_ready": "✨ Vzoel Fox's Assistant ready!",
+            "help": "📚 Vzoel Fox's Help System",
             "gcast_start": "📢 Mempersiapkan global cast...",
             "gcast_done": "✅ Global cast selesai!"
         }
@@ -246,7 +246,7 @@ class VzoelSimpleComments:
         return self.get(key, **kwargs)
     
     def vzoel(self, key):
-        """VzoelFox branding"""
+        """Vzoel Fox's branding"""
         return self.get(key)
 
 # Global simple instances

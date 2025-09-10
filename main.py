@@ -1,5 +1,5 @@
 """
-VzoelFox's Assistant v2
+Vzoel Fox's Assistant v2
 Enhanced userbot with Premium Emoji Support
 Created by: Vzoel Fox's
 """
@@ -33,7 +33,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class SessionGenerator:
-    """VzoelFox's Assistant Session String Generator"""
+    """Vzoel Fox's Assistant Session String Generator"""
     
     def __init__(self):
         self.config_file = ".env"
@@ -86,9 +86,9 @@ class SessionGenerator:
             return False
     
     async def generate_session_string(self) -> str:
-        """Generate session string with VzoelFox branding"""
+        """Generate session string with Vzoel Fox's branding"""
         signature = vzoel_emoji.get_vzoel_signature()
-        print(f"\n{signature} VzoelFox's Assistant Session Generator {signature}\n")
+        print(f"\n{signature} Vzoel Fox's Assistant Session Generator {signature}\n")
         
         # Get API credentials
         while True:
@@ -161,13 +161,13 @@ class SessionGenerator:
         # Save to .env file
         self.save_session_to_env(session_string)
         
-        print(f"\n{signature} VzoelFox's Assistant Setup Complete! {signature}")
+        print(f"\n{signature} Vzoel Fox's Assistant Setup Complete! {signature}")
         print(f"{vzoel_emoji.get_emoji('centang')} You can now run the assistant with: python main.py")
         
         return session_string
 
 class VzoelFoxBot:
-    """VzoelFox's Assistant v2"""
+    """Vzoel Fox's Assistant v2"""
     
     def __init__(self):
         self.client = None
@@ -202,13 +202,13 @@ class VzoelFoxBot:
                 return False
             
             self.is_running = True
-            logger.info("VzoelFox's Assistant v2 started successfully!")
+            logger.info("Vzoel Fox's's Assistant v2 started successfully!")
             
             # Display startup message with signature emojis
             signature = vzoel_emoji.get_vzoel_signature()
             startup_msg = vzoel_emoji.format_emoji_response(
                 ['utama', 'petir', 'aktif'], 
-                "VzoelFox's Assistant v2 is now ACTIVE!"
+                "Vzoel Fox's's Assistant v2 is now ACTIVE!"
             )
             logger.info(f"{signature} {startup_msg}")
             
@@ -223,7 +223,7 @@ class VzoelFoxBot:
         if self.client:
             await self.client.disconnect()
             self.is_running = False
-            logger.info("VzoelFox's Assistant v2 stopped")
+            logger.info("Vzoel Fox's's Assistant v2 stopped")
 
 # Event handlers
 bot = VzoelFoxBot()
@@ -231,14 +231,14 @@ bot = VzoelFoxBot()
 
 @events.register(events.NewMessage(pattern=r'\.vzoel'))
 async def vzoel_handler(event):
-    """Special VzoelFox command"""
+    """Special Vzoel Fox's command"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         vzoel_emojis = vzoel_emoji.get_command_emojis('vzoel')
         signature = vzoel_emoji.get_vzoel_signature()
         
         vzoel_text = f"""**{signature} VZOEL FOX'S TERRITORY {signature}**
 
-{vzoel_emoji.get_emoji('utama')} **Welcome to VzoelFox's Domain**
+{vzoel_emoji.get_emoji('utama')} **Welcome to Vzoel Fox's's Domain**
 {vzoel_emoji.get_emoji('petir')} **Power:** UNLIMITED
 {vzoel_emoji.get_emoji('adder1')} **Mode:** PREMIUM ACTIVATED
 {vzoel_emoji.get_emoji('aktif')} **Status:** DOMINATING
@@ -270,7 +270,7 @@ async def emoji_info_handler(event):
             error_emojis = vzoel_emoji.get_status_emojis('error')
             error_msg = vzoel_emoji.format_emoji_response(
                 error_emojis, 
-                f"Emoji `{emoji_name}` not found in VzoelFox collection"
+                f"Emoji `{emoji_name}` not found in Vzoel Fox's collection"
             )
             await event.edit(error_msg)
         vzoel_client.increment_command_count()
@@ -281,7 +281,7 @@ async def list_emojis_handler(event):
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         all_emojis = vzoel_emoji.get_all_emojis()
         
-        emoji_list = "**VzoelFox's Premium Emoji Collection**\n\n"
+        emoji_list = "**Vzoel Fox's's Premium Emoji Collection**\n\n"
         
         for category_name, category_data in vzoel_emoji.categories.items():
             emoji_list += f"**{category_data['description']}**\n"
@@ -304,7 +304,7 @@ def show_usage():
     """Show usage instructions"""
     signature = vzoel_emoji.get_vzoel_signature()
     print(f"""
-{signature} VzoelFox's Assistant v2 Usage {signature}
+{signature} Vzoel Fox's's Assistant v2 Usage {signature}
 
 🤩 Commands:
   python main.py                    - Start the assistant
@@ -328,7 +328,7 @@ async def main():
     
     # Check for session generation argument
     if len(sys.argv) > 1 and sys.argv[1] == "--generate-session":
-        logger.info("🦊 VzoelFox's Assistant Session Generator")
+        logger.info("🦊 Vzoel Fox's's Assistant Session Generator")
         generator = SessionGenerator()
         await generator.generate_session_string()
         return

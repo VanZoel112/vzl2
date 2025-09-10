@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Fix Plugin Syntax Errors
-Repairs indentation and import placement issues in VzoelFox plugins
+Repairs indentation and import placement issues in Vzoel Fox's plugins
 """
 
 import os
@@ -114,7 +114,7 @@ def fix_file(file_path):
 
 def main():
     """Main fix function"""
-    print("🔧 VzoelFox Plugin Syntax Fix")
+    print("🔧 Vzoel Fox's Plugin Syntax Fix")
     print("==============================")
     
     # List of plugins that had errors

@@ -1,5 +1,5 @@
 """
-VzoelFox's Assistant v2 - Advanced Client
+Vzoel Fox's's Assistant v2 - Advanced Client
 Enhanced client with plugin system and auto-update features
 Created by: Vzoel Fox's
 Enhanced by: Vzoel Fox's Ltpn
@@ -30,7 +30,7 @@ from config import Config
 logger = logging.getLogger(__name__)
 
 class PluginManager:
-    """VzoelFox's Advanced Plugin Manager"""
+    """Vzoel Fox's's Advanced Plugin Manager"""
     
     def __init__(self, client, vzoel_client_instance=None):
         self.client = client
@@ -49,7 +49,7 @@ class PluginManager:
             
             # Create __init__.py for proper module import
             init_file = self.plugins_dir / "__init__.py"
-            init_file.write_text("# VzoelFox's Assistant Plugins\n")
+            init_file.write_text("# Vzoel Fox's's Assistant Plugins\n")
     
     def save_plugin_info(self):
         """Save plugin information to file"""
@@ -235,7 +235,7 @@ class PluginManager:
         return plugin_list
 
 class AutoUpdater:
-    """VzoelFox's Auto-Update System"""
+    """Vzoel Fox's's Auto-Update System"""
     
     def __init__(self, client):
         self.client = client
@@ -309,7 +309,7 @@ class AutoUpdater:
                 if not update_info["needs_update"]:
                     return {"status": "already_updated", "message": "Already up to date"}
             
-            logger.info(f"⚙️ Starting VzoelFox's Assistant update...")
+            logger.info(f"⚙️ Starting Vzoel Fox's's Assistant update...")
             
             # Stash local changes if any
             subprocess.run(['git', 'stash'], cwd=os.getcwd())
@@ -387,8 +387,8 @@ class AutoUpdater:
                 logger.error(f"Auto update check error: {e}")
                 await asyncio.sleep(300)  # Wait 5 minutes on error
 
-class VzoelFoxClient:
-    """VzoelFox's Advanced Assistant Client"""
+class Vzoel Fox'sClient:
+    """Vzoel Fox's's Advanced Assistant Client"""
     
     def __init__(self):
         self.client: Optional[TelegramClient] = None
@@ -468,10 +468,10 @@ class VzoelFoxClient:
             logger.error(f"❌ Failed to setup components: {e}")
     
     async def start(self) -> bool:
-        """Start the VzoelFox's Assistant client"""
+        """Start the Vzoel Fox's's Assistant client"""
         try:
             signature = vzoel_emoji.get_vzoel_signature()
-            logger.info(f"{signature} Starting VzoelFox's Assistant v2...")
+            logger.info(f"{signature} Starting Vzoel Fox's's Assistant v2...")
             
             # Initialize client
             if not await self.initialize_client():
@@ -486,7 +486,7 @@ class VzoelFoxClient:
             # Startup message
             startup_msg = vzoel_emoji.format_emoji_response(
                 ['utama', 'petir', 'aktif'],
-                f"VzoelFox's Assistant v2 is now ACTIVE!\n"
+                f"Vzoel Fox's's Assistant v2 is now ACTIVE!\n"
                 f"🤩 Plugins loaded: {self.stats['plugins_loaded']}\n"
                 f"⚙️ Auto-updater: Active"
             )
@@ -503,12 +503,12 @@ class VzoelFoxClient:
         """Stop the client gracefully"""
         try:
             if self.client and self.is_running:
-                logger.info("⛈ Stopping VzoelFox's Assistant...")
+                logger.info("⛈ Stopping Vzoel Fox's's Assistant...")
                 await self.client.disconnect()
                 self.is_running = False
                 
                 signature = vzoel_emoji.get_vzoel_signature()
-                logger.info(f"{signature} VzoelFox's Assistant stopped gracefully")
+                logger.info(f"{signature} Vzoel Fox's's Assistant stopped gracefully")
             
         except Exception as e:
             logger.error(f"❌ Error stopping client: {e}")
@@ -529,4 +529,4 @@ class VzoelFoxClient:
         self.stats['commands_executed'] += 1
 
 # Global client instance
-vzoel_client = VzoelFoxClient()
+vzoel_client = Vzoel Fox'sClient()

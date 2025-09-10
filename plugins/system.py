@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced System Plugin for VzoelFox Userbot - Premium Edition
+Enhanced System Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: System management dan update commands
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium System System
@@ -65,7 +65,7 @@ async def update_handler(event):
         result = await vzoel_client.auto_updater.perform_update(force=force)
         
         if result.get("status") == "success":
-            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} VZOEL Update Successful!\n{result['message']}\n\n{get_emoji('adder2')} Powered by VzoelFox Technology\n{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"
+            success_msg = f"{get_emoji('utama')} {get_emoji('centang')} {signature} VZOEL Update Successful!\n{result['message']}\n\n{get_emoji('adder2')} Powered by Vzoel Fox's Technology\n{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"
             await safe_edit_premium(msg, success_msg)
         else:
             error_msg = f"{get_emoji('merah')} {signature} VZOEL Update Failed\n{result.get('message', 'Unknown error')}\n\n{get_emoji('telegram')} - 2025 Vzoel Fox's (LTPN)"
@@ -90,7 +90,7 @@ async def stats_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        stats_text = f"""{signature} VzoelFox's Assistant Stats
+        stats_text = f"""{signature} Vzoel Fox's's Assistant Stats
 
 {get_emoji('utama')} User: {me.first_name}
 {get_emoji('aktif')} ID: {me.id}
@@ -129,7 +129,7 @@ async def plugins_handler(event):
             plugins_text += f"{get_emoji('kuning')} {description[:50]}{'...' if len(description) > 50 else ''}\n"
             plugins_text += f"{get_emoji('petir')} {commands}\n\n"
         
-        plugins_text += "© VzoelFox's Plugin System"
+        plugins_text += "© Vzoel Fox's's Plugin System"
         
         await safe_edit_premium(event, plugins_text)
         if vzoel_client:
@@ -142,7 +142,7 @@ async def restart_handler(event):
         from client import vzoel_client
 
         
-        restart_msg = f"{get_emoji('loading')} Restarting VzoelFox's Assistant..."
+        restart_msg = f"{get_emoji('loading')} Restarting Vzoel Fox's's Assistant..."
         
         msg = await event.edit(restart_msg)
         

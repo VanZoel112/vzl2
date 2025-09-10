@@ -119,7 +119,7 @@ def fix_plugin_completely(file_path):
 
 def main():
     """Main function to fix all plugins"""
-    print("🔧 Final VzoelFox Plugin Fix")
+    print("🔧 Final Vzoel Fox's Plugin Fix")
     print("=============================")
     
     # List of plugins with errors

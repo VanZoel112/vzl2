@@ -89,7 +89,7 @@ def clean_plugin(file_path):
 
 def main():
     """Clean all problematic plugins"""
-    print("🧹 VzoelFox Plugin Cleaner")
+    print("🧹 Vzoel Fox's Plugin Cleaner")
     print("==========================")
     
     error_plugins = [

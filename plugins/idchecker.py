@@ -7,10 +7,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced ID Checker Plugin for VzoelFox Userbot - Premium Edition
+Enhanced ID Checker Plugin for 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition
 Fitur: Advanced ID checking dengan premium display
-Founder Userbot: Vzoel Fox's Ltpn
-Version: 3.0.0 - Premium ID Checker System
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 0.0.0.𝟼𝟿 - Premium ID Checker System
 """
 
 from telethon import events
@@ -19,8 +19,8 @@ import asyncio
 import random
 
 # Plugin info
-__version__ = "3.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 async def vzoel_init(client, vzoel_emoji=None):
     """Plugin initialization"""
@@ -134,7 +134,7 @@ async def id_info_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        id_info = f"""{signature} VzoelFox ID Checker
+        id_info = f"""{signature} Vzoel Fox's ID Checker
 
 {get_emoji('utama')} Usage Methods:
 • .id @username - Check by username
@@ -157,9 +157,9 @@ async def id_info_handler(event):
 • Premium emoji integration
 • Step-by-step animation
 • Clean information display
-• VzoelFox branding
+• Vzoel Fox's branding
 
-By VzoelFox Assistant"""
+By Vzoel Fox's Assistant"""
         
         await safe_edit_premium(event, id_info)
         if vzoel_client:

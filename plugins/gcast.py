@@ -9,7 +9,7 @@ import unicodedata
 from telethon.tl.types import MessageEntityCustomEmoji
 
 """
-Enhanced Gcast Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Gcast Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Global cast dengan blacklist support dan premium emoji
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Gcast System
@@ -201,7 +201,7 @@ async def list_blacklist_handler(event):
             return
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-        blacklist_text = f"{signature} VzoelFox Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})\n\n"
+        blacklist_text = f"{signature} Vzoel Fox's Gcast Blacklist ({len(Config.GCAST_BLACKLIST)})\n\n"
         
         for i, chat_id in enumerate(Config.GCAST_BLACKLIST, 1):
             try:
@@ -214,7 +214,7 @@ async def list_blacklist_handler(event):
 
 
         
-        blacklist_text += "\nBy VzoelFox Assistant"
+        blacklist_text += "\nBy Vzoel Fox's Assistant"
 
         
         await safe_edit_premium(event, blacklist_text)
@@ -429,7 +429,7 @@ async def gcast_handler(event):
 └ Speed: {get_emoji('petir')} VZOEL ENGINE
 
 {get_emoji('adder2')} Ready for next broadcast!
-{get_emoji('telegram')} by VzoelFox Assistant"""
+{get_emoji('telegram')} by Vzoel Fox's Assistant"""
         await safe_edit_premium(event, complete_msg)
         
         if vzoel_client:
@@ -497,7 +497,7 @@ async def gcast_info_handler(event):
 ├ Safety: {get_emoji('centang')} BLACKLIST PROTECTED
 └ Version: 3.0.0 PREMIUM
 
-{get_emoji('adder2')} Powered by VzoelFox Technology"""
+{get_emoji('adder2')} Powered by Vzoel Fox's Technology"""
         
         await safe_edit_premium(event, info_text)
         if vzoel_client:

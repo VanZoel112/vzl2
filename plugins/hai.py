@@ -1,8 +1,8 @@
 """
-Plugin Hai untuk VzoelFox Userbot - Premium Edition  
+Plugin Hai untuk 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition  
 Fitur: Interactive greeting dengan edit looping dan premium emoji
-Founder Userbot: Vzoel Fox's Ltpn
-Version: 1.0.0 - Interactive Hai System
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 0.0.0.𝟼𝟿 - Interactive Hai System
 """
 
 from telethon import events
@@ -14,21 +14,21 @@ import os
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from central emoji template (VzoelFox style)
+# Import from central emoji template (Vzoel Fox's style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
     "name": "hai",
-    "version": "1.0.0",
+    "version": "0.0.0.𝟼𝟿",
     "description": "Interactive greeting dengan edit looping dan premium emoji",
-    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
     "commands": [".hai"],
-    "features": ["interactive greeting", "edit looping", "premium emoji", "VzoelFox branding"]
+    "features": ["interactive greeting", "edit looping", "premium emoji", "𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 branding"]
 }
 
-__version__ = "1.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -102,7 +102,7 @@ async def hai_handler(event):
             
             await safe_edit_premium(message, updated_hasil)
         
-        # Final display dengan signature VzoelFox
+        # Final display dengan signature Vzoel Fox's
         await asyncio.sleep(1)
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         

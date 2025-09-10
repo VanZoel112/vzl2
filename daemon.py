@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-VzoelFox Userbot 24/7 Daemon Runner
+Vzoel Fox's Userbot 24/7 Daemon Runner
 Founder Userbot: Vzoel Fox's Lutpan
 Version: 1.0.0 - Production Grade 24/7 Runner
 """
@@ -33,7 +33,7 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-logger = logging.getLogger('VzoelFox-Daemon')
+logger = logging.getLogger('Vzoel Fox's-Daemon')
 
 # Runtime stats
 STATS_FILE = Path("daemon_stats.json")
@@ -99,7 +99,7 @@ def signal_handler(signum, frame):
         runtime_stats["total_uptime"] += uptime
     
     save_stats()
-    logger.info("🦊 VzoelFox Daemon shutdown complete")
+    logger.info("🦊 Vzoel Fox's Daemon shutdown complete")
     sys.exit(0)
 
 def setup_signal_handlers():
@@ -180,11 +180,11 @@ async def monitor_process():
             logger.error(f"Monitor error: {e}")
 
 def start_main_process():
-    """Start the main VzoelFox process"""
+    """Start the main Vzoel Fox's process"""
     global main_process
     
     try:
-        logger.info("🚀 Starting main VzoelFox process...")
+        logger.info("🚀 Starting main Vzoel Fox's process...")
         
         # Start main.py as subprocess
         main_process = subprocess.Popen([
@@ -300,10 +300,10 @@ async def run_daemon():
     monitor_task.cancel()
 
 def print_banner():
-    """Print VzoelFox daemon banner"""
+    """Print Vzoel Fox's daemon banner"""
     banner = """
 ╔══════════════════════════════════════════════════════╗
-║             🦊 VzoelFox 24/7 Daemon                 ║
+║             🦊 Vzoel Fox's 24/7 Daemon                 ║
 ║           Production Grade Process Manager           ║
 ║                                                      ║
 ║     Founder: Vzoel Fox's Lutpan                      ║
@@ -355,7 +355,7 @@ async def main():
     runtime_stats["daemon_start_time"] = time.time()
     save_stats()
     
-    logger.info("🦊 VzoelFox 24/7 Daemon starting...")
+    logger.info("🦊 Vzoel Fox's 24/7 Daemon starting...")
     logger.info("🔍 Monitoring: System resources every 30 seconds")
     logger.info("📊 Stats: Auto-saved continuously")
     logger.info("🛑 Shutdown: Use Ctrl+C for graceful stop")
@@ -374,7 +374,7 @@ async def main():
         runtime_stats["total_uptime"] += uptime
     
     save_stats()
-    logger.info("🦊 VzoelFox Daemon has stopped")
+    logger.info("🦊 Vzoel Fox's Daemon has stopped")
 
 if __name__ == "__main__":
     try:
@@ -386,7 +386,7 @@ if __name__ == "__main__":
         # Check for help argument
         if len(sys.argv) > 1 and sys.argv[1] in ["--help", "-h", "help"]:
             print("""
-🦊 VzoelFox 24/7 Daemon Usage:
+🦊 Vzoel Fox's 24/7 Daemon Usage:
 
 Commands:
   python daemon.py           - Start 24/7 daemon

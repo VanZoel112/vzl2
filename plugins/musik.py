@@ -1,5 +1,5 @@
 """
-Plugin Musik untuk VzoelFox Userbot - Premium Edition
+Plugin Musik untuk Vzoel Fox's Userbot - Premium Edition
 Fitur: Music player dan downloader dengan YT-DLP dan Spotify support
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 1.0.0 - Music System
@@ -18,21 +18,21 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from central emoji template (VzoelFox style)
+# Import from central emoji template (Vzoel Fox's style)
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
     "name": "musik",
-    "version": "1.0.0",
+    "version": "0.0.0.𝟼𝟿",
     "description": "Music player dan downloader dengan YT-DLP dan Spotify support",
-    "author": "Founder Userbot: Vzoel Fox's Ltpn",
+    "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
     "commands": [".play", ".download", ".minfo", ".pause", ".resume", ".stop", ".volume", ".mute", ".mstatus"],
-    "features": ["YouTube music streaming", "Spotify integration", "music download", "premium emoji", "VzoelFox branding"]
+    "features": ["YouTube music streaming", "Spotify integration", "music download", "premium emoji", "𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 branding"]
 }
 
-__version__ = "1.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global references (will be set by vzoel_init)
 vzoel_client = None
@@ -90,7 +90,7 @@ YouTube requires manual verification untuk akses content
 Contact admin untuk setup YouTube cookies
 atau gunakan alternatif search method
 
-{get_emoji('utama')} VzoelFox Music System - Anti-Bot Protection"""
+{get_emoji('utama')} Vzoel Fox's Music System - Anti-Bot Protection"""
 
 def install_ytdlp():
     """Install yt-dlp if not available"""
@@ -341,7 +341,7 @@ async def play_music_handler(event):
 • Clear cache dan coba lagi
 • Update system packages
 
-{get_emoji('utama')} VzoelFox Music System"""
+{get_emoji('utama')} Vzoel Fox's Music System"""
                 await safe_edit_premium(event, error_msg)
                 return
         
@@ -361,7 +361,7 @@ async def play_music_handler(event):
 • Content restriction/geo-block
 • Rate limiting dari server YouTube
 
-{get_emoji('telegram')} VzoelFox telah mencoba:
+{get_emoji('telegram')} Vzoel Fox's telah mencoba:
 • Multiple User-Agent strategies
 • Cookie-based authentication
 • Alternative extractors (yt-dlp, youtube-dl)
@@ -378,7 +378,7 @@ async def play_music_handler(event):
 .play alan walker faded
 .play ed sheeran perfect
 
-{get_emoji('utama')} VzoelFox Advanced Music Search"""
+{get_emoji('utama')} Vzoel Fox's Advanced Music Search"""
             await safe_edit_premium(event, not_found_msg)
             return
         
@@ -409,7 +409,7 @@ async def play_music_handler(event):
 
 {get_emoji('adder1')} Link: {results[0]['url']}
 
-{get_emoji('petir')} VzoelFox Music Player Active!"""
+{get_emoji('petir')} Vzoel Fox's Music Player Active!"""
         
         await safe_edit_premium(event, playing_msg)
         
@@ -451,7 +451,7 @@ async def download_music_handler(event):
 • Clear cache dan coba lagi
 • Update system packages
 
-{get_emoji('utama')} VzoelFox Music System"""
+{get_emoji('utama')} Vzoel Fox's Music System"""
                 await safe_edit_premium(event, error_msg)
                 return
         
@@ -494,7 +494,7 @@ async def download_music_handler(event):
 
 {get_emoji('adder2')} File siap digunakan!
 
-{get_emoji('telegram')} VzoelFox Downloader"""
+{get_emoji('telegram')} Vzoel Fox's Downloader"""
             
             await safe_edit_premium(event, success_msg)
             
@@ -504,7 +504,7 @@ async def download_music_handler(event):
                     await event.client.send_file(
                         event.chat_id, 
                         downloaded_file,
-                        caption=f"{get_emoji('utama')} Downloaded by VzoelFox Music System"
+                        caption=f"{get_emoji('utama')} Downloaded by Vzoel Fox's Music System"
                     )
             except Exception as e:
                 print(f"Error sending file: {e}")
@@ -525,7 +525,7 @@ async def download_music_handler(event):
 
 {get_emoji('telegram')} Coba lagi dalam beberapa menit
 
-{get_emoji('utama')} VzoelFox Downloader"""
+{get_emoji('utama')} Vzoel Fox's Downloader"""
             await safe_edit_premium(event, error_msg)
         
         if vzoel_client:
@@ -542,7 +542,7 @@ async def music_info_handler(event):
         # Count downloaded files
         downloaded_count = len(list(MUSIC_DIR.glob("*.mp3")))
         
-        music_info = f"""{signature} VzoelFox Music System
+        music_info = f"""{signature} Vzoel Fox's Music System
 
 {get_emoji('utama')} Features:
 • YouTube music search and streaming
@@ -573,9 +573,9 @@ async def music_info_handler(event):
 .download https://youtu.be/xxx - Download dari URL
 .download alan walker faded - Search dan download
 
-{get_emoji('adder2')} Powered by VzoelFox Technology
+{get_emoji('adder2')} Powered by Vzoel Fox's Technology
 
-By VzoelFox Assistant"""
+By Vzoel Fox's Assistant"""
         
         await safe_edit_premium(event, music_info)
         
@@ -611,7 +611,7 @@ async def cookie_check_handler(event):
 .play [song name] - Search and play music
 .download [song/url] - Download audio file
 
-{get_emoji('petir')} VzoelFox Music System - Cookies Valid"""
+{get_emoji('petir')} Vzoel Fox's Music System - Cookies Valid"""
         else:
             status_msg = f"""{get_emoji('merah')} COOKIES STATUS: INVALID
             
@@ -635,7 +635,7 @@ async def cookie_check_handler(event):
 3. Export cookies dengan extension
 4. Save ke cookies.txt
 
-{get_emoji('petir')} VzoelFox Music System - Fix Required"""
+{get_emoji('petir')} Vzoel Fox's Music System - Fix Required"""
         
         await safe_edit_premium(event, status_msg)
         

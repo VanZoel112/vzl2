@@ -1,8 +1,8 @@
 """
-Enhanced Help Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Help Plugin for 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition
 Fitur: Help system dengan latency detection, pagination dan emoji looping
-Founder Userbot: Vzoel Fox's Ltpn
-Version: 3.0.0 - Premium Help System with Latency
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 0.0.0.𝟼𝟿 - Premium Help System with Latency
 """
 
 from telethon import events
@@ -16,12 +16,12 @@ import random
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import from central emoji template (VzoelFox style)
+# Import from central emoji template (Vzoel Fox's style)
 from plugins.emoji_template import get_emoji, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
 
 # Plugin info
-__version__ = "3.0.0"
-__author__ = "Founder Userbot: Vzoel Fox's Ltpn"
+__version__ = "0.0.0.𝟼𝟿"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global variables for help navigation and animation
 help_sessions = {}  # {user_id: {'page': int, 'total_pages': int}}
@@ -49,7 +49,7 @@ def get_all_plugins():
             try:
                 spec = __import__(f'plugins.{plugin_name}', fromlist=['__version__', '__author__'])
                 version = getattr(spec, '__version__', 'Unknown')
-                author = getattr(spec, '__author__', 'VzoelFox')
+                author = getattr(spec, '__author__', '𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥\'𝑠')
                 
                 # Get commands by looking for @events.register patterns
                 commands = []
@@ -73,7 +73,7 @@ def get_all_plugins():
                 plugins.append({
                     'name': plugin_name,
                     'version': 'Unknown',
-                    'author': 'VzoelFox',
+                    'author': '𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥\'𝑠',
                     'commands': ['Unknown'],
                     'file': file
                 })
@@ -145,7 +145,7 @@ async def create_help_page(page=0, latency_ms=100):
     latency_emoji = get_latency_emoji(latency_ms)
     
     # Build help content sesuai template
-    help_content = f"""{get_emoji('utama')} Bantuan untuk Vzoel Assistant plugin
+    help_content = f"""{get_emoji('utama')} Bantuan untuk 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 plugin
 {get_emoji('kuning')} Total plugin : {total_plugins}
 Latency : {latency_emoji} {latency_ms}ms
 
@@ -162,7 +162,9 @@ Latency : {latency_emoji} {latency_ms}ms
 .next untuk melihat plugins berikutnya
 .back untuk melihat plugins sebelumnya
 
-{get_emoji('utama')} by Vzoel Lutpan"""
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
 
     return help_content, page, total_pages
 
@@ -357,7 +359,7 @@ async def help_info_handler(event):
         latency_ms = await get_latency()
         latency_emoji = get_latency_emoji(latency_ms)
         
-        help_info = f"""{get_emoji('utama')} VzoelFox Help System
+        help_info = f"""{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Help System
 
 {get_emoji('centang')} Loaded Plugins: {len(plugins)}
 {get_emoji('aktif')} Latency: {latency_emoji} {latency_ms}ms
@@ -377,7 +379,9 @@ async def help_info_handler(event):
 • Plugin descriptions yang lengkap
 • Real-time latency monitoring
 
-{get_emoji('adder2')} by Vzoel Lutpan"""
+𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+
+©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
         
         await safe_edit_premium(event, help_info)
         

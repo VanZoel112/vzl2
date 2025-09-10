@@ -1,5 +1,5 @@
 """
-Enhanced Limit Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Limit Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Limit checking untuk spam prevention
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Limit System
@@ -123,7 +123,7 @@ async def perform_limit_check(event, msg):
 • Gunakan delay lebih lama antar pesan
 • Hindari broadcast massal
 
-**VzoelFox Limit Checker**"""
+**Vzoel Fox's Limit Checker**"""
             await safe_edit_premium(msg, restriction_msg)
         elif account_status['good_news']:
             # Good news from spambot - account is safe
@@ -134,7 +134,7 @@ async def perform_limit_check(event, msg):
 {get_emoji('telegram')} **Spam Protection:** Enabled
 {get_emoji('petir')} **Limit Status:** No Restrictions
 
-{get_emoji('centang')} **VzoelFox Features:**
+{get_emoji('centang')} **Vzoel Fox's Features:**
 • Flood protection aktif
 • Spam detection enabled
 • Account dalam kondisi baik
@@ -157,7 +157,7 @@ async def perform_limit_check(event, msg):
 • Koneksi tidak stabil
 • Respons bot tidak standar
 
-**VzoelFox Limit Checker**"""
+**Vzoel Fox's Limit Checker**"""
             await safe_edit_premium(msg, unclear_msg)
     
     except Exception as e:
@@ -260,7 +260,7 @@ Sistem untuk memeriksa status akun dan pembatasan melalui @spambot dengan mengir
 {get_emoji('petir')} **Usage:**
 Simply type `.limit` to start comprehensive account restriction check via @spambot interaction.
 
-**By VzoelFox Assistant**"""
+**By Vzoel Fox's Assistant**"""
         
         
         msg = await event.edit(limit_info)

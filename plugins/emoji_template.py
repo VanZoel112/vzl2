@@ -1,6 +1,6 @@
 """
 Template Premium Emoji untuk Semua Plugin VZL2 ASSISTANT
-Sistem mapping yang sama persis dengan VzoelFox
+Sistem mapping yang sama persis dengan Vzoel Fox's
 Author: Vzoel Fox's (Enhanced by Morgan) 
 Version: 1.0.0
 """

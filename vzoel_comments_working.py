@@ -1,12 +1,12 @@
 """
-VzoelFox Working Comment System
+Vzoel Fox's Working Comment System
 Based on successful VanZoel112/vzoelfox comment structure
 Simplified and working approach for process, results and responses
 Created by: Vzoel Fox's
 """
 
 class VzoelWorkingComments:
-    """Working comment system based on VzoelFox structure"""
+    """Working comment system based on Vzoel Fox's structure"""
     
     def __init__(self):
         self.comments = {
@@ -51,10 +51,10 @@ class VzoelWorkingComments:
             
             # Response messages
             "response": {
-                "ping": "🏓 PONG!!!! VzoelFox Assistant Active",
-                "alive_start": "🔧 Starting VzoelFox Assistant...",
-                "alive_ready": "✨ VzoelFox Assistant Ready!",
-                "help": "📚 VzoelFox Help System",
+                "ping": "🏓 PONG!!!! Vzoel Fox's Assistant Active",
+                "alive_start": "🔧 Starting Vzoel Fox's Assistant...",
+                "alive_ready": "✨ Vzoel Fox's Assistant Ready!",
+                "help": "📚 Vzoel Fox's Help System",
                 "gcast_start": "📢 Starting global cast...",
                 "gcast_done": "✅ Global cast completed!",
                 "system_info": "💻 System Information"
@@ -62,14 +62,14 @@ class VzoelWorkingComments:
             
             # Vzoel branding
             "vzoel": {
-                "signature": "🦊 VzoelFox's Assistant",
+                "signature": "🦊 Vzoel Fox's's Assistant",
                 "creator": "Created by: Vzoel Fox's",
                 "enhanced": "Enhanced by Vzoel Fox's Ltpn",
                 "copyright": "©2025 ~ Vzoel Fox's (LTPN)",
                 "repo": "Vzoel Fox's Original Repository",
                 "ig": "Instagram : vzoel.fox_s",
                 "zone": "Zone : Indonesia 🇮🇩",
-                "repo_notice": "Repository ini adalah Original dari VzoelFox Assistant. Dilarang keras melakukan recode, rename, atau distribusi ulang tanpa izin!"
+                "repo_notice": "Repository ini adalah Original dari Vzoel Fox's Assistant. Dilarang keras melakukan recode, rename, atau distribusi ulang tanpa izin!"
             }
         }
     
@@ -102,7 +102,7 @@ class VzoelWorkingComments:
             try:
                 if key == "ping":
                     ping_responses = {
-                        "result": "🏓 PONG!!!! VzoelFox Assistant Active",
+                        "result": "🏓 PONG!!!! Vzoel Fox's Assistant Active",
                         "testing": "📡 Testing latency...",
                         "with_latency": "🏓 PONG!!!! Latency {latency}ms"
                     }
@@ -139,17 +139,17 @@ class VzoelWorkingComments:
     def get_alive_phases(self) -> list:
         """Get 12-phase alive animation sequence"""
         return [
-            "🚀 Initializing VzoelFox Assistant...",
+            "🚀 Initializing Vzoel Fox's Assistant...",
             "⚙️ Loading premium components...", 
-            "🌐 Connecting to VzoelFox servers...",
+            "🌐 Connecting to Vzoel Fox's servers...",
             "✨ Validating premium emojis...",
             "🔍 Scanning installed plugins...",
             "🛡️ Checking system integrity...",
-            "🔐 Verifying VzoelFox credentials...",
+            "🔐 Verifying Vzoel Fox's credentials...",
             "👤 Loading assistant profile...",
             "🖥️ Preparing display interface...",
             "⚡ Finalizing system status...",
-            "🎉 VzoelFox Assistant ready!",
+            "🎉 Vzoel Fox's Assistant ready!",
             "📊 Generating status display..."
         ]
 

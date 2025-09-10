@@ -1,6 +1,6 @@
 """
-VzoelFox's Session Generator
-Interactive session generator for VzoelFox's Assistant v2
+Vzoel Fox's's Session Generator
+Interactive session generator for Vzoel Fox's's Assistant v2
 Created by: Vzoel Fox's
 """
 
@@ -11,10 +11,10 @@ from telethon.sessions import StringSession
 from telethon.errors import SessionPasswordNeededError, PhoneNumberInvalidError, PhoneCodeInvalidError
 
 def get_vzoel_banner():
-    """Get VzoelFox's signature banner"""
+    """Get Vzoel Fox's's signature banner"""
     return """
 ╔══════════════════════════════════════════════════════════╗
-║          🦊 VzoelFox's Session Generator v2              ║
+║          🦊 Vzoel Fox's's Session Generator v2              ║
 ║        Interactive Telegram Session Generator            ║
 ║            Created by: Vzoel Fox's                       ║
 ╚══════════════════════════════════════════════════════════╝
@@ -166,7 +166,7 @@ async def generate_string_session():
 def save_to_env_file(string_session, api_id, api_hash):
     """Save session to .env file"""
     try:
-        env_content = f"""# VzoelFox's Assistant v2 Configuration
+        env_content = f"""# Vzoel Fox's's Assistant v2 Configuration
 # Generated automatically by session generator
 
 # API Configuration (Required)
@@ -219,14 +219,14 @@ async def main():
                 api_id, api_hash = get_api_credentials()
                 save_to_env_file(string_session, api_id, api_hash)
         
-        print("\n🦊 Terima kasih telah menggunakan VzoelFox's Session Generator!")
-        print("🚀 Sekarang Anda dapat menjalankan VzoelFox's Assistant v2")
+        print("\n🦊 Terima kasih telah menggunakan Vzoel Fox's's Session Generator!")
+        print("🚀 Sekarang Anda dapat menjalankan Vzoel Fox's's Assistant v2")
         
     except Exception as e:
         print(f"❌ Error dalam main function: {e}")
 
 if __name__ == "__main__":
-    print("🔄 Memulai VzoelFox's Session Generator...")
+    print("🔄 Memulai Vzoel Fox's's Session Generator...")
     
     # Check if telethon is installed
     try:

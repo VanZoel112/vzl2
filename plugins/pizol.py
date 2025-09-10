@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
 
 """
-Enhanced Pizol Plugin for VzoelFox Userbot - Premium Edition
+Enhanced Pizol Plugin for Vzoel Fox's Userbot - Premium Edition
 Fitur: Pizol command dengan premium branding
 Founder Userbot: Vzoel Fox's Ltpn
 Version: 3.0.0 - Premium Pizol System
@@ -40,7 +40,7 @@ async def pizol_handler(event):
         # 40-phase animation sequence
         animation_phases = [
             "Initializing Pizol System...",
-            "Loading VzoelFox Core...",
+            "Loading Vzoel Fox's Core...",
             "Connecting to Pizol Servers...",
             "Validating Pizol Credentials...",
             "Scanning System Components...",
@@ -102,7 +102,7 @@ async def pizol_handler(event):
         pizol_display = f"""{get_emoji('utama')} PIZOL VZOEL ASSISTANT
 
 {get_emoji('centang')} System Status : FULLY OPERATIONAL
-{get_emoji('aktif')} Core Engine : VzoelFox v2.0.0
+{get_emoji('aktif')} Core Engine : Vzoel Fox's v2.0.0
 {get_emoji('petir')} Power Level : MAXIMUM
 {get_emoji('telegram')} Plugins Loaded : {plugin_count}
 {get_emoji('proses')} Mode : PIZOL ACTIVATED
@@ -122,7 +122,7 @@ async def pizol_handler(event):
 • Multi-Chat Voice Support
 
 {random_emoji3} PIZOL READY !!!
-Semua sistem VzoelFox Assistant telah dimuat dengan sempurna!
+Semua sistem Vzoel Fox's Assistant telah dimuat dengan sempurna!
 Ready untuk menjalankan semua perintah premium!
 
 {get_emoji('adder1')} ©2025 ~ PIZOL VZOEL FOX'S SYSTEM"""
@@ -145,7 +145,7 @@ async def pizol_info_handler(event):
         pizol_info = f"""{signature} PIZOL System Information
 
 {get_emoji('utama')} What is PIZOL?
-PIZOL adalah sistem extended dari VzoelFox Assistant dengan animasi 40 fase yang menampilkan status sistem secara detail dan menyeluruh.
+PIZOL adalah sistem extended dari Vzoel Fox's Assistant dengan animasi 40 fase yang menampilkan status sistem secara detail dan menyeluruh.
 
 {get_emoji('centang')} 40-Phase Animation Sequence:
 1-10: System Initialization & Core Loading
@@ -158,7 +158,7 @@ PIZOL adalah sistem extended dari VzoelFox Assistant dengan animasi 40 fase yang
 • Comprehensive system status display
 • Advanced feature enumeration
 • Professional technology showcase
-• Premium VzoelFox branding
+• Premium Vzoel Fox's branding
 
 {get_emoji('telegram')} Display Elements:
 • System operational status
@@ -175,7 +175,7 @@ PIZOL adalah sistem extended dari VzoelFox Assistant dengan animasi 40 fase yang
 {get_emoji('petir')} Usage:
 Simply type .pizol to activate the full 40-phase animation sequence and view comprehensive system status.
 
-By VzoelFox Assistant"""
+By Vzoel Fox's Assistant"""
         
         # Display pizol info with premium emoji support
         await safe_edit_premium(event, pizol_info)
