@@ -17,8 +17,9 @@ requests>=2.31.0
 # Version Control
 gitpython>=3.1.0
 
-# Audio & Music (for local musik.py system)
-mutagen>=1.47.0
+# Audio & Music (for Spotify musik.py system)
+spotipy>=2.24.0
+yt-dlp>=2024.12.13
 ffmpeg-python>=0.2.0
 
 # System Monitoring (for daemon.py)
