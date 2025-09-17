@@ -20,7 +20,10 @@ import time
 import hashlib
 
 from telethon import TelegramClient, events
-from telethon.errors import SessionPasswordNeededError, ApiIdInvalidError
+from telethon.errors import (
+    SessionPasswordNeededError, ApiIdInvalidError, SessionRevokedError,
+    AuthKeyUnregisteredError, AuthKeyDuplicatedError, UnauthorizedError
+)
 from telethon.tl.types import User
 from telethon.sessions import StringSession
 
@@ -395,6 +398,7 @@ class VzoelFoxClient:
         self.config = Config()
         self.plugin_manager: Optional[PluginManager] = None
         self.auto_updater: Optional[AutoUpdater] = None
+        self.recovery_manager: Optional['SessionRecoveryManager'] = None
         self.is_running = False
         self.start_time = time.time()
         self.stats = {
@@ -404,8 +408,43 @@ class VzoelFoxClient:
         }
         
     async def initialize_client(self) -> bool:
-        """Initialize the client with session"""
+        """Initialize the client with session and automatic recovery"""
         try:
+            # Initialize recovery manager
+            from session_recovery import SessionRecoveryManager
+            self.recovery_manager = SessionRecoveryManager(self.config)
+            
+            # Check session validity first
+            logger.info("🔍 Checking session validity...")
+            check_result = await self.recovery_manager.check_session_validity()
+            
+            if not check_result["valid"] and check_result["needs_recovery"]:
+                logger.warning(f"⚠️ Session recovery needed: {check_result['error_type']}")
+                logger.warning(f"❌ Error: {check_result['error']}")
+                
+                # Backup current session
+                logger.info("📁 Backing up current session...")
+                self.recovery_manager.backup_current_session()
+                
+                # Remove expired sessions
+                removed_files = self.recovery_manager.remove_expired_sessions()
+                if removed_files:
+                    logger.info(f"🗑️ Removed expired session files: {removed_files}")
+                
+                # Suggest recovery
+                signature = vzoel_emoji.get_vzoel_signature()
+                recovery_msg = vzoel_emoji.format_emoji_response(
+                    ['warning', 'tools'],
+                    f"**Session Recovery Required**\n"
+                    f"Error Type: {check_result['error_type']}\n"
+                    f"Run recovery with: python session_recovery.py"
+                )
+                
+                logger.error(recovery_msg)
+                logger.error("🔧 Manual recovery required. Bot cannot start automatically.")
+                return False
+            
+            # Initialize client normally
             if self.config.STRING_SESSION:
                 logger.info("🤩 Using string session...")
                 self.client = TelegramClient(
@@ -426,8 +465,8 @@ class VzoelFoxClient:
             if not await self.client.is_user_authorized():
                 logger.error("❌ Client not authorized!")
                 logger.error("🔑 STRING_SESSION tidak ditemukan atau tidak valid")
-                logger.error("📱 Jalankan generate_session.py untuk membuat session baru:")
-                logger.error("   python generate_session.py")
+                logger.error("📱 Jalankan session recovery untuk membuat session baru:")
+                logger.error("   python session_recovery.py")
                 return False
             
             # Get user info
@@ -438,12 +477,38 @@ class VzoelFoxClient:
             
             return True
             
+        except (SessionRevokedError, AuthKeyUnregisteredError, AuthKeyDuplicatedError, UnauthorizedError) as e:
+            logger.error(f"❌ Session error detected: {type(e).__name__}: {e}")
+            
+            # Auto backup and cleanup
+            if self.recovery_manager:
+                logger.info("📁 Backing up expired session...")
+                self.recovery_manager.backup_current_session()
+                
+                logger.info("🗑️ Removing expired session files...")
+                removed_files = self.recovery_manager.remove_expired_sessions()
+                if removed_files:
+                    logger.info(f"Removed: {removed_files}")
+            
+            # Suggest recovery
+            signature = vzoel_emoji.get_vzoel_signature()
+            recovery_msg = vzoel_emoji.format_emoji_response(
+                ['warning', 'tools'],
+                f"**Session Expired/Revoked**\n"
+                f"Error: {type(e).__name__}\n"
+                f"Run recovery: python session_recovery.py"
+            )
+            
+            logger.error(recovery_msg)
+            logger.error("🔧 Session recovery required. Use: python session_recovery.py")
+            return False
+            
         except Exception as e:
             logger.error(f"❌ Failed to initialize client: {e}")
             if "STRING_SESSION" in str(e) or "unauthorized" in str(e).lower():
                 logger.error("🔑 Session tidak valid atau tidak ditemukan")
-                logger.error("📱 Jalankan generate_session.py untuk membuat session baru:")
-                logger.error("   python generate_session.py")
+                logger.error("📱 Jalankan session recovery untuk membuat session baru:")
+                logger.error("   python session_recovery.py")
             return False
     
     async def setup_components(self):

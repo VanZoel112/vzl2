@@ -22,6 +22,58 @@ Script ini akan:
 
 ---
 
+## 🔧 Session Recovery System
+
+### Automatic Session Recovery
+VzoelFox's Assistant v2 dilengkapi dengan sistem recovery otomatis untuk session yang kadaluwarsa:
+
+**Features:**
+- ✅ **Auto-detection** session kadaluwarsa
+- ✅ **Auto-backup** session lama sebelum recovery  
+- ✅ **Auto-cleanup** file session yang expired
+- ✅ **Interactive recovery** dengan guided setup
+- ✅ **Session validation** otomatis saat startup
+
+### Quick Recovery Commands
+
+**1. One-click Recovery:**
+```bash
+python quick_recovery.py
+```
+Script all-in-one untuk recovery session dengan test otomatis.
+
+**2. Manual Recovery:**
+```bash
+python session_recovery.py
+```
+Recovery interaktif dengan control penuh.
+
+**3. In-Bot Commands:**
+```
+.session          # Status session lengkap
+.sessioncheck     # Check validitas session
+.sessionbackup    # Backup session manual  
+.sessionrecovery  # Guide recovery lengkap
+```
+
+### When Recovery is Needed
+
+Recovery diperlukan ketika muncul error:
+- 🚨 `SessionRevokedError` - Session dibatalkan Telegram
+- 🚨 `AUTH_KEY_UNREGISTERED` - Key tidak terdaftar
+- 🚨 `AUTH_KEY_DUPLICATED` - Parallel session terdeteksi
+- 🚨 `UnauthorizedError` - Session tidak valid
+
+### Recovery Process
+
+1. **Backup Otomatis**: Session lama di-backup ke `session_backups/`
+2. **Cleanup**: File session expired dihapus otomatis
+3. **Interactive Setup**: Guided setup session baru
+4. **Auto-Update**: File `.env` diupdate otomatis
+5. **Validation**: Test session baru sebelum selesai
+
+---
+
 ## 📱 Manual Setup
 
 ### 1️⃣ Generate Session
