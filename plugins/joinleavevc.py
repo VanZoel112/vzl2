@@ -50,9 +50,9 @@ async def vzoel_init(client, vzoel_emoji=None):
     await load_settings()
 
 def check_pytgcalls():
-    """Check if PyTgCalls is available"""
+    """Check if py-tgcalls is available"""
     try:
-        import pytgcalls
+        from pytgcalls import PyTgCalls
         return True
     except ImportError:
         return False
@@ -83,19 +83,14 @@ async def auto_join_vc(client, chat_id, stealth=True):
             return False
 
         from pytgcalls import PyTgCalls
-        from pytgcalls.types.input_stream import InputAudioStream, InputStream
 
         # Create PyTgCalls instance if not exists
         if chat_id not in vc_instances:
             vc_instances[chat_id] = PyTgCalls(client)
             await vc_instances[chat_id].start()
 
-        # Join voice chat with blank audio stream (stealth mode)
-        await vc_instances[chat_id].join_group_call(
-            chat_id,
-            InputStream(InputAudioStream()),
-            stream_type="blank"
-        )
+        # Join voice chat (py-tgcalls API)
+        await vc_instances[chat_id].join_group_call(chat_id)
 
         vc_status[chat_id] = {
             'joined': True,

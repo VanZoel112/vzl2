@@ -40,8 +40,13 @@ Plugin canggih untuk otomatis bergabung/keluar dari voice chat menggunakan mode 
 
 ### 1. Install Dependencies
 ```bash
+# Install py-tgcalls (bukan pytgcalls!)
 pip install py-tgcalls -U
-pkg install ffmpeg  # Untuk Termux
+
+# Install system dependencies
+pkg install ffmpeg opus  # Untuk Termux
+# atau
+apt install ffmpeg opus-tools  # Untuk Ubuntu/Debian
 ```
 
 ### 2. Restart Bot
@@ -92,9 +97,15 @@ Hadir di voice chat sambil melakukan aktivitas lain.
 
 ## 🔧 Troubleshooting
 
-### PyTgCalls Error
+### py-tgcalls Error
 ```bash
-pip uninstall py-tgcalls
+# Uninstall pytgcalls lama jika ada
+pip uninstall pytgcalls -y
+
+# Install py-tgcalls yang benar
+pip install py-tgcalls -U
+
+# Jika masih error, install versi spesifik
 pip install py-tgcalls==0.9.7
 ```
 
