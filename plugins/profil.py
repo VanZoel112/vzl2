@@ -279,12 +279,19 @@ def create_default_avatar(name, size=200):
     
     # Draw initials
     if font:
-        bbox = draw.textbbox((0, 0), initials, font=font)
-        text_width = bbox[2] - bbox[0]
-        text_height = bbox[3] - bbox[1]
-        x = (size[0] - text_width) // 2
-        y = (size[1] - text_height) // 2
-        draw.text((x, y), initials, fill=(255, 255, 255), font=font)
+        try:
+            bbox = draw.textbbox((0, 0), initials, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+            x = (size[0] - text_width) // 2
+            y = (size[1] - text_height) // 2
+            draw.text((x, y), initials, fill=(255, 255, 255), font=font)
+        except Exception as e:
+            print(f"Error adding branding: {e}")
+            # Fallback: draw text at center without bbox calculation
+            x = size[0] // 2 - 20
+            y = size[1] // 2 - 10
+            draw.text((x, y), initials, fill=(255, 255, 255), font=font)
     
     return img
 

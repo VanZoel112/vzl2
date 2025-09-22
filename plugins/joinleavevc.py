@@ -146,7 +146,7 @@ async def auto_leave_timer(client, chat_id, delay):
 @events.register(events.NewMessage(pattern=r'\.autojoin\s*(.*)'))
 async def auto_join_handler(event):
     """Enable/disable auto join for current group"""
-    if event.is_private or not await is_owner(event.sender_id):
+    if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
     from client import vzoel_client
@@ -214,7 +214,7 @@ async def auto_join_handler(event):
 @events.register(events.NewMessage(pattern=r'\.autovc\s*(.*)'))
 async def auto_vc_handler(event):
     """Global auto vc settings"""
-    if not await is_owner(event.sender_id):
+    if not await is_owner(event.client, event.sender_id):
         return
 
     from client import vzoel_client
@@ -298,7 +298,7 @@ async def auto_vc_handler(event):
 @events.register(events.NewMessage(pattern=r'\.joinvc'))
 async def manual_join_handler(event):
     """Manual join voice chat with clone mode"""
-    if event.is_private or not await is_owner(event.sender_id):
+    if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
     from client import vzoel_client
@@ -350,7 +350,7 @@ async def manual_join_handler(event):
 @events.register(events.NewMessage(pattern=r'\.leavevc'))
 async def manual_leave_handler(event):
     """Manual leave voice chat"""
-    if event.is_private or not await is_owner(event.sender_id):
+    if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
     from client import vzoel_client
@@ -386,7 +386,7 @@ async def manual_leave_handler(event):
 @events.register(events.NewMessage(pattern=r'\.vcstatus'))
 async def vc_status_handler(event):
     """Show comprehensive voice chat status"""
-    if not await is_owner(event.sender_id):
+    if not await is_owner(event.client, event.sender_id):
         return
 
     from client import vzoel_client
