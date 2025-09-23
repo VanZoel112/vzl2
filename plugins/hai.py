@@ -92,15 +92,27 @@ async def hai_handler(event):
         
         # Looping terbatas untuk mencegah flood wait
         for i in range(6):  # Reduced from 20 to 6 loops
-            await asyncio.sleep(4.0)  # Increased from 1.5s to 4.0s delay
-            
+            await asyncio.sleep(3.0)  # Optimized timing for better animation
+
             # Generate emoji baru HANYA untuk bagian paling atas
             new_emoji_top = get_emoji(random.choice(all_premium_emojis))
-            
+
             # Update hasil dengan emoji baru HANYA di baris pertama
-            updated_hasil = f"""{new_emoji_top} {hasil_flat}"""
-            
-            await safe_edit_premium(message, updated_hasil)
+            updated_hasil = f"""{new_emoji_top} Profil by Vzoel Assistant
+{get_emoji('biru')} Nama : Vzoel Fox's
+{get_emoji('merah')} Zodiac sign : Cancer
+{get_emoji('kuning')} Hobby : Ngegame,Berenang,dan Belajar hal baru.
+{get_emoji('biru')} Umur : yg jelas bukan om²
+
+{get_emoji('utama')} Developer Assistant : Vzoel Fox's"""
+
+            # Enhanced edit with error handling
+            edit_success = await safe_edit_premium(message, updated_hasil)
+            if not edit_success:
+                print(f"DEBUG: Animation edit {i+1} failed, retrying...")
+                await asyncio.sleep(1.0)
+                # Retry once more
+                await safe_edit_premium(message, updated_hasil)
         
         # Final display dengan signature Vzoel Fox's
         await asyncio.sleep(1)

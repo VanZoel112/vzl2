@@ -1,10 +1,11 @@
 """
 Template Premium Emoji untuk Semua Plugin VZL2 ASSISTANT
 Sistem mapping yang sama persis dengan Vzoel Fox's
-Author: Vzoel Fox's (Enhanced by Morgan) 
+Author: Vzoel Fox's (Enhanced by Morgan)
 Version: 1.0.0
 """
 
+import asyncio
 from telethon.tl.types import MessageEntityCustomEmoji
 
 # ===== PREMIUM EMOJI CONFIGURATION (STANDALONE) =====
@@ -31,32 +32,50 @@ def create_premium_entities(text):
     """Create premium emoji entities for text with proper offset calculation"""
     try:
         entities = []
-        offset = 0
-        
-        for char_idx, char in enumerate(text):
-            # Check if this character is one of our premium emojis
-            for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
-                emoji_char = emoji_data['char']
-                emoji_id = emoji_data['id']
-                
-                # Check if current position matches emoji
-                if text[char_idx:char_idx + len(emoji_char)] == emoji_char:
-                    # Calculate proper UTF-16 offset for this emoji position
-                    text_before = text[:char_idx]
+        used_positions = set()
+
+        # Sort emojis by length (longest first) to prevent partial matches
+        sorted_emojis = sorted(PREMIUM_EMOJIS.items(),
+                             key=lambda x: len(x[1]['char']),
+                             reverse=True)
+
+        for emoji_type, emoji_data in sorted_emojis:
+            emoji_char = emoji_data['char']
+            emoji_id = emoji_data['id']
+
+            # Find all occurrences of this emoji
+            start_pos = 0
+            while True:
+                pos = text.find(emoji_char, start_pos)
+                if pos == -1:
+                    break
+
+                # Check if this position is already used
+                if not any(p in used_positions for p in range(pos, pos + len(emoji_char))):
+                    # Calculate UTF-16 offset
+                    text_before = text[:pos]
                     utf16_offset = len(text_before.encode('utf-16-le')) // 2
-                    
-                    # Calculate UTF-16 length of emoji
+
+                    # Calculate UTF-16 length
                     emoji_utf16_length = len(emoji_char.encode('utf-16-le')) // 2
-                    
+
                     entities.append(MessageEntityCustomEmoji(
                         offset=utf16_offset,
                         length=emoji_utf16_length,
                         document_id=int(emoji_id)
                     ))
-                    break
-        
+
+                    # Mark positions as used
+                    for p in range(pos, pos + len(emoji_char)):
+                        used_positions.add(p)
+
+                start_pos = pos + 1
+
+        # Sort entities by offset for proper order
+        entities.sort(key=lambda x: x.offset)
         return entities
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG: Premium entities error: {e}")
         return []
 
 async def safe_send_premium(event, text, buttons=None):
@@ -89,21 +108,35 @@ async def safe_edit_premium(message_or_event, text, buttons=None):
     """Edit message with premium entities (standalone version)"""
     try:
         entities = create_premium_entities(text)
-        
-        if entities:
-            if buttons:
-                return await message_or_event.edit(text, formatting_entities=entities, buttons=buttons)
-            else:
-                return await message_or_event.edit(text, formatting_entities=entities)
-        else:
-            # No premium emojis found, edit normally
-            if buttons:
-                return await message_or_event.edit(text, buttons=buttons)
-            else:
-                return await message_or_event.edit(text)
-                
-    except Exception:
-        # Fallback to simple edit
+
+        # Force retry mechanism for premium entities
+        for attempt in range(3):
+            try:
+                if entities:
+                    if buttons:
+                        return await message_or_event.edit(text, formatting_entities=entities, buttons=buttons)
+                    else:
+                        return await message_or_event.edit(text, formatting_entities=entities)
+                else:
+                    # Try with empty entities to force premium rendering
+                    if buttons:
+                        return await message_or_event.edit(text, formatting_entities=[], buttons=buttons)
+                    else:
+                        return await message_or_event.edit(text, formatting_entities=[])
+                break
+            except Exception as e:
+                print(f"DEBUG: Edit attempt {attempt + 1} failed: {e}")
+                if attempt == 2:  # Last attempt
+                    # Final fallback to simple edit
+                    if buttons:
+                        return await message_or_event.edit(text, buttons=buttons)
+                    else:
+                        return await message_or_event.edit(text)
+                await asyncio.sleep(0.5)  # Brief pause before retry
+
+    except Exception as e:
+        print(f"DEBUG: Safe edit error: {e}")
+        # Ultimate fallback
         try:
             if hasattr(message_or_event, 'edit'):
                 if buttons:
@@ -111,7 +144,6 @@ async def safe_edit_premium(message_or_event, text, buttons=None):
                 else:
                     return await message_or_event.edit(text)
             elif hasattr(message_or_event, 'reply'):
-                # Fallback to reply if edit not available
                 if buttons:
                     return await message_or_event.reply(text, buttons=buttons)
                 else:
