@@ -1,115 +1,47 @@
-#!/usr/bin/env python3
 """
 VZL2 Show JSON Plugin - Message to JSON Converter
 Converts messages, emojis, stickers, media to detailed JSON metadata
-Advanced message analysis with premium emoji mapping
-Created by: VanZoel112
+𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
+Version: 1.0.0 - Premium JSON Analyzer
 """
 
-import asyncio
-import os
-import json
-import re
-from typing import Dict, List, Any, Optional
-from datetime import datetime
 from telethon import events
 from telethon.tl.types import (
-    MessageEntityCustomEmoji, User, MessageMediaPhoto, MessageMediaDocument,
+    MessageEntityCustomEmoji, MessageMediaPhoto, MessageMediaDocument,
     DocumentAttributeSticker, DocumentAttributeVideo, DocumentAttributeAudio,
     DocumentAttributeAnimated, MessageMediaWebPage
 )
+import json
+import re
+import sys
+import os
+from datetime import datetime
 
-# Import from VZL2 utils
-try:
-    from utils.font_helper import convert_font
-except ImportError:
-    def convert_font(text, style):
-        return text
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ===== Plugin Info =====
+# Import from central emoji template (VZL2 style)
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+
+# Plugin Info
 PLUGIN_INFO = {
     "name": "showjson",
     "version": "1.0.0",
-    "description": "Advanced message to JSON converter with emoji/sticker/media analysis",
-    "author": "VanZoel112",
+    "description": "Premium message to JSON converter dengan emoji/sticker/media analysis",
+    "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
     "commands": [".sj", ".showjson"],
-    "features": ["message analysis", "emoji detection", "sticker metadata", "media info", "JSON export"]
+    "features": ["message analysis", "emoji detection", "media metadata", "JSON export"]
 }
 
-# ===== PREMIUM EMOJI CONFIGURATION (VZL2 Format) =====
-PREMIUM_EMOJIS = {
-    'main': {'id': '6156784006194009426', 'char': '🤩'},
-    'check': {'id': '5794353925360457382', 'char': '⚙️'},
-    'adder1': {'id': '5794407002566300853', 'char': '⛈'},
-    'adder2': {'id': '5793913811471700779', 'char': '✅'},
-    'adder3': {'id': '5321412209992033736', 'char': '👽'},
-    'adder4': {'id': '5793973133559993740', 'char': '✈️'},
-    'adder5': {'id': '5357404860566235955', 'char': '😈'},
-    'adder6': {'id': '5794323465452394551', 'char': '🎚️'}
-}
+__version__ = "1.0.0"
+__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
-def get_emoji(emoji_type):
-    """Get premium emoji character"""
-    return PREMIUM_EMOJIS.get(emoji_type, {}).get('char', '🤩')
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
 
-def create_premium_entities(text):
-    """Create premium emoji entities for text with UTF-16 support"""
-    try:
-        entities = []
-        current_offset = 0
-        i = 0
-
-        while i < len(text):
-            found_emoji = False
-
-            for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
-                emoji_char = emoji_data['char']
-                emoji_id = emoji_data['id']
-
-                if text[i:].startswith(emoji_char):
-                    try:
-                        emoji_bytes = emoji_char.encode('utf-16-le')
-                        utf16_length = len(emoji_bytes) // 2
-
-                        entities.append(MessageEntityCustomEmoji(
-                            offset=current_offset,
-                            length=utf16_length,
-                            document_id=int(emoji_id)
-                        ))
-
-                        i += len(emoji_char)
-                        current_offset += utf16_length
-                        found_emoji = True
-                        break
-
-                    except Exception:
-                        break
-
-            if not found_emoji:
-                char = text[i]
-                char_bytes = char.encode('utf-16-le')
-                char_utf16_length = len(char_bytes) // 2
-                current_offset += char_utf16_length
-                i += 1
-
-        return entities
-    except Exception:
-        return []
-
-async def safe_send_premium(event, text):
-    """Send message with premium entities"""
-    try:
-        entities = create_premium_entities(text)
-        if entities:
-            return await event.reply(text, formatting_entities=entities)
-        else:
-            return await event.reply(text)
-    except Exception as e:
-        print(f"[ShowJSON] Premium emoji error: {e}")
-        return await event.reply(text)
-
-class MessageJSONAnalyzer:
-    """Advanced Message to JSON Converter with Media Analysis"""
+class JSONAnalyzer:
+    """Premium Message to JSON Converter"""
 
     def __init__(self):
         self.emoji_pattern = re.compile(
@@ -123,7 +55,7 @@ class MessageJSONAnalyzer:
             r'\U0001F100-\U0001F1FF]+' # enclosed characters
         )
 
-    def detect_emojis(self, text: str) -> List[Dict]:
+    def detect_emojis(self, text: str) -> list:
         """Detect and analyze emojis in text"""
         emojis = []
         if not text:
@@ -136,13 +68,12 @@ class MessageJSONAnalyzer:
                 "position": match.start(),
                 "end_position": match.end(),
                 "unicode_codepoint": [f"U+{ord(c):04X}" for c in emoji_char],
-                "name": f"EMOJI_{ord(emoji_char[0]):04X}",
                 "category": "standard_emoji"
             })
 
         return emojis
 
-    def analyze_custom_emojis(self, message) -> List[Dict]:
+    def analyze_custom_emojis(self, message) -> list:
         """Analyze custom/premium emojis from message entities"""
         custom_emojis = []
 
@@ -161,36 +92,37 @@ class MessageJSONAnalyzer:
 
         return custom_emojis
 
-    def analyze_sticker(self, document) -> Dict:
-        """Analyze sticker document"""
-        sticker_info = {
-            "type": "sticker",
-            "id": str(document.id),
-            "access_hash": str(document.access_hash),
-            "file_reference": document.file_reference.hex() if document.file_reference else None,
-            "size": document.size,
-            "mime_type": document.mime_type,
-            "attributes": {}
-        }
+    def get_media_type(self, message) -> str:
+        """Determine media type from message"""
+        if not message.media:
+            return "text"
 
-        # Analyze attributes
-        for attr in document.attributes:
-            if isinstance(attr, DocumentAttributeSticker):
-                sticker_info["attributes"]["sticker"] = {
-                    "alt": attr.alt,
-                    "stickerset": {
-                        "id": str(attr.stickerset.id) if attr.stickerset else None,
-                        "access_hash": str(attr.stickerset.access_hash) if attr.stickerset else None
-                    } if attr.stickerset else None,
-                    "mask": attr.mask,
-                    "mask_coords": str(attr.mask_coords) if hasattr(attr, 'mask_coords') and attr.mask_coords else None
-                }
-            elif isinstance(attr, DocumentAttributeAnimated):
-                sticker_info["attributes"]["animated"] = True
+        if isinstance(message.media, MessageMediaPhoto):
+            return "photo"
+        elif isinstance(message.media, MessageMediaDocument):
+            document = message.media.document
 
-        return sticker_info
+            for attr in document.attributes:
+                if isinstance(attr, DocumentAttributeSticker):
+                    return "sticker"
+                elif isinstance(attr, DocumentAttributeVideo):
+                    if hasattr(attr, 'round_message') and attr.round_message:
+                        return "video_note"
+                    return "video"
+                elif isinstance(attr, DocumentAttributeAudio):
+                    if hasattr(attr, 'voice') and attr.voice:
+                        return "voice"
+                    return "audio"
+                elif isinstance(attr, DocumentAttributeAnimated):
+                    return "gif"
 
-    def analyze_photo(self, photo) -> Dict:
+            return "document"
+        elif isinstance(message.media, MessageMediaWebPage):
+            return "webpage"
+
+        return "other"
+
+    def analyze_photo(self, photo) -> dict:
         """Analyze photo media"""
         return {
             "type": "photo",
@@ -207,64 +139,11 @@ class MessageJSONAnalyzer:
                 }
                 for size in photo.sizes
             ],
-            "dc_id": photo.dc_id,
-            "has_stickers": photo.has_stickers if hasattr(photo, 'has_stickers') else False
+            "dc_id": photo.dc_id
         }
 
-    def analyze_video(self, document) -> Dict:
-        """Analyze video document"""
-        video_info = {
-            "type": "video",
-            "id": str(document.id),
-            "access_hash": str(document.access_hash),
-            "file_reference": document.file_reference.hex() if document.file_reference else None,
-            "size": document.size,
-            "mime_type": document.mime_type,
-            "attributes": {}
-        }
-
-        # Analyze video attributes
-        for attr in document.attributes:
-            if isinstance(attr, DocumentAttributeVideo):
-                video_info["attributes"]["video"] = {
-                    "duration": attr.duration,
-                    "width": attr.w,
-                    "height": attr.h,
-                    "round_message": attr.round_message if hasattr(attr, 'round_message') else False,
-                    "supports_streaming": attr.supports_streaming if hasattr(attr, 'supports_streaming') else False
-                }
-            elif isinstance(attr, DocumentAttributeAnimated):
-                video_info["attributes"]["animated"] = True
-
-        return video_info
-
-    def analyze_audio(self, document) -> Dict:
-        """Analyze audio document"""
-        audio_info = {
-            "type": "audio",
-            "id": str(document.id),
-            "access_hash": str(document.access_hash),
-            "file_reference": document.file_reference.hex() if document.file_reference else None,
-            "size": document.size,
-            "mime_type": document.mime_type,
-            "attributes": {}
-        }
-
-        # Analyze audio attributes
-        for attr in document.attributes:
-            if isinstance(attr, DocumentAttributeAudio):
-                audio_info["attributes"]["audio"] = {
-                    "duration": attr.duration,
-                    "title": attr.title,
-                    "performer": attr.performer,
-                    "voice": attr.voice if hasattr(attr, 'voice') else False,
-                    "waveform": attr.waveform.hex() if hasattr(attr, 'waveform') and attr.waveform else None
-                }
-
-        return audio_info
-
-    def analyze_document(self, document) -> Dict:
-        """Analyze generic document"""
+    def analyze_document(self, document) -> dict:
+        """Analyze document media"""
         doc_info = {
             "type": "document",
             "id": str(document.id),
@@ -275,16 +154,31 @@ class MessageJSONAnalyzer:
             "attributes": []
         }
 
-        # Add attribute info
         for attr in document.attributes:
-            doc_info["attributes"].append({
-                "type": type(attr).__name__,
-                "data": str(attr)
-            })
+            if isinstance(attr, DocumentAttributeSticker):
+                doc_info["sticker_info"] = {
+                    "alt": attr.alt,
+                    "stickerset_id": str(attr.stickerset.id) if attr.stickerset else None,
+                    "mask": attr.mask
+                }
+            elif isinstance(attr, DocumentAttributeVideo):
+                doc_info["video_info"] = {
+                    "duration": attr.duration,
+                    "width": attr.w,
+                    "height": attr.h,
+                    "round_message": getattr(attr, 'round_message', False)
+                }
+            elif isinstance(attr, DocumentAttributeAudio):
+                doc_info["audio_info"] = {
+                    "duration": attr.duration,
+                    "title": attr.title,
+                    "performer": attr.performer,
+                    "voice": getattr(attr, 'voice', False)
+                }
 
         return doc_info
 
-    async def analyze_message(self, message) -> Dict:
+    async def analyze_message(self, message) -> dict:
         """Comprehensive message analysis to JSON"""
 
         # Basic message info
@@ -302,11 +196,9 @@ class MessageJSONAnalyzer:
             "text": message.text or "",
             "text_length": len(message.text) if message.text else 0,
             "reply_to": message.reply_to_msg_id if message.reply_to_msg_id else None,
-            "forward_from": None,
             "edit_date": message.edit_date.isoformat() if message.edit_date else None,
             "pinned": message.pinned,
-            "views": message.views,
-            "reactions": None
+            "views": message.views
         }
 
         # Get sender info if available
@@ -316,12 +208,12 @@ class MessageJSONAnalyzer:
                 "username": sender.username,
                 "first_name": sender.first_name,
                 "last_name": sender.last_name,
-                "is_bot": sender.bot if hasattr(sender, 'bot') else False,
-                "is_verified": sender.verified if hasattr(sender, 'verified') else False,
-                "is_premium": sender.premium if hasattr(sender, 'premium') else False
+                "is_bot": getattr(sender, 'bot', False),
+                "is_verified": getattr(sender, 'verified', False),
+                "is_premium": getattr(sender, 'premium', False)
             })
 
-        # Analyze text emojis
+        # Analyze emojis
         message_data["emojis"] = {
             "standard_emojis": self.detect_emojis(message.text),
             "custom_emojis": self.analyze_custom_emojis(message)
@@ -329,36 +221,20 @@ class MessageJSONAnalyzer:
 
         # Analyze media
         message_data["media"] = None
+        media_type = self.get_media_type(message)
+        message_data["media_type"] = media_type
+
         if message.media:
             if isinstance(message.media, MessageMediaPhoto):
                 message_data["media"] = self.analyze_photo(message.media.photo)
-
             elif isinstance(message.media, MessageMediaDocument):
-                document = message.media.document
-
-                # Check document type
-                is_sticker = any(isinstance(attr, DocumentAttributeSticker) for attr in document.attributes)
-                is_video = any(isinstance(attr, DocumentAttributeVideo) for attr in document.attributes)
-                is_audio = any(isinstance(attr, DocumentAttributeAudio) for attr in document.attributes)
-
-                if is_sticker:
-                    message_data["media"] = self.analyze_sticker(document)
-                elif is_video:
-                    message_data["media"] = self.analyze_video(document)
-                elif is_audio:
-                    message_data["media"] = self.analyze_audio(document)
-                else:
-                    message_data["media"] = self.analyze_document(document)
-
+                message_data["media"] = self.analyze_document(message.media.document)
             elif isinstance(message.media, MessageMediaWebPage):
                 message_data["media"] = {
                     "type": "webpage",
-                    "webpage": {
-                        "id": str(message.media.webpage.id) if hasattr(message.media.webpage, 'id') else None,
-                        "url": message.media.webpage.url if hasattr(message.media.webpage, 'url') else None,
-                        "title": message.media.webpage.title if hasattr(message.media.webpage, 'title') else None,
-                        "description": message.media.webpage.description if hasattr(message.media.webpage, 'description') else None
-                    }
+                    "url": getattr(message.media.webpage, 'url', None),
+                    "title": getattr(message.media.webpage, 'title', None),
+                    "description": getattr(message.media.webpage, 'description', None)
                 }
 
         # Message entities analysis
@@ -371,7 +247,6 @@ class MessageJSONAnalyzer:
                     "length": entity.length
                 }
 
-                # Add specific entity data
                 if hasattr(entity, 'url'):
                     entity_data["url"] = entity.url
                 if hasattr(entity, 'user_id'):
@@ -397,60 +272,52 @@ class MessageJSONAnalyzer:
         return message_data
 
 # Initialize analyzer
-analyzer = MessageJSONAnalyzer()
+analyzer = JSONAnalyzer()
 
-async def is_owner_check(client, user_id):
-    """Check if user is bot owner"""
-    try:
-        owner_id = os.getenv("OWNER_ID")
-        if owner_id:
-            return user_id == int(owner_id)
-        me = await client.get_me()
-        return user_id == me.id
-    except Exception:
-        return False
+async def vzoel_init(client, emoji_handler):
+    """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
 
-# Global client reference
-client = None
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
 
-async def showjson_handler(event):
-    """Show JSON handler (.sj or .showjson)"""
-    global client
-    if not await is_owner_check(client, event.sender_id):
+    signature = f"{get_emoji('utama')}{get_emoji('telegram')}{get_emoji('proses')}"
+    print(f"✅ [ShowJSON] Premium JSON analyzer loaded v{PLUGIN_INFO['version']}")
+    print(f"✅ [ShowJSON] 𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠 branding: {signature} JSON ANALYZER")
+
+@events.register(events.NewMessage(pattern=r'\.sj'))
+async def sj_handler(event):
+    """Show JSON handler (.sj)"""
+    if not await is_owner(event):
         return
 
-    # Show processing status
     processing_msg = await safe_send_premium(event,
-        f"{get_emoji('check')} {convert_font('Analyzing Message...', 'bold')}\n\n"
-        f"{get_emoji('adder1')} Processing message data to JSON..."
+        f"{get_emoji('loading')} **Analyzing Message...**\n\n"
+        f"{get_emoji('proses')} Processing message data to JSON..."
     )
 
     try:
-        # Get target message
         target_message = None
 
         if event.reply_to_msg_id:
-            # Analyze replied message
             target_message = await event.get_reply_message()
         else:
-            # Analyze the command message itself
             target_message = event
 
         if not target_message:
-            await processing_msg.edit(
-                f"{get_emoji('adder5')} {convert_font('No Message to Analyze!', 'bold')}\n\n"
-                f"{get_emoji('adder3')} Reply to a message to analyze it, or use the command to analyze itself."
+            await safe_edit_premium(processing_msg,
+                f"{get_emoji('merah')} **No Message to Analyze!**\n\n"
+                f"{get_emoji('kuning')} Reply to a message to analyze it\n\n"
+                f"{get_emoji('telegram')} VZL2 JSON Analyzer"
             )
             return
 
         # Analyze message
         json_data = await analyzer.analyze_message(target_message)
-
-        # Format JSON output
         json_str = json.dumps(json_data, indent=2, ensure_ascii=False)
 
-        # Check if JSON is too long for single message
-        if len(json_str) > 3500:  # Leave room for formatting
+        # Check if JSON is too long
+        if len(json_str) > 3500:
             # Split into chunks
             chunks = []
             chunk_size = 3500
@@ -458,97 +325,54 @@ async def showjson_handler(event):
                 chunks.append(json_str[i:i + chunk_size])
 
             # Send first chunk with header
-            header_text = f"""{get_emoji('main')} {convert_font('MESSAGE JSON ANALYSIS', 'bold')}
+            header_text = f"{get_emoji('utama')} **MESSAGE JSON ANALYSIS**\n\n"
+            header_text += f"{get_emoji('aktif')} **Message ID:** `{json_data['message_id']}`\n"
+            header_text += f"{get_emoji('proses')} **Total Size:** `{len(json_str)} chars`\n"
+            header_text += f"{get_emoji('loading')} **Parts:** `{len(chunks)} chunks`\n\n"
+            header_text += f"{get_emoji('centang')} **Part 1/{len(chunks)}:**\n\n"
+            header_text += f"```json\n{chunks[0]}\n```"
 
-{get_emoji('adder2')} {convert_font('Message ID:', 'bold')} {convert_font(str(json_data['message_id']), 'mono')}
-{get_emoji('adder4')} {convert_font('Total Size:', 'bold')} {convert_font(f'{len(json_str)} chars', 'mono')}
-{get_emoji('adder1')} {convert_font('Parts:', 'bold')} {convert_font(f'{len(chunks)} chunks', 'mono')}
-
-{get_emoji('check')} {convert_font('Part 1/' + str(len(chunks)) + ':', 'bold')}
-
-{convert_font('```json', 'mono')}
-{chunks[0]}
-{convert_font('```', 'mono')}"""
-
-            await processing_msg.edit(header_text)
+            await safe_edit_premium(processing_msg, header_text)
 
             # Send remaining chunks
             for i, chunk in enumerate(chunks[1:], 2):
-                chunk_text = f"""{get_emoji('adder3')} {convert_font(f'Part {i}/{len(chunks)}:', 'bold')}
-
-{convert_font('```json', 'mono')}
-{chunk}
-{convert_font('```', 'mono')}"""
-
+                chunk_text = f"{get_emoji('kuning')} **Part {i}/{len(chunks)}:**\n\n"
+                chunk_text += f"```json\n{chunk}\n```"
                 await event.reply(chunk_text)
 
         else:
             # Single message output
             analytics = json_data['analytics']
 
-            result_text = f"""{get_emoji('main')} {convert_font('MESSAGE JSON ANALYSIS', 'bold')}
+            result_text = f"{get_emoji('utama')} **MESSAGE JSON ANALYSIS**\n\n"
+            result_text += f"{get_emoji('aktif')} **Message ID:** `{json_data['message_id']}`\n"
+            result_text += f"{get_emoji('proses')} **Chat ID:** `{json_data['chat_id']}`\n"
+            result_text += f"{get_emoji('loading')} **Date:** `{json_data['date'][:19] if json_data['date'] else 'N/A'}`\n\n"
 
-{get_emoji('adder2')} {convert_font('Message ID:', 'bold')} {convert_font(str(json_data['message_id']), 'mono')}
-{get_emoji('adder4')} {convert_font('Chat ID:', 'bold')} {convert_font(str(json_data['chat_id']), 'mono')}
-{get_emoji('adder1')} {convert_font('Date:', 'bold')} {convert_font(json_data['date'][:19] if json_data['date'] else 'N/A', 'mono')}
+            result_text += f"{get_emoji('centang')} **Analytics:**\n"
+            result_text += f"  • Text: `{'Yes' if analytics['has_text'] else 'No'}` (`{json_data['text_length']}` chars)\n"
+            result_text += f"  • Media: `{'Yes' if analytics['has_media'] else 'No'}` (`{json_data['media_type']}`)\n"
+            result_text += f"  • Emojis: `{analytics['total_emojis']}` total\n"
+            result_text += f"  • Entities: `{analytics['total_entities']}` total\n\n"
 
-{get_emoji('check')} {convert_font('Analytics:', 'bold')}
-  • Text: {convert_font('Yes' if analytics['has_text'] else 'No', 'mono')} ({convert_font(str(json_data['text_length']), 'mono')} chars)
-  • Media: {convert_font('Yes' if analytics['has_media'] else 'No', 'mono')} ({convert_font(json_data['media']['type'] if json_data['media'] else 'None', 'mono')})
-  • Emojis: {convert_font(str(analytics['total_emojis']), 'mono')} total
-  • Entities: {convert_font(str(analytics['total_entities']), 'mono')} total
+            result_text += f"{get_emoji('kuning')} **Full JSON Data:**\n\n"
+            result_text += f"```json\n{json_str}\n```\n\n"
+            result_text += f"{get_emoji('telegram')} VZL2 JSON Analyzer"
 
-{get_emoji('adder3')} {convert_font('Full JSON Data:', 'bold')}
-
-{convert_font('```json', 'mono')}
-{json_str}
-{convert_font('```', 'mono')}
-
-{get_emoji('adder6')} VZL2 Message JSON Analyzer"""
-
-            await processing_msg.edit(result_text)
-
-        print(f"[ShowJSON] Analyzed message {json_data['message_id']} - {analytics['total_emojis']} emojis, {analytics['total_entities']} entities")
+            await safe_edit_premium(processing_msg, result_text)
 
     except Exception as e:
-        error_text = f"""{get_emoji('adder5')} {convert_font('Analysis Failed!', 'bold')}
+        await safe_edit_premium(processing_msg,
+            f"{get_emoji('merah')} **Analysis Failed!**\n\n"
+            f"{get_emoji('merah')} **Error:** `{str(e)[:100]}`\n\n"
+            f"{get_emoji('kuning')} **Possible Issues:**\n"
+            f"  • Message too complex to analyze\n"
+            f"  • Media access restrictions\n"
+            f"  • Network connectivity issues\n\n"
+            f"{get_emoji('telegram')} VZL2 JSON Analyzer"
+        )
 
-{get_emoji('adder5')} {convert_font('Error:', 'bold')} {str(e)[:100]}...
-
-{get_emoji('adder3')} {convert_font('Possible Issues:', 'bold')}
-  • Message too complex to analyze
-  • Media access restrictions
-  • Network connectivity issues
-
-{get_emoji('adder1')} {convert_font('Try again with simpler message', 'bold')}
-
-{get_emoji('adder6')} VZL2 Message JSON Analyzer"""
-
-        await processing_msg.edit(error_text)
-        print(f"[ShowJSON] Analysis error: {e}")
-
-def get_plugin_info():
-    return PLUGIN_INFO
-
-def setup(client_instance):
-    """Setup function untuk register event handlers"""
-    global client
-    client = client_instance
-
-    client.add_event_handler(showjson_handler, events.NewMessage(pattern=r'\.sj$'))
-    client.add_event_handler(showjson_handler, events.NewMessage(pattern=r'\.showjson$'))
-
-    print(f"✅ [ShowJSON] Message JSON analyzer loaded v{PLUGIN_INFO['version']} - .sj/.showjson commands ready")
-
-def cleanup_plugin():
-    """Cleanup plugin resources"""
-    global client
-    try:
-        print("[ShowJSON] Plugin cleanup initiated")
-        client = None
-        print("[ShowJSON] Plugin cleanup completed")
-    except Exception as e:
-        print(f"[ShowJSON] Cleanup error: {e}")
-
-# Export functions
-__all__ = ['setup', 'cleanup_plugin', 'get_plugin_info', 'showjson_handler']
+@events.register(events.NewMessage(pattern=r'\.showjson'))
+async def showjson_handler(event):
+    """Show JSON handler (.showjson) - alias for .sj"""
+    await sj_handler(event)
