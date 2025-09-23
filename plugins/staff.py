@@ -25,14 +25,14 @@ from plugins.emoji_template import get_emoji, create_premium_entities, safe_send
 # Plugin Info
 PLUGIN_INFO = {
     "name": "staff",
-    "version": "1.0.0",
-    "description": "Premium staff management dengan admin promotion dan listing",
+    "version": "1.1.0",
+    "description": "Premium staff management dengan admin promotion, custom title dan listing",
     "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
-    "commands": [".staff", ".admin", ".unadmin", ".reloadmin"],
-    "features": ["admin promotion", "admin demotion", "staff listing", "premium emoji"]
+    "commands": [".staff", ".admin [title]", ".unadmin", ".reloadmin"],
+    "features": ["admin promotion", "custom admin title", "admin demotion", "staff listing", "premium emoji"]
 }
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
 
 # Global references (will be set by vzoel_init)
@@ -84,8 +84,8 @@ class StaffSystem:
             print(f"[Staff] Error getting admins: {e}")
             return []
 
-    async def promote_user(self, client, chat_id: int, user) -> bool:
-        """Promote user to administrator"""
+    async def promote_user(self, client, chat_id: int, user, custom_title: str = "Admin") -> bool:
+        """Promote user to administrator with custom title"""
         try:
             # Use raw client if VzoelFoxClient, otherwise use client directly
             raw_client = client.client if hasattr(client, 'client') else client
@@ -101,11 +101,14 @@ class StaffSystem:
                 add_admins=False
             )
 
+            # Truncate title if too long (Telegram limit is 16 characters)
+            title = custom_title[:16] if custom_title else "Admin"
+
             await raw_client(EditAdminRequest(
                 channel=chat_id,
                 user_id=user.id,
                 admin_rights=admin_rights,
-                rank="Admin"
+                rank=title
             ))
             return True
         except Exception as e:
@@ -148,15 +151,38 @@ class StaffSystem:
                 return reply_msg.sender
 
         if args:
-            username = args.strip().lstrip('@')
+            # Split args to get username part only
+            username_part = args.strip().split()[0].lstrip('@')
             try:
                 # Use raw client for get_entity
                 raw_client = client.client if hasattr(client, 'client') else client
-                user = await raw_client.get_entity(username)
+                user = await raw_client.get_entity(username_part)
                 return user
             except:
                 return None
         return None
+
+    def parse_admin_args(self, args: str, event):
+        """Parse arguments untuk .admin command dengan title support"""
+        if not args:
+            return None, "Admin"
+
+        # Handle reply + title
+        if event.reply_to_msg_id:
+            # When replying, args adalah title
+            title = args.strip() if args.strip() else "Admin"
+            return None, title[:16]  # Truncate to Telegram limit
+
+        # Handle @username <title>
+        parts = args.strip().split(maxsplit=1)
+        if len(parts) == 1:
+            # Only username, no title
+            return parts[0], "Admin"
+        else:
+            # Username + title
+            username = parts[0]
+            title = parts[1][:16]  # Truncate to Telegram limit
+            return username, title
 
 # Initialize staff system
 staff_system = StaffSystem()
@@ -188,15 +214,23 @@ async def admin_handler(event):
         return
 
     args = event.text.split(maxsplit=1)[1] if len(event.text.split()) > 1 else ""
-    target_user = await staff_system.resolve_user(vzoel_client, event, args)
+
+    # Parse arguments untuk mendapatkan username dan title
+    username_arg, custom_title = staff_system.parse_admin_args(args, event)
+
+    # Resolve target user
+    target_user = await staff_system.resolve_user(vzoel_client, event, username_arg or args)
 
     if not target_user:
         await safe_send_premium(event,
             f"{get_emoji('utama')} PREMIUM ADMIN PROMOTION\n\n"
             f"{get_emoji('merah')} No target specified!\n\n"
             f"{get_emoji('utama')} Usage:\n"
-            f"  • `.admin @username` - Promote by username\n"
-            f"  • Reply to user + `.admin` - Promote by reply\n\n"
+            f"  • `.admin @username` - Promote with default title\n"
+            f"  • `.admin @username <title>` - Promote with custom title\n"
+            f"  • Reply to user + `.admin` - Promote by reply\n"
+            f"  • Reply to user + `.admin <title>` - Promote with title\n\n"
+            f"{get_emoji('kuning')} Title limit: 16 characters\n"
             f"{get_emoji('adder1')} Requirements: Admin with promote rights\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
         )
@@ -206,17 +240,18 @@ async def admin_handler(event):
         f"{get_emoji('loading')} Promoting User...\n\n"
         f"{get_emoji('proses')} Target: {target_user.first_name}\n"
         f"{get_emoji('loading')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
+        f"{get_emoji('centang')} Title: `{custom_title}`\n"
         f"{get_emoji('kuning')} Processing promotion..."
     )
 
-    success = await staff_system.promote_user(vzoel_client, event.chat_id, target_user)
+    success = await staff_system.promote_user(vzoel_client, event.chat_id, target_user, custom_title)
 
     if success:
         await safe_edit_premium(promoting_msg,
             f"{get_emoji('aktif')} User Promoted Successfully!\n\n"
             f"{get_emoji('utama')} New Admin: {target_user.first_name}\n"
             f"{get_emoji('proses')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
-            f"{get_emoji('centang')} Rank: Administrator\n"
+            f"{get_emoji('centang')} Title: `{custom_title}`\n"
             f"{get_emoji('aktif')} Privileges: Standard admin rights granted\n\n"
             f"{get_emoji('telegram')} View all staff: `.staff`\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
