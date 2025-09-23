@@ -244,9 +244,42 @@ def get_plugin_details(plugin_name):
     
     return help_text
 
+def get_sender_id(event):
+    """Get sender ID dari berbagai event types dengan robust detection"""
+    try:
+        # Try standard sender_id first
+        if hasattr(event, 'sender_id') and event.sender_id:
+            return event.sender_id
+
+        # Try from_id for channel events
+        if hasattr(event, 'from_id') and event.from_id:
+            if hasattr(event.from_id, 'user_id'):
+                return event.from_id.user_id
+            return event.from_id
+
+        # Try sender object
+        if hasattr(event, 'sender') and event.sender:
+            return event.sender.id
+
+        # Try message sender if available
+        if hasattr(event, 'message') and event.message:
+            if hasattr(event.message, 'sender_id') and event.message.sender_id:
+                return event.message.sender_id
+            if hasattr(event.message, 'from_id') and event.message.from_id:
+                if hasattr(event.message.from_id, 'user_id'):
+                    return event.message.from_id.user_id
+                return event.message.from_id
+
+        return None
+    except Exception:
+        return None
+
 async def is_owner_check(client, user_id):
     """Check if user is bot owner"""
     try:
+        if user_id is None:
+            return False
+
         owner_id = os.getenv("OWNER_ID")
         if owner_id:
             return user_id == int(owner_id)
@@ -261,7 +294,8 @@ client = None
 async def help_handler(event):
     """Main help command handler"""
     global client
-    if not await is_owner_check(client, event.sender_id):
+    sender_id = get_sender_id(event)
+    if not await is_owner_check(client, sender_id):
         return
     
     try:
@@ -303,7 +337,8 @@ async def help_handler(event):
 async def next_handler(event):
     """Handle .next command for pagination"""
     global client
-    if not await is_owner_check(client, event.sender_id):
+    sender_id = get_sender_id(event)
+    if not await is_owner_check(client, sender_id):
         return
 
     try:
@@ -337,7 +372,8 @@ async def next_handler(event):
 async def back_handler(event):
     """Handle .back command for navigation"""
     global client
-    if not await is_owner_check(client, event.sender_id):
+    sender_id = get_sender_id(event)
+    if not await is_owner_check(client, sender_id):
         return
     
     try:
