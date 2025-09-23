@@ -61,10 +61,13 @@ class StaffSystem:
     async def get_chat_admins(self, client, chat_id):
         """Get all chat administrators"""
         try:
+            # Use raw client if VzoelFoxClient, otherwise use client directly
+            raw_client = client.client if hasattr(client, 'client') else client
+
             admins = []
-            async for participant in client.iter_participants(chat_id, filter="administrators"):
+            async for participant in raw_client.iter_participants(chat_id, filter="administrators"):
                 if not participant.bot:
-                    participant_info = await client.get_participants(chat_id, filter="administrators")
+                    participant_info = await raw_client.get_participants(chat_id, filter="administrators")
                     for p in participant_info:
                         if p.id == participant.id and hasattr(p, 'participant'):
                             admin_title = self.get_admin_title(p.participant)
@@ -84,6 +87,9 @@ class StaffSystem:
     async def promote_user(self, client, chat_id: int, user) -> bool:
         """Promote user to administrator"""
         try:
+            # Use raw client if VzoelFoxClient, otherwise use client directly
+            raw_client = client.client if hasattr(client, 'client') else client
+
             admin_rights = ChatAdminRights(
                 change_info=True,
                 post_messages=True,
@@ -95,7 +101,7 @@ class StaffSystem:
                 add_admins=False
             )
 
-            await client(EditAdminRequest(
+            await raw_client(EditAdminRequest(
                 channel=chat_id,
                 user_id=user.id,
                 admin_rights=admin_rights,
@@ -109,6 +115,9 @@ class StaffSystem:
     async def demote_user(self, client, chat_id: int, user) -> bool:
         """Demote user from administrator"""
         try:
+            # Use raw client if VzoelFoxClient, otherwise use client directly
+            raw_client = client.client if hasattr(client, 'client') else client
+
             no_admin_rights = ChatAdminRights(
                 change_info=False,
                 post_messages=False,
@@ -120,7 +129,7 @@ class StaffSystem:
                 add_admins=False
             )
 
-            await client(EditAdminRequest(
+            await raw_client(EditAdminRequest(
                 channel=chat_id,
                 user_id=user.id,
                 admin_rights=no_admin_rights,

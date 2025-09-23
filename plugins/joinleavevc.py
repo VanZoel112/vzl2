@@ -197,7 +197,7 @@ async def auto_join_handler(event):
 {get_emoji('proses')} Status: {status}
 {get_emoji('centang')} VC: {vc_conn}
 
-**Usage:**
+{get_emoji('kuning')} **Usage:**
 • `.autojoin on` - Enable auto join
 • `.autojoin off` - Disable auto join"""
 
@@ -271,13 +271,13 @@ async def auto_vc_handler(event):
 {get_emoji('centang')} **Auto Groups:** {len(auto_vc_settings['auto_join_groups'])}
 {get_emoji('loading')} **Auto Leave:** {auto_vc_settings['auto_leave_delay']}s
 
-**Commands:**
+{get_emoji('centang')} **Commands:**
 • `.autovc on/off` - Enable/disable system
 • `.autovc delay <seconds>` - Set auto leave delay
 • `.autojoin on/off` - Enable for current group
 • `.vcstatus` - Show detailed status
 
-**Features:**
+{get_emoji('aktif')} **Features:**
 • Clone account voice chat
 • Stealth mode (muted join)
 • Auto leave timer
