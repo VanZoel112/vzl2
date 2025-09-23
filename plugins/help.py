@@ -11,8 +11,7 @@ import glob
 from telethon import events
 from telethon.tl.types import MessageEntityCustomEmoji
 
-# Import from central font system
-from utils.font_helper import convert_font
+# Font helper tidak diperlukan - removed unused import
 
 # ===== Plugin Info =====
 PLUGIN_INFO = {
