@@ -22,12 +22,22 @@ from plugins.emoji_template import get_emoji, create_premium_entities, safe_send
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 # Global variables for tagall state
 tagall_tasks = {}
 tagall_active = {}
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Tagall Plugin loaded - Member tagging ready")
 
@@ -35,7 +45,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 async def tagall_handler(event):
     """Tag all members in group with animated feedback"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
                 
         # Check if we're in a group
         if event.is_private:
@@ -180,7 +190,7 @@ By Vzoel Fox's Assistant"""
 async def stop_tagall_handler(event):
     """Stop ongoing tagall process"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
                 
         chat_id = event.chat_id
         
@@ -201,7 +211,7 @@ async def stop_tagall_handler(event):
 async def tagall_info_handler(event):
     """Show information about tagall system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
                 
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         

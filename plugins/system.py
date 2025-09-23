@@ -23,8 +23,18 @@ import os
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
-async def vzoel_init(client, vzoel_emoji=None):
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} System Plugin loaded - Update & Stats commands ready")
 
@@ -32,7 +42,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 async def update_handler(event):
     """Manual update command with force option"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         args = event.pattern_match.group(1)
         force = args and args.strip().lower() == 'force'
@@ -75,7 +85,7 @@ async def update_handler(event):
 async def stats_handler(event):
     """Show assistant statistics"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         stats = vzoel_client.get_stats()
         me = await event.client.get_me()
@@ -109,7 +119,7 @@ async def stats_handler(event):
 async def plugins_handler(event):
     """List loaded plugins"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         plugin_list = vzoel_client.plugin_manager.get_plugin_list()
         
@@ -139,7 +149,7 @@ async def plugins_handler(event):
 async def restart_handler(event):
     """Restart the assistant"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
 
         
         restart_msg = f"{get_emoji('loading')} Restarting Vzoel Fox's's Assistant..."

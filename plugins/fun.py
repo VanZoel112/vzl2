@@ -30,8 +30,18 @@ PLUGIN_INFO = {
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
-async def vzoel_init(client, vzoel_emoji=None):
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Fun Plugin loaded - Entertainment commands ready")
 
@@ -39,7 +49,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 async def dice_handler(event):
     """Roll a dice with Vzoel Fox's style"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         
         # Show rolling animation
@@ -64,7 +74,7 @@ async def dice_handler(event):
 async def flip_handler(event):
     """Flip a coin"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         
         flipping_msg = f"{get_emoji('proses')} Flipping coin..."
@@ -86,7 +96,7 @@ async def flip_handler(event):
 async def quote_handler(event):
     """Send a random Vzoel Fox's quote"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         vzoel_quotes = [
             f"The fox always finds a way {get_emoji('adder1')}",

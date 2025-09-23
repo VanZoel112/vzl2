@@ -25,6 +25,10 @@ from datetime import datetime, timedelta
 __version__ = "4.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 # Global variables for auto voice chat management
 auto_vc_settings = {
     'enabled': False,
@@ -43,8 +47,14 @@ vc_timers = {}
 # Settings file path
 SETTINGS_FILE = "database/joinleavevc_settings.json"
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Auto Join/Leave VC Plugin loaded - Clone mode ready")
     await load_settings()
@@ -144,7 +154,7 @@ async def auto_join_handler(event):
     if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
-    from client import vzoel_client
+    global vzoel_client, vzoel_emoji
 
     args = event.pattern_match.group(1).strip().lower()
 
@@ -212,7 +222,7 @@ async def auto_vc_handler(event):
     if not await is_owner(event.client, event.sender_id):
         return
 
-    from client import vzoel_client
+    global vzoel_client, vzoel_emoji
 
     args = event.pattern_match.group(1).strip().lower()
 
@@ -296,7 +306,7 @@ async def manual_join_handler(event):
     if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
-    from client import vzoel_client
+    global vzoel_client, vzoel_emoji
 
     if event.is_private:
         error_msg = f"{get_emoji('merah')} Voice chat commands only work in groups"
@@ -348,7 +358,7 @@ async def manual_leave_handler(event):
     if event.is_private or not await is_owner(event.client, event.sender_id):
         return
 
-    from client import vzoel_client
+    global vzoel_client, vzoel_emoji
 
     if event.is_private:
         error_msg = f"{get_emoji('merah')} Voice chat commands only work in groups"
@@ -384,7 +394,7 @@ async def vc_status_handler(event):
     if not await is_owner(event.client, event.sender_id):
         return
 
-    from client import vzoel_client
+    global vzoel_client, vzoel_emoji
 
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
 

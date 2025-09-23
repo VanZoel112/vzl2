@@ -21,12 +21,22 @@ from plugins.emoji_template import get_emoji, create_premium_entities, safe_send
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 # Global variables for limit checking
 limit_active = {}
 limit_tasks = {}
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Limit Checker Plugin loaded - Anti-flood ready")
 
@@ -34,7 +44,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 async def limit_checker_handler(event):
     """Check account limits and restrictions via @spambot"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         chat_id = event.chat_id if not event.is_private else event.sender_id
         
@@ -64,7 +74,7 @@ async def limit_checker_handler(event):
 
 async def perform_limit_check(event, msg):
     """Perform the actual limit checking process"""
-    from emoji_handler_premium import vzoel_emoji
+    global vzoel_client, vzoel_emoji
     
     try:
         # Phase 1: Connecting to @spambot
@@ -225,7 +235,7 @@ def analyze_spambot_responses(responses):
 async def limit_info_handler(event):
     """Show information about limit checker system"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         

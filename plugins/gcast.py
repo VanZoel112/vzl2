@@ -26,6 +26,10 @@ import re
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 def create_unlimited_premium_entities(text):
     """Create premium emoji entities for ALL unicode emojis (unlimited support)"""
     try:
@@ -86,8 +90,14 @@ def create_unlimited_premium_entities(text):
         print(f"Error creating unlimited premium entities: {e}")
         return []
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
+    global vzoel_client, vzoel_emoji
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     from config import Config
     Config.load_blacklist()
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
@@ -97,7 +107,7 @@ async def vzoel_init(client, vzoel_emoji=None):
 async def add_blacklist_handler(event):
     """Add chat to gcast blacklist"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         from config import Config
         
         args = event.pattern_match.group(1)
@@ -161,7 +171,7 @@ async def add_blacklist_handler(event):
 async def remove_blacklist_handler(event):
     """Remove chat from gcast blacklist"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         from config import Config
         
         args = event.pattern_match.group(1)
@@ -192,7 +202,7 @@ async def remove_blacklist_handler(event):
 async def list_blacklist_handler(event):
     """List all blacklisted chats"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         from config import Config
         
         if not Config.GCAST_BLACKLIST:
@@ -225,7 +235,7 @@ async def list_blacklist_handler(event):
 async def gcast_handler(event):
     """Advanced gcast with animated feedback"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         from config import Config
         
         # Get message content
@@ -439,7 +449,7 @@ async def gcast_handler(event):
 async def gcast_info_handler(event):
     """Show gcast information with animation"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         from config import Config
 
         

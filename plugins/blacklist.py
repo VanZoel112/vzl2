@@ -24,6 +24,10 @@ import re
 __version__ = "3.0.0"
 __author__ = "Founder Userbot: Vzoel Fox's Ltpn"
 
+# Global references (will be set by vzoel_init)
+vzoel_client = None
+vzoel_emoji = None
+
 # Global variables
 blacklist_words = {}  # {chat_id: [words]}
 locked_users = {}     # {chat_id: [user_ids]}
@@ -32,10 +36,14 @@ blacklist_active = {}  # {chat_id: True/False}
 # File for persistent storage
 BLACKLIST_FILE = "blacklist_data.json"
 
-async def vzoel_init(client, vzoel_emoji=None):
+async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
-    global blacklist_words, locked_users, blacklist_active
-    
+    global vzoel_client, vzoel_emoji, blacklist_words, locked_users, blacklist_active
+
+    # Set global references
+    vzoel_client = client
+    vzoel_emoji = emoji_handler
+
     # Load existing blacklist data
     load_blacklist_data()
     
@@ -76,7 +84,7 @@ def save_blacklist_data():
 async def add_blacklist_handler(event):
     """Add words to blacklist for automatic deletion"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         chat_id = event.chat_id
         
@@ -141,7 +149,7 @@ Vzoel Fox's Blacklist System"""
 async def remove_blacklist_handler(event):
     """Remove words from blacklist (whitelist)"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         chat_id = event.chat_id
         
@@ -227,7 +235,7 @@ Vzoel Fox's Whitelist System"""
 async def lock_user_handler(event):
     """Lock user to delete all their messages"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         chat_id = event.chat_id
         target_user = None
@@ -297,7 +305,7 @@ Vzoel Fox's Lock System"""
 async def unlock_user_handler(event):
     """Unlock user to stop deleting their messages"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
         
         chat_id = event.chat_id
         target_user = None
@@ -409,7 +417,7 @@ async def auto_delete_handler(event):
 async def blacklist_info_handler(event):
     """Show blacklist system information"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+        global vzoel_client, vzoel_emoji
 
         
         chat_id = event.chat_id
