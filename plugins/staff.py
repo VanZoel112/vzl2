@@ -20,7 +20,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from central emoji template (VZL2 style)
-from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
@@ -164,7 +164,9 @@ async def vzoel_init(client, emoji_handler):
 @events.register(events.NewMessage(pattern=r'\.admin'))
 async def admin_handler(event):
     """Admin promotion handler"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):
@@ -222,7 +224,9 @@ async def admin_handler(event):
 @events.register(events.NewMessage(pattern=r'\.unadmin'))
 async def unadmin_handler(event):
     """Admin demotion handler"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):
@@ -278,7 +282,9 @@ async def unadmin_handler(event):
 @events.register(events.NewMessage(pattern=r'\.staff'))
 async def staff_handler(event):
     """Staff listing handler"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):
@@ -340,7 +346,9 @@ async def staff_handler(event):
 @events.register(events.NewMessage(pattern=r'\.reloadmin'))
 async def reloadmin_handler(event):
     """Admin reload/refresh handler"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):

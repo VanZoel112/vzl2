@@ -23,7 +23,7 @@ from collections import defaultdict
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from central emoji template (VZL2 style)
-from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
@@ -262,7 +262,9 @@ async def vzoel_init(client, emoji_handler):
 @events.register(events.NewMessage(pattern=r'\.monitor'))
 async def monitor_handler(event):
     """User monitoring handler (.monitor)"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):
@@ -364,7 +366,9 @@ async def monitor_handler(event):
 @events.register(events.NewMessage(pattern=r'\.stats'))
 async def stats_handler(event):
     """Detailed statistics handler (.stats)"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     if not (event.is_group or event.is_channel):

@@ -21,7 +21,7 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import from central emoji template (VZL2 style)
-from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
 
 # Plugin Info
 PLUGIN_INFO = {
@@ -288,7 +288,9 @@ async def vzoel_init(client, emoji_handler):
 @events.register(events.NewMessage(pattern=r'\.sj'))
 async def sj_handler(event):
     """Show JSON handler (.sj)"""
-    if not await is_owner(event):
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        pass  # Owner check passed
+    else:
         return
 
     processing_msg = await safe_send_premium(event,
