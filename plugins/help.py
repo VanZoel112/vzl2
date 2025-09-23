@@ -1,389 +1,392 @@
+#!/usr/bin/env python3
 """
-Enhanced Help Plugin for 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 - Premium Edition
-Fitur: Help system dengan latency detection, pagination dan emoji looping
-𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠
-Version: 0.0.0.𝟼𝟿 - Premium Help System with Latency
+Simple Help Plugin for VzoelFox Userbot - Direct Plugin List with Premium Emojis
+Fitur: 10 plugins per page, .next/.back navigation, detailed plugin info
+Founder Userbot: Vzoel Fox's Ltpn 🤩
+Version: 4.0.0 - Simple Template System
 """
 
-from telethon import events
-import asyncio
 import os
 import glob
-import sys
-import time
-import random
+from telethon import events
+from telethon.tl.types import MessageEntityCustomEmoji
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Import from central font system
+from utils.font_helper import convert_font
 
-# Import from central emoji template (Vzoel Fox's style)
-from plugins.emoji_template import get_emoji, safe_send_premium, safe_edit_premium, PREMIUM_EMOJIS
+# ===== Plugin Info =====
+PLUGIN_INFO = {
+    "name": "help",
+    "version": "4.0.0", 
+    "description": "Simple help system - 10 plugins per page dengan premium emoji support",
+    "author": "Founder Userbot: Vzoel Fox's Ltpn 🤩",
+    "commands": [".help", ".next", ".back", ".help <plugin>"],
+    "features": ["simple template", "10 plugins per page", "premium emoji integration", "plugin details"]
+}
 
-# Plugin info
-__version__ = "0.0.0.𝟼𝟿"
-__author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠"
+# ===== PREMIUM EMOJI CONFIGURATION =====
+PREMIUM_EMOJIS = {
+    'main': {'id': '6156784006194009426', 'char': '🤩'},
+    'check': {'id': '5794353925360457382', 'char': '⚙️'},
+    'adder1': {'id': '5794407002566300853', 'char': '⛈'},
+    'adder2': {'id': '5793913811471700779', 'char': '✅'},
+    'adder3': {'id': '5321412209992033736', 'char': '👽'},
+    'adder4': {'id': '5793973133559993740', 'char': '✈️'},
+    'adder5': {'id': '5357404860566235955', 'char': '😈'},
+    'adder6': {'id': '5794323465452394551', 'char': '🎚️'}
+}
 
-# Global variables for help navigation and animation
-help_sessions = {}  # {user_id: {'page': int, 'total_pages': int}}
-help_animations = {}  # {user_id: animation_task}
-PLUGINS_PER_PAGE = 6  # Reduced for better display
+# Global navigation state
+HELP_STATE = {
+    'current_page': 0,
+    'plugins_per_page': 10
+}
 
-async def vzoel_init(client, vzoel_emoji):
-    """Plugin initialization"""
-    signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
-    print(f"{signature} Help Plugin loaded - Simple navigation ready")
+def get_emoji(emoji_type):
+    """Get premium emoji character"""
+    return PREMIUM_EMOJIS.get(emoji_type, {}).get('char', '🤩')
+
+def create_premium_entities(text):
+    """Create premium emoji entities for text with UTF-16 support"""
+    try:
+        entities = []
+        current_offset = 0
+        i = 0
+        
+        while i < len(text):
+            found_emoji = False
+            
+            for emoji_type, emoji_data in PREMIUM_EMOJIS.items():
+                emoji_char = emoji_data['char']
+                emoji_id = emoji_data['id']
+                
+                if text[i:].startswith(emoji_char):
+                    try:
+                        emoji_bytes = emoji_char.encode('utf-16-le')
+                        utf16_length = len(emoji_bytes) // 2
+                        
+                        entities.append(MessageEntityCustomEmoji(
+                            offset=current_offset,
+                            length=utf16_length,
+                            document_id=int(emoji_id)
+                        ))
+                        
+                        i += len(emoji_char)
+                        current_offset += utf16_length
+                        found_emoji = True
+                        break
+                        
+                    except Exception:
+                        break
+            
+            if not found_emoji:
+                char = text[i]
+                char_bytes = char.encode('utf-16-le')
+                char_utf16_length = len(char_bytes) // 2
+                current_offset += char_utf16_length
+                i += 1
+        
+        return entities
+    except Exception:
+        return []
+
+async def safe_send_premium(event, text):
+    """Send message with premium entities"""
+    try:
+        entities = create_premium_entities(text)
+        if entities:
+            return await event.reply(text, formatting_entities=entities)
+        else:
+            return await event.reply(text)
+    except Exception as e:
+        # Fallback to plain text if premium emoji fails
+        print(f"[Help] Premium emoji error: {e}")
+        return await event.reply(text)
 
 def get_all_plugins():
-    """Get all plugin files and their info"""
-    plugins = []
-    plugin_dir = "plugins"
-    
-    if os.path.exists(plugin_dir):
-        for file in glob.glob(f"{plugin_dir}/*.py"):
-            if file.endswith('__init__.py') or file.endswith('emoji_template.py'):
-                continue
-                
-            plugin_name = os.path.basename(file)[:-3]  # Remove .py extension
-            
-            # Try to get plugin info
-            try:
-                spec = __import__(f'plugins.{plugin_name}', fromlist=['__version__', '__author__'])
-                version = getattr(spec, '__version__', 'Unknown')
-                author = getattr(spec, '__author__', '𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥\'𝑠')
-                
-                # Get commands by looking for @events.register patterns
-                commands = []
-                try:
-                    with open(file, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        import re
-                        patterns = re.findall(r'pattern=r["\']\\\.([^"\']+)["\']', content)
-                        commands = [f'.{cmd}' for cmd in patterns]
-                except:
-                    commands = ['Unknown']
-                
-                plugins.append({
-                    'name': plugin_name,
-                    'version': version,
-                    'author': author,
-                    'commands': commands[:3],  # Show max 3 commands
-                    'file': file
-                })
-            except:
-                plugins.append({
-                    'name': plugin_name,
-                    'version': 'Unknown',
-                    'author': '𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥\'𝑠',
-                    'commands': ['Unknown'],
-                    'file': file
-                })
-    
-    return sorted(plugins, key=lambda x: x['name'])
-
-async def get_latency():
-    """Calculate latency dengan ping test"""
+    """Get all plugin files from plugins directory"""
     try:
-        start_time = time.time()
-        # Simple ping test - bisa diganti dengan ping ke server
-        await asyncio.sleep(0.001)  # Minimal delay untuk simulasi
-        end_time = time.time()
-        latency_ms = (end_time - start_time) * 1000
+        plugin_files = glob.glob("plugins/*.py")
+        plugins = []
         
-        # Add some realistic variation
-        import random
-        latency_ms += random.uniform(10, 150)  # Add realistic ping variation
+        for plugin_file in plugin_files:
+            plugin_name = os.path.basename(plugin_file).replace('.py', '')
+            if plugin_name not in ['__init__', 'database_helper', 'nsfw_downloader']:
+                plugins.append(plugin_name)
         
-        return int(latency_ms)
-    except:
-        return 100  # Default fallback
+        return sorted(plugins)
+    except Exception:
+        return []
 
-def get_latency_emoji(latency_ms):
-    """Get emoji based on latency"""
-    if latency_ms < 100:
-        return get_emoji('biru')  # Good latency - blue
-    elif latency_ms <= 200:
-        return get_emoji('kuning')  # Medium latency - yellow  
-    else:
-        return get_emoji('merah')  # Bad latency - red
+def get_plugin_info_from_file(plugin_name):
+    """Get plugin info from file if available"""
+    try:
+        import importlib
+        import sys
+        
+        # Add plugins to path
+        if 'plugins' not in sys.path:
+            sys.path.append('plugins')
+            
+        plugin_module = importlib.import_module(plugin_name)
+        
+        if hasattr(plugin_module, 'get_plugin_info'):
+            return plugin_module.get_plugin_info()
+        elif hasattr(plugin_module, 'PLUGIN_INFO'):
+            return plugin_module.PLUGIN_INFO
+        else:
+            return {
+                'name': plugin_name,
+                'description': 'Plugin deskripsi tidak tersedia',
+                'commands': ['Lihat source code untuk commands']
+            }
+    except Exception:
+        return {
+            'name': plugin_name,
+            'description': 'Plugin tidak dapat dimuat',
+            'commands': ['Error loading plugin']
+        }
 
-def get_plugin_descriptions():
-    """Get plugin descriptions untuk help display"""
-    plugin_descriptions = {
-        'alive': 'Status dan informasi bot dengan animasi 12 fase',
-        'hai': 'Greeting interaktif dengan profil dan emoji looping',
-        'idchecker': 'Cek ID Telegram user dengan animasi step-by-step',
-        'musik': 'Download dan play musik dari YouTube dengan YT-DLP',
-        'pizol': 'Status sistem lengkap dengan animasi 40 fase',
-        'ping': 'Test kecepatan respon dan latency bot',
-        'help': 'Bantuan dan daftar plugin dengan navigasi',
-        'gcast': 'Broadcast pesan ke multiple grup dan channel',
-        'blacklist': 'Kelola daftar blacklist user dan grup',
-        'tagall': 'Tag semua member dalam grup',
-        'limit': 'Kelola batas penggunaan command',
-        'system': 'Informasi sistem server dan resource',
-        'fun': 'Plugin hiburan dan games sederhana',
-        'vc': 'Voice chat management dan controls',
-        'comments': 'Kelola komentar dan feedback sistem'
-    }
-    return plugin_descriptions
+def get_help_page(page=0):
+    """Generate help page with 10 plugins per page showing their commands"""
+    all_plugins = get_all_plugins()
 
-async def create_help_page(page=0, latency_ms=100):
-    """Create help page content sesuai template"""
-    plugins = get_all_plugins()
-    descriptions = get_plugin_descriptions()
-    total_plugins = len(plugins)
-    total_pages = (total_plugins + PLUGINS_PER_PAGE - 1) // PLUGINS_PER_PAGE
-    
-    # Ensure page is within bounds
-    page = max(0, min(page, total_pages - 1))
-    
-    start_idx = page * PLUGINS_PER_PAGE
-    end_idx = start_idx + PLUGINS_PER_PAGE
-    page_plugins = plugins[start_idx:end_idx]
-    
-    # Get latency emoji
-    latency_emoji = get_latency_emoji(latency_ms)
-    
-    # Build help content sesuai template
-    help_content = f"""{get_emoji('utama')} Bantuan untuk 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 plugin
-{get_emoji('kuning')} Total plugin : {total_plugins}
-Latency : {latency_emoji} {latency_ms}ms
+    # Add core plugins to the list
+    all_plugins.insert(0, 'core')
+
+    plugins_per_page = HELP_STATE['plugins_per_page']
+    start_idx = page * plugins_per_page
+    end_idx = start_idx + plugins_per_page
+    page_plugins = all_plugins[start_idx:end_idx]
+
+    total_plugins = len(all_plugins)
+    total_pages = (total_plugins - 1) // plugins_per_page + 1
+
+    help_text = f"""{get_emoji('main')} {convert_font('VZOELFOX PLUGINS', 'bold')} (Page {page + 1}/{total_pages})
+
+{get_emoji('check')} {convert_font('Total Plugins:', 'bold')} {total_plugins}
+{get_emoji('adder4')} {convert_font('Page:', 'bold')} {page + 1} of {total_pages}
 
 """
+
+    for idx, plugin_name in enumerate(page_plugins, start_idx + 1):
+        if plugin_name == 'core':
+            # Handle core commands
+            core_commands = ['.alive', '.ping', '.restart', '.plugins']
+            help_text += f"{get_emoji('adder2')} {convert_font(f'{idx}.', 'bold')} {convert_font('core', 'mono')}\n"
+            help_text += f"   └ Commands: {convert_font(', '.join(core_commands), 'mono')}\n"
+            help_text += f"   └ Core userbot functions\n\n"
+        else:
+            # Handle plugin commands
+            plugin_info = get_plugin_info_from_file(plugin_name)
+            commands = plugin_info.get('commands', [])
+            description = plugin_info.get('description', 'No description')[:50]
+
+            help_text += f"{get_emoji('adder2')} {convert_font(f'{idx}.', 'bold')} {convert_font(plugin_name, 'mono')}\n"
+
+            if commands:
+                # Show commands in a more compact format
+                if len(commands) <= 3:
+                    help_text += f"   └ Commands: {convert_font(', '.join(commands), 'mono')}\n"
+                else:
+                    help_text += f"   └ Commands: {convert_font(', '.join(commands[:3]), 'mono')} + {len(commands)-3} more\n"
+            else:
+                help_text += f"   └ Commands: {convert_font('See plugin for details', 'mono')}\n"
+
+            help_text += f"   └ {description}\n\n"
+
+    help_text += f"{get_emoji('adder6')} {convert_font('Navigation:', 'bold')}\n"
+    if page > 0:
+        help_text += f"{get_emoji('adder1')} {convert_font('.back', 'mono')} - Previous page\n"
+    if page < total_pages - 1:
+        help_text += f"{get_emoji('adder1')} {convert_font('.next', 'mono')} - Next page\n"
+
+    help_text += f"{get_emoji('adder3')} {convert_font('.help <plugin>', 'mono')} - Plugin details\n"
+    help_text += f"\n{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}\n"
+    help_text += f"{get_emoji('adder5')} Powered by Vzoel Fox's Technology\n"
+    help_text += f"{get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"
+
+    return help_text
+
+def get_plugin_details(plugin_name):
+    """Get detailed plugin information"""
+    plugin_info = get_plugin_info_from_file(plugin_name)
     
-    # Add plugins dengan emoji looping placeholder
-    for plugin in page_plugins:
-        plugin_name = plugin['name']
-        description = descriptions.get(plugin_name, f'Plugin {plugin_name} dengan fitur premium')
-        help_content += f"• {plugin_name} = {description}\n"
+    help_text = f"""{get_emoji('main')} {convert_font(f'PLUGIN: {plugin_name.upper()}', 'bold')}
+
+{get_emoji('check')} {convert_font('Description:', 'bold')}
+{plugin_info.get('description', 'Tidak ada deskripsi')}
+
+{get_emoji('adder2')} {convert_font('Commands:', 'bold')}
+"""
     
-    # Add navigation info
-    help_content += f"""
-.next untuk melihat plugins berikutnya
-.back untuk melihat plugins sebelumnya
+    commands = plugin_info.get('commands', [])
+    if commands:
+        for cmd in commands:
+            help_text += f"{get_emoji('adder4')} {convert_font(cmd, 'mono')}\n"
+    else:
+        help_text += f"{get_emoji('adder5')} Tidak ada commands tersedia\n"
+    
+    if 'features' in plugin_info:
+        help_text += f"\n{get_emoji('adder3')} {convert_font('Features:', 'bold')}\n"
+        for feature in plugin_info['features']:
+            help_text += f"{get_emoji('adder6')} {feature}\n"
+    
+    if 'author' in plugin_info:
+        help_text += f"\n{get_emoji('main')} {convert_font('Author:', 'bold')} {plugin_info['author']}\n"
+    
+    if 'version' in plugin_info:
+        help_text += f"{get_emoji('check')} {convert_font('Version:', 'bold')} {plugin_info['version']}\n"
+    
+    help_text += f"\n{get_emoji('adder1')} {convert_font('.help', 'mono')} - Back to main help\n"
+    help_text += f"\n{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}\n"
+    help_text += f"{get_emoji('adder5')} Powered by Vzoel Fox's Technology\n"
+    help_text += f"{get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"
+    
+    return help_text
 
-𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+async def is_owner_check(client, user_id):
+    """Check if user is bot owner"""
+    try:
+        owner_id = os.getenv("OWNER_ID")
+        if owner_id:
+            return user_id == int(owner_id)
+        me = await client.get_me()
+        return user_id == me.id
+    except Exception:
+        return False
 
-©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
+# Global client reference
+client = None
 
-    return help_content, page, total_pages
-
-async def animate_help_display(message, base_content, page_plugins):
-    """Animate help display dengan emoji looping unlimited"""
-    all_emojis = ['utama', 'centang', 'petir', 'loading', 'kuning', 'biru', 'merah', 'proses', 'aktif', 'adder1', 'adder2', 'telegram']
-    descriptions = get_plugin_descriptions()
+async def help_handler(event):
+    """Main help command handler"""
+    global client
+    if not await is_owner_check(client, event.sender_id):
+        return
     
     try:
-        # Loop terbatas untuk menghindari FloodWaitError
-        for _ in range(8):  # Hanya 8 iterations untuk menghindari flood
-            await asyncio.sleep(3.5)  # 3.5 detik per perubahan untuk safety
+        args = event.text.split(maxsplit=1)
+        
+        if len(args) > 1:
+            # Show specific plugin details
+            plugin_name = args[1].strip().lower()
+            all_plugins = get_all_plugins()
             
-            # Generate content dengan emoji yang berubah
-            animated_content = base_content.split('\n')
-            
-            # Update emoji untuk setiap plugin line (yang dimulai dengan •)
-            for i, line in enumerate(animated_content):
-                if line.startswith('• '):
-                    # Ganti bullet dengan emoji random
-                    plugin_line = line[2:]  # Remove "• "
-                    random_emoji = get_emoji(random.choice(all_emojis))
-                    animated_content[i] = f"{random_emoji} {plugin_line}"
-            
-            # Join content kembali
-            final_content = '\n'.join(animated_content)
-            
-            await safe_edit_premium(message, final_content)
-            
-    except asyncio.CancelledError:
-        pass
+            if plugin_name in all_plugins:
+                help_text = get_plugin_details(plugin_name)
+                await safe_send_premium(event, help_text)
+                return
+            else:
+                error_text = f"""{get_emoji('adder5')} {convert_font('Plugin tidak ditemukan:', 'bold')} {convert_font(plugin_name, 'mono')}
+
+{get_emoji('adder3')} {convert_font('Available plugins:', 'bold')}
+{', '.join([convert_font(p, 'mono') for p in all_plugins[:10]])}...
+
+{get_emoji('adder1')} {convert_font('.help', 'mono')} - Show all plugins
+
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+                await safe_send_premium(event, error_text)
+                return
+        
+        # Reset to page 0 and show main help
+        HELP_STATE['current_page'] = 0
+        help_text = get_help_page(0)
+        await safe_send_premium(event, help_text)
+        
     except Exception as e:
-        print(f"Animation error: {e}")
-        pass
+        error_text = f"""{get_emoji('adder5')} {convert_font('Help error:', 'bold')} {str(e)}
 
-@events.register(events.NewMessage(pattern=r'\.help'))
-async def help_handler(event):
-    """Main help command dengan latency dan emoji animation"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        
-        user_id = event.sender_id
-        
-        # Stop any existing animation
-        if user_id in help_animations:
-            help_animations[user_id].cancel()
-            del help_animations[user_id]
-        
-        # Calculate latency
-        latency_ms = await get_latency()
-        
-        # Create first page
-        help_content, current_page, total_pages = await create_help_page(0, latency_ms)
-        
-        # Store session info
-        help_sessions[user_id] = {
-            'page': current_page,
-            'total_pages': total_pages
-        }
-        
-        # Send initial content
-        message = await safe_edit_premium(event, help_content)
-        
-        # Start emoji animation
-        plugins = get_all_plugins()
-        start_idx = current_page * PLUGINS_PER_PAGE
-        end_idx = start_idx + PLUGINS_PER_PAGE
-        page_plugins = plugins[start_idx:end_idx]
-        
-        # Start animation task
-        animation_task = asyncio.create_task(
-            animate_help_display(message, help_content, page_plugins)
-        )
-        help_animations[user_id] = animation_task
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}
+{get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"""
+        await safe_send_premium(event, error_text)
 
-@events.register(events.NewMessage(pattern=r'\.next'))
-async def next_page_handler(event):
-    """Navigate to next help page"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
-        
-        user_id = event.sender_id
-        
-        # Stop current animation
-        if user_id in help_animations:
-            help_animations[user_id].cancel()
-            del help_animations[user_id]
-        
-        # Calculate latency
-        latency_ms = await get_latency()
-        
-        if user_id not in help_sessions:
-            # No active help session, show first page
-            help_content, current_page, total_pages = await create_help_page(0, latency_ms)
-            help_sessions[user_id] = {
-                'page': current_page,
-                'total_pages': total_pages
-            }
+async def next_handler(event):
+    """Handle .next command for pagination"""
+    global client
+    if not await is_owner_check(client, event.sender_id):
+        return
+
+    try:
+        all_plugins = get_all_plugins()
+        # Add core to total count
+        total_plugins = len(all_plugins) + 1  # +1 for core
+        plugins_per_page = HELP_STATE['plugins_per_page']
+        total_pages = (total_plugins - 1) // plugins_per_page + 1
+        current_page = HELP_STATE['current_page']
+
+        if current_page < total_pages - 1:
+            HELP_STATE['current_page'] = current_page + 1
+            help_text = get_help_page(HELP_STATE['current_page'])
+            await safe_send_premium(event, help_text)
         else:
-            # Get current session
-            session = help_sessions[user_id]
-            next_page = (session['page'] + 1) % session['total_pages']  # Loop back to 0 after last page
-            
-            help_content, current_page, total_pages = await create_help_page(next_page, latency_ms)
-            
-            # Update session
-            help_sessions[user_id] = {
-                'page': current_page,
-                'total_pages': total_pages
-            }
-        
-        # Send updated content
-        message = await safe_edit_premium(event, help_content)
-        
-        # Start new animation
-        plugins = get_all_plugins()
-        start_idx = current_page * PLUGINS_PER_PAGE
-        end_idx = start_idx + PLUGINS_PER_PAGE
-        page_plugins = plugins[start_idx:end_idx]
-        
-        animation_task = asyncio.create_task(
-            animate_help_display(message, help_content, page_plugins)
-        )
-        help_animations[user_id] = animation_task
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
+            error_text = f"""{get_emoji('adder5')} {convert_font('Already at last page!', 'bold')}
 
-@events.register(events.NewMessage(pattern=r'\.back'))
-async def back_page_handler(event):
-    """Navigate to previous help page"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+{get_emoji('check')} Current page: {current_page + 1}/{total_pages}
+{get_emoji('adder1')} {convert_font('.back', 'mono')} - Previous page
+{get_emoji('adder3')} {convert_font('.help', 'mono')} - First page
+
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+            await safe_send_premium(event, error_text)
+
+    except Exception as e:
+        error_text = f"""{get_emoji('adder5')} {convert_font('Next error:', 'bold')} {str(e)}
+
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+        await safe_send_premium(event, error_text)
+
+async def back_handler(event):
+    """Handle .back command for navigation"""
+    global client
+    if not await is_owner_check(client, event.sender_id):
+        return
+    
+    try:
+        current_page = HELP_STATE['current_page']
         
-        user_id = event.sender_id
-        
-        # Stop current animation
-        if user_id in help_animations:
-            help_animations[user_id].cancel()
-            del help_animations[user_id]
-        
-        # Calculate latency
-        latency_ms = await get_latency()
-        
-        if user_id not in help_sessions:
-            # No active help session, show first page
-            help_content, current_page, total_pages = await create_help_page(0, latency_ms)
-            help_sessions[user_id] = {
-                'page': current_page,
-                'total_pages': total_pages
-            }
+        if current_page > 0:
+            HELP_STATE['current_page'] = current_page - 1
+            help_text = get_help_page(HELP_STATE['current_page'])
+            await safe_send_premium(event, help_text)
         else:
-            # Get current session
-            session = help_sessions[user_id]
-            prev_page = (session['page'] - 1) % session['total_pages']  # Loop to last page if at 0
-            
-            help_content, current_page, total_pages = await create_help_page(prev_page, latency_ms)
-            
-            # Update session
-            help_sessions[user_id] = {
-                'page': current_page,
-                'total_pages': total_pages
-            }
-        
-        # Send updated content
-        message = await safe_edit_premium(event, help_content)
-        
-        # Start new animation
-        plugins = get_all_plugins()
-        start_idx = current_page * PLUGINS_PER_PAGE
-        end_idx = start_idx + PLUGINS_PER_PAGE
-        page_plugins = plugins[start_idx:end_idx]
-        
-        animation_task = asyncio.create_task(
-            animate_help_display(message, help_content, page_plugins)
-        )
-        help_animations[user_id] = animation_task
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
+            error_text = f"""{get_emoji('adder5')} {convert_font('Already at first page!', 'bold')}
 
-@events.register(events.NewMessage(pattern=r'\.helpinfo'))
-async def help_info_handler(event):
-    """Show help system information"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        from client import vzoel_client
+{get_emoji('check')} Current page: 1
+{get_emoji('adder1')} {convert_font('.next', 'mono')} - Next page
+{get_emoji('adder3')} {convert_font('.help <plugin>', 'mono')} - Plugin details
+
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+            await safe_send_premium(event, error_text)
         
-        plugins = get_all_plugins()
-        latency_ms = await get_latency()
-        latency_emoji = get_latency_emoji(latency_ms)
-        
-        help_info = f"""{get_emoji('utama')} 𝗩𝗭𝗢𝗘𝗟 𝗔𝗦𝗦𝗜𝗦𝗧𝗔𝗡𝗧 Help System
+    except Exception as e:
+        error_text = f"""{get_emoji('adder5')} {convert_font('Back error:', 'bold')} {str(e)}
 
-{get_emoji('centang')} Loaded Plugins: {len(plugins)}
-{get_emoji('aktif')} Latency: {latency_emoji} {latency_ms}ms
-{get_emoji('proses')} Animation: Emoji looping unlimited
-{get_emoji('telegram')} Premium Emojis: Enabled
+{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+        await safe_send_premium(event, error_text)
 
-{get_emoji('kuning')} Commands:
-{get_emoji('petir')} .help - Show plugin list dengan animation
-{get_emoji('loading')} .next - Next page (dengan animation)
-{get_emoji('merah')} .back - Previous page (dengan animation)
-{get_emoji('adder1')} .helpinfo - System information
+def get_plugin_info():
+    return PLUGIN_INFO
 
-{get_emoji('biru')} Template Features:
-• Latency detection dengan warna emoji
-• Emoji looping unlimited pada bullets
-• Navigation .next dan .back
-• Plugin descriptions yang lengkap
-• Real-time latency monitoring
+def setup(client_instance):
+    """Setup function untuk register event handlers"""
+    global client
+    client = client_instance
+    
+    client.add_event_handler(help_handler, events.NewMessage(pattern=r'\.help(?:\s+(.+))?$'))
+    client.add_event_handler(next_handler, events.NewMessage(pattern=r'\.next$'))
+    client.add_event_handler(back_handler, events.NewMessage(pattern=r'\.back$'))
+    
+    print(f"✅ [Help] Simple template system loaded v{PLUGIN_INFO['version']} - 10 plugins per page")
 
-𝚁𝚎𝚜𝚞𝚕𝚝 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙰𝚜𝚜𝚒𝚜𝚝𝚊𝚗𝚝
+def cleanup_plugin():
+    """Cleanup plugin resources"""
+    global client
+    try:
+        print("[Help] Plugin cleanup initiated")
+        client = None
+        print("[Help] Plugin cleanup completed")
+    except Exception as e:
+        print(f"[Help] Cleanup error: {e}")
 
-©𝟸0𝟸𝟻 𝚋𝚢 𝚅𝚣𝚘𝚎𝚕 𝙵𝚘𝚡'𝚜 𝙻𝚞𝚝𝚙𝚊𝚗"""
-        
-        await safe_edit_premium(event, help_info)
-        
-        if vzoel_client:
-            vzoel_client.increment_command_count()
+# Export functions
+__all__ = ['setup', 'cleanup_plugin', 'get_plugin_info', 'help_handler', 'next_handler', 'back_handler']
