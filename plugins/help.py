@@ -117,17 +117,17 @@ async def help_handler(event):
             page_plugins = all_plugins[start_idx:end_idx]
 
             # Build help text
-            help_text = f"{get_emoji('utama')} **VZOEL FOX'S PLUGINS** (Page 1/{total_pages})\n\n"
-            help_text += f"{get_emoji('centang')} **Total Plugins:** {total_plugins}\n"
-            help_text += f"{get_emoji('aktif')} **Page:** 1 of {total_pages}\n\n"
+            help_text = f"{get_emoji('utama')} VZOEL FOX'S PLUGINS (Page 1/{total_pages})\n\n"
+            help_text += f"{get_emoji('centang')} Total Plugins: {total_plugins}\n"
+            help_text += f"{get_emoji('aktif')} Page: 1 of {total_pages}\n\n"
 
             for idx, plugin_name in enumerate(page_plugins, 1):
                 commands = get_plugin_commands(plugin_name)
 
                 if plugin_name == 'core':
-                    help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}` - Core functions\n"
+                    help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}` - Core functions\n"
                 else:
-                    help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}`\n"
+                    help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}`\n"
 
                 if commands:
                     if len(commands) <= 3:
@@ -140,17 +140,17 @@ async def help_handler(event):
 
             # Navigation
             if total_pages > 1:
-                help_text += f"{get_emoji('kuning')} **Navigation:**\n"
+                help_text += f"{get_emoji('kuning')} Navigation:\n"
                 help_text += f"{get_emoji('loading')} `.next` - Next page\n"
                 help_text += f"{get_emoji('merah')} `.back` - Previous page\n\n"
 
-            help_text += f"{get_emoji('telegram')} **VZL2 Premium System**\n"
+            help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
             help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
 
             await safe_send_premium(event, help_text)
 
         except Exception as e:
-            error_text = f"{get_emoji('merah')} **Help Error:** `{str(e)}`\n\n"
+            error_text = f"{get_emoji('merah')} Help Error: `{str(e)}`\n\n"
             error_text += f"{get_emoji('telegram')} VZL2 Help System"
             await safe_send_premium(event, error_text)
 
@@ -175,17 +175,17 @@ async def next_handler(event):
                 page_plugins = all_plugins[start_idx:end_idx]
 
                 # Build help text untuk page baru
-                help_text = f"{get_emoji('utama')} **VZOEL FOX'S PLUGINS** (Page {new_page + 1}/{total_pages})\n\n"
-                help_text += f"{get_emoji('centang')} **Total Plugins:** {total_plugins}\n"
-                help_text += f"{get_emoji('aktif')} **Page:** {new_page + 1} of {total_pages}\n\n"
+                help_text = f"{get_emoji('utama')} VZOEL FOX'S PLUGINS (Page {new_page + 1}/{total_pages})\n\n"
+                help_text += f"{get_emoji('centang')} Total Plugins: {total_plugins}\n"
+                help_text += f"{get_emoji('aktif')} Page: {new_page + 1} of {total_pages}\n\n"
 
                 for idx, plugin_name in enumerate(page_plugins, start_idx + 1):
                     commands = get_plugin_commands(plugin_name)
 
                     if plugin_name == 'core':
-                        help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}` - Core functions\n"
+                        help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}` - Core functions\n"
                     else:
-                        help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}`\n"
+                        help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}`\n"
 
                     if commands:
                         if len(commands) <= 3:
@@ -197,25 +197,25 @@ async def next_handler(event):
                     help_text += "\n"
 
                 # Navigation
-                help_text += f"{get_emoji('kuning')} **Navigation:**\n"
+                help_text += f"{get_emoji('kuning')} Navigation:\n"
                 help_text += f"{get_emoji('merah')} `.back` - Previous page\n"
                 if new_page < total_pages - 1:
                     help_text += f"{get_emoji('loading')} `.next` - Next page\n"
                 help_text += "\n"
 
-                help_text += f"{get_emoji('telegram')} **VZL2 Premium System**\n"
+                help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
                 help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
 
                 await safe_send_premium(event, help_text)
             else:
-                error_text = f"{get_emoji('merah')} **Already at last page!**\n\n"
+                error_text = f"{get_emoji('merah')} Already at last page!\n\n"
                 error_text += f"{get_emoji('centang')} Current page: {current_page + 1}/{total_pages}\n"
                 error_text += f"{get_emoji('kuning')} Use `.back` for previous page\n\n"
                 error_text += f"{get_emoji('telegram')} VZL2 Help System"
                 await safe_send_premium(event, error_text)
 
         except Exception as e:
-            error_text = f"{get_emoji('merah')} **Next Error:** `{str(e)}`\n\n"
+            error_text = f"{get_emoji('merah')} Next Error: `{str(e)}`\n\n"
             error_text += f"{get_emoji('telegram')} VZL2 Help System"
             await safe_send_premium(event, error_text)
 
@@ -241,17 +241,17 @@ async def back_handler(event):
                 page_plugins = all_plugins[start_idx:end_idx]
 
                 # Build help text untuk page baru
-                help_text = f"{get_emoji('utama')} **VZOEL FOX'S PLUGINS** (Page {new_page + 1}/{total_pages})\n\n"
-                help_text += f"{get_emoji('centang')} **Total Plugins:** {total_plugins}\n"
-                help_text += f"{get_emoji('aktif')} **Page:** {new_page + 1} of {total_pages}\n\n"
+                help_text = f"{get_emoji('utama')} VZOEL FOX'S PLUGINS (Page {new_page + 1}/{total_pages})\n\n"
+                help_text += f"{get_emoji('centang')} Total Plugins: {total_plugins}\n"
+                help_text += f"{get_emoji('aktif')} Page: {new_page + 1} of {total_pages}\n\n"
 
                 for idx, plugin_name in enumerate(page_plugins, start_idx + 1):
                     commands = get_plugin_commands(plugin_name)
 
                     if plugin_name == 'core':
-                        help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}` - Core functions\n"
+                        help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}` - Core functions\n"
                     else:
-                        help_text += f"{get_emoji('proses')} **{idx}.** `{plugin_name}`\n"
+                        help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}`\n"
 
                     if commands:
                         if len(commands) <= 3:
@@ -264,25 +264,25 @@ async def back_handler(event):
 
                 # Navigation
                 if total_pages > 1:
-                    help_text += f"{get_emoji('kuning')} **Navigation:**\n"
+                    help_text += f"{get_emoji('kuning')} Navigation:\n"
                     if new_page > 0:
                         help_text += f"{get_emoji('merah')} `.back` - Previous page\n"
                     if new_page < total_pages - 1:
                         help_text += f"{get_emoji('loading')} `.next` - Next page\n"
                     help_text += "\n"
 
-                help_text += f"{get_emoji('telegram')} **VZL2 Premium System**\n"
+                help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
                 help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
 
                 await safe_send_premium(event, help_text)
             else:
-                error_text = f"{get_emoji('merah')} **Already at first page!**\n\n"
+                error_text = f"{get_emoji('merah')} Already at first page!\n\n"
                 error_text += f"{get_emoji('centang')} Current page: 1\n"
                 error_text += f"{get_emoji('kuning')} Use `.next` for next page\n\n"
                 error_text += f"{get_emoji('telegram')} VZL2 Help System"
                 await safe_send_premium(event, error_text)
 
         except Exception as e:
-            error_text = f"{get_emoji('merah')} **Back Error:** `{str(e)}`\n\n"
+            error_text = f"{get_emoji('merah')} Back Error: `{str(e)}`\n\n"
             error_text += f"{get_emoji('telegram')} VZL2 Help System"
             await safe_send_premium(event, error_text)

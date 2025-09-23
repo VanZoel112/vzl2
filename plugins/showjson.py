@@ -294,7 +294,7 @@ async def sj_handler(event):
         return
 
     processing_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Analyzing Message...**\n\n"
+        f"{get_emoji('loading')} Analyzing Message...\n\n"
         f"{get_emoji('proses')} Processing message data to JSON..."
     )
 
@@ -308,7 +308,7 @@ async def sj_handler(event):
 
         if not target_message:
             await safe_edit_premium(processing_msg,
-                f"{get_emoji('merah')} **No Message to Analyze!**\n\n"
+                f"{get_emoji('merah')} No Message to Analyze!\n\n"
                 f"{get_emoji('kuning')} Reply to a message to analyze it\n\n"
                 f"{get_emoji('telegram')} VZL2 JSON Analyzer"
             )
@@ -327,18 +327,18 @@ async def sj_handler(event):
                 chunks.append(json_str[i:i + chunk_size])
 
             # Send first chunk with header
-            header_text = f"{get_emoji('utama')} **MESSAGE JSON ANALYSIS**\n\n"
-            header_text += f"{get_emoji('aktif')} **Message ID:** `{json_data['message_id']}`\n"
-            header_text += f"{get_emoji('proses')} **Total Size:** `{len(json_str)} chars`\n"
-            header_text += f"{get_emoji('loading')} **Parts:** `{len(chunks)} chunks`\n\n"
-            header_text += f"{get_emoji('centang')} **Part 1/{len(chunks)}:**\n\n"
+            header_text = f"{get_emoji('utama')} MESSAGE JSON ANALYSIS\n\n"
+            header_text += f"{get_emoji('aktif')} Message ID: `{json_data['message_id']}`\n"
+            header_text += f"{get_emoji('proses')} Total Size: `{len(json_str)} chars`\n"
+            header_text += f"{get_emoji('loading')} Parts: `{len(chunks)} chunks`\n\n"
+            header_text += f"{get_emoji('centang')} Part 1/{len(chunks)}:\n\n"
             header_text += f"```json\n{chunks[0]}\n```"
 
             await safe_edit_premium(processing_msg, header_text)
 
             # Send remaining chunks
             for i, chunk in enumerate(chunks[1:], 2):
-                chunk_text = f"{get_emoji('kuning')} **Part {i}/{len(chunks)}:**\n\n"
+                chunk_text = f"{get_emoji('kuning')} Part {i}/{len(chunks)}:\n\n"
                 chunk_text += f"```json\n{chunk}\n```"
                 await event.reply(chunk_text)
 
@@ -346,18 +346,18 @@ async def sj_handler(event):
             # Single message output
             analytics = json_data['analytics']
 
-            result_text = f"{get_emoji('utama')} **MESSAGE JSON ANALYSIS**\n\n"
-            result_text += f"{get_emoji('aktif')} **Message ID:** `{json_data['message_id']}`\n"
-            result_text += f"{get_emoji('proses')} **Chat ID:** `{json_data['chat_id']}`\n"
-            result_text += f"{get_emoji('loading')} **Date:** `{json_data['date'][:19] if json_data['date'] else 'N/A'}`\n\n"
+            result_text = f"{get_emoji('utama')} MESSAGE JSON ANALYSIS\n\n"
+            result_text += f"{get_emoji('aktif')} Message ID: `{json_data['message_id']}`\n"
+            result_text += f"{get_emoji('proses')} Chat ID: `{json_data['chat_id']}`\n"
+            result_text += f"{get_emoji('loading')} Date: `{json_data['date'][:19] if json_data['date'] else 'N/A'}`\n\n"
 
-            result_text += f"{get_emoji('centang')} **Analytics:**\n"
+            result_text += f"{get_emoji('centang')} Analytics:\n"
             result_text += f"  • Text: `{'Yes' if analytics['has_text'] else 'No'}` (`{json_data['text_length']}` chars)\n"
             result_text += f"  • Media: `{'Yes' if analytics['has_media'] else 'No'}` (`{json_data['media_type']}`)\n"
             result_text += f"  • Emojis: `{analytics['total_emojis']}` total\n"
             result_text += f"  • Entities: `{analytics['total_entities']}` total\n\n"
 
-            result_text += f"{get_emoji('kuning')} **Full JSON Data:**\n\n"
+            result_text += f"{get_emoji('kuning')} Full JSON Data:\n\n"
             result_text += f"```json\n{json_str}\n```\n\n"
             result_text += f"{get_emoji('telegram')} VZL2 JSON Analyzer"
 
@@ -365,9 +365,9 @@ async def sj_handler(event):
 
     except Exception as e:
         await safe_edit_premium(processing_msg,
-            f"{get_emoji('merah')} **Analysis Failed!**\n\n"
-            f"{get_emoji('merah')} **Error:** `{str(e)[:100]}`\n\n"
-            f"{get_emoji('kuning')} **Possible Issues:**\n"
+            f"{get_emoji('merah')} Analysis Failed!\n\n"
+            f"{get_emoji('merah')} Error: `{str(e)[:100]}`\n\n"
+            f"{get_emoji('kuning')} Possible Issues:\n"
             f"  • Message too complex to analyze\n"
             f"  • Media access restrictions\n"
             f"  • Network connectivity issues\n\n"

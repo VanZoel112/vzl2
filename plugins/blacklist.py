@@ -93,7 +93,7 @@ async def add_blacklist_handler(event):
                 blacklist_text = match.group(2)
         
         if not blacklist_text:
-            help_msg = f"""{get_emoji('kuning')} **Blacklist Usage:**
+            help_msg = f"""{get_emoji('kuning')} Blacklist Usage:
 • `.bl <kata>` - Tambah kata ke blacklist
 • `.bl` (reply) - Tambah pesan yang direply
 • `.wl <kata>` - Hapus dari blacklist
@@ -121,16 +121,16 @@ async def add_blacklist_handler(event):
         save_blacklist_data()
         
         if added_words:
-            success_msg = f"""**{get_emoji('centang')} BLACKLIST UPDATED**
+            success_msg = f"""{get_emoji('centang')} BLACKLIST UPDATED
 
-{get_emoji('merah')} **Kata Ditambahkan:** {len(added_words)}
-{get_emoji('aktif')} **Words:** {', '.join(added_words)}
-{get_emoji('telegram')} **Total Blacklist:** {len(blacklist_words[chat_id])} kata
-{get_emoji('petir')} **Status:** Auto-delete aktif
+{get_emoji('merah')} Kata Ditambahkan: {len(added_words)}
+{get_emoji('aktif')} Words: {', '.join(added_words)}
+{get_emoji('telegram')} Total Blacklist: {len(blacklist_words[chat_id])} kata
+{get_emoji('petir')} Status: Auto-delete aktif
 
-{get_emoji('proses')} **Pesan yang mengandung kata ini akan otomatis dihapus**
+{get_emoji('proses')} Pesan yang mengandung kata ini akan otomatis dihapus
 
-**Vzoel Fox's Blacklist System**"""
+Vzoel Fox's Blacklist System"""
         else:
             success_msg = f"{get_emoji('kuning')} Semua kata sudah ada di blacklist"
         
@@ -161,15 +161,15 @@ async def remove_blacklist_handler(event):
             # Show current blacklist
             if chat_id in blacklist_words and blacklist_words[chat_id]:
                 blacklist_list = ', '.join(blacklist_words[chat_id])
-                current_msg = f"""**{get_emoji('telegram')} BLACKLIST CURRENT**
+                current_msg = f"""{get_emoji('telegram')} BLACKLIST CURRENT
 
-{get_emoji('merah')} **Total:** {len(blacklist_words[chat_id])} kata
-{get_emoji('aktif')} **Words:** {blacklist_list[:500]}{'...' if len(blacklist_list) > 500 else ''}
+{get_emoji('merah')} Total: {len(blacklist_words[chat_id])} kata
+{get_emoji('aktif')} Words: {blacklist_list[:500]}{'...' if len(blacklist_list) > 500 else ''}
 
-{get_emoji('centang')} **Untuk menghapus:** `.wl <kata>`
-{get_emoji('kuning')} **Clear semua:** `.wl clear`
+{get_emoji('centang')} Untuk menghapus: `.wl <kata>`
+{get_emoji('kuning')} Clear semua: `.wl clear`
 
-**Vzoel Fox's Blacklist**"""
+Vzoel Fox's Blacklist"""
             else:
                 current_msg = f"{get_emoji('kuning')} Blacklist kosong di chat ini"
                 
@@ -184,13 +184,13 @@ async def remove_blacklist_handler(event):
             cleared_count = len(blacklist_words[chat_id])
             blacklist_words[chat_id] = []
             save_blacklist_data()
-            clear_msg = f"""**{get_emoji('centang')} BLACKLIST CLEARED**
+            clear_msg = f"""{get_emoji('centang')} BLACKLIST CLEARED
 
-{get_emoji('aktif')} **Dihapus:** {cleared_count} kata
-{get_emoji('telegram')} **Status:** Blacklist kosong
-{get_emoji('proses')} **Auto-delete:** Non-aktif
+{get_emoji('aktif')} Dihapus: {cleared_count} kata
+{get_emoji('telegram')} Status: Blacklist kosong
+{get_emoji('proses')} Auto-delete: Non-aktif
 
-**Vzoel Fox's Blacklist System**"""
+Vzoel Fox's Blacklist System"""
             await safe_edit_premium(event, clear_msg)
             return
         
@@ -208,15 +208,15 @@ async def remove_blacklist_handler(event):
         save_blacklist_data()
         
         if removed_words:
-            success_msg = f"""**{get_emoji('centang')} WHITELIST UPDATED**
+            success_msg = f"""{get_emoji('centang')} WHITELIST UPDATED
 
-{get_emoji('aktif')} **Kata Dihapus:** {len(removed_words)}
-{get_emoji('telegram')} **Words:** {', '.join(removed_words)}
-{get_emoji('proses')} **Sisa Blacklist:** {len(blacklist_words[chat_id])} kata
+{get_emoji('aktif')} Kata Dihapus: {len(removed_words)}
+{get_emoji('telegram')} Words: {', '.join(removed_words)}
+{get_emoji('proses')} Sisa Blacklist: {len(blacklist_words[chat_id])} kata
 
-{get_emoji('centang')} **Kata ini tidak akan dihapus lagi**
+{get_emoji('centang')} Kata ini tidak akan dihapus lagi
 
-**Vzoel Fox's Whitelist System**"""
+Vzoel Fox's Whitelist System"""
         else:
             success_msg = f"{get_emoji('kuning')} Kata tidak ditemukan di blacklist"
         
@@ -276,16 +276,16 @@ Commands: .lock @user, .unlock @user, .locked
                 user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
             except:
                 user_display = f"User ID: {target_user}"
-            lock_msg = f"""**{get_emoji('merah')} USER LOCKED**
+            lock_msg = f"""{get_emoji('merah')} USER LOCKED
 
-{get_emoji('aktif')} **User:** {user_display}
-{get_emoji('telegram')} **Status:** Semua pesan akan dihapus
-{get_emoji('petir')} **Total Locked:** {len(locked_users[chat_id])} user
-{get_emoji('proses')} **Auto-delete:** Aktif untuk user ini
+{get_emoji('aktif')} User: {user_display}
+{get_emoji('telegram')} Status: Semua pesan akan dihapus
+{get_emoji('petir')} Total Locked: {len(locked_users[chat_id])} user
+{get_emoji('proses')} Auto-delete: Aktif untuk user ini
 
-{get_emoji('centang')} **Perintah unlock:** `.unlock {user_display}`
+{get_emoji('centang')} Perintah unlock: `.unlock {user_display}`
 
-**Vzoel Fox's Lock System**"""
+Vzoel Fox's Lock System"""
             await safe_edit_premium(event, lock_msg)
         else:
             already_msg = f"{get_emoji('kuning')} User sudah di-lock sebelumnya"
@@ -330,15 +330,15 @@ async def unlock_user_handler(event):
                     except:
                         locked_list.append(f"ID: {user_id}")
                 
-                locked_msg = f"""**{get_emoji('telegram')} LOCKED USERS**
+                locked_msg = f"""{get_emoji('telegram')} LOCKED USERS
 
-{get_emoji('merah')} **Total:** {len(locked_users[chat_id])} user
-{get_emoji('aktif')} **Users:** {', '.join(locked_list)}
+{get_emoji('merah')} Total: {len(locked_users[chat_id])} user
+{get_emoji('aktif')} Users: {', '.join(locked_list)}
 
-{get_emoji('centang')} **Untuk unlock:** `.unlock @username`
-{get_emoji('kuning')} **Clear semua:** `.unlock clear`
+{get_emoji('centang')} Untuk unlock: `.unlock @username`
+{get_emoji('kuning')} Clear semua: `.unlock clear`
 
-**Vzoel Fox's Lock System**"""
+Vzoel Fox's Lock System"""
             else:
                 locked_msg = f"{get_emoji('kuning')} Tidak ada user yang di-lock"
             await safe_edit_premium(event, locked_msg)
@@ -356,13 +356,13 @@ async def unlock_user_handler(event):
                 user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
             except:
                 user_display = f"User ID: {target_user}"
-            unlock_msg = f"""**{get_emoji('centang')} USER UNLOCKED**
+            unlock_msg = f"""{get_emoji('centang')} USER UNLOCKED
 
-{get_emoji('aktif')} **User:** {user_display}
-{get_emoji('telegram')} **Status:** Pesan tidak akan dihapus lagi
-{get_emoji('proses')} **Sisa Locked:** {len(locked_users[chat_id])} user
+{get_emoji('aktif')} User: {user_display}
+{get_emoji('telegram')} Status: Pesan tidak akan dihapus lagi
+{get_emoji('proses')} Sisa Locked: {len(locked_users[chat_id])} user
 
-**Vzoel Fox's Unlock System**"""
+Vzoel Fox's Unlock System"""
             await safe_edit_premium(event, unlock_msg)
         else:
             not_locked_msg = f"{get_emoji('kuning')} User tidak dalam daftar lock"
@@ -420,28 +420,28 @@ async def blacklist_info_handler(event):
         locked_count = len(locked_users.get(chat_id, []))
         status = "Aktif" if blacklist_active.get(chat_id, True) else "Non-aktif"
         
-        blacklist_info = f"""**{signature} Blacklist System Info**
+        blacklist_info = f"""{signature} Blacklist System Info
 
-{get_emoji('merah')} **Blacklist Words:** {word_count} kata
-{get_emoji('aktif')} **Locked Users:** {locked_count} user  
-{get_emoji('telegram')} **Status:** {status}
+{get_emoji('merah')} Blacklist Words: {word_count} kata
+{get_emoji('aktif')} Locked Users: {locked_count} user  
+{get_emoji('telegram')} Status: {status}
 
-{get_emoji('centang')} **Commands:**
+{get_emoji('centang')} Commands:
 • `.bl <kata>` - Add blacklist word
 • `.wl <kata>` - Remove blacklist word
 • `.lock @user` - Lock user (delete all messages)
 • `.unlock @user` - Unlock user
 
-{get_emoji('proses')} **Features:**
+{get_emoji('proses')} Features:
 • Auto-delete pesan dengan kata blacklist
 • Lock user untuk hapus semua pesan mereka
 • Support text dan reply mode
 • Persistent storage (saved to file)
 
-{get_emoji('petir')} **How it works:**
+{get_emoji('petir')} How it works:
 Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari user yang di-lock, bahkan jika hanya sebagian kata yang match.
 
-**Vzoel Fox's Blacklist System**"""
+Vzoel Fox's Blacklist System"""
         
         await safe_edit_premium(event, blacklist_info)
         vzoel_client.increment_command_count()

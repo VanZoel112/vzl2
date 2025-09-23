@@ -182,7 +182,7 @@ async def admin_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} Group Only!\n\n"
             f"{get_emoji('kuning')} Admin commands only work in groups."
         )
         return
@@ -192,40 +192,40 @@ async def admin_handler(event):
 
     if not target_user:
         await safe_send_premium(event,
-            f"{get_emoji('utama')} **PREMIUM ADMIN PROMOTION**\n\n"
-            f"{get_emoji('merah')} **No target specified!**\n\n"
-            f"{get_emoji('utama')} **Usage:**\n"
+            f"{get_emoji('utama')} PREMIUM ADMIN PROMOTION\n\n"
+            f"{get_emoji('merah')} No target specified!\n\n"
+            f"{get_emoji('utama')} Usage:\n"
             f"  • `.admin @username` - Promote by username\n"
             f"  • Reply to user + `.admin` - Promote by reply\n\n"
-            f"{get_emoji('adder1')} **Requirements:** Admin with promote rights\n\n"
+            f"{get_emoji('adder1')} Requirements: Admin with promote rights\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
         )
         return
 
     promoting_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Promoting User...**\n\n"
-        f"{get_emoji('proses')} **Target:** {target_user.first_name}\n"
-        f"{get_emoji('loading')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n"
-        f"{get_emoji('kuning')} **Processing promotion...**"
+        f"{get_emoji('loading')} Promoting User...\n\n"
+        f"{get_emoji('proses')} Target: {target_user.first_name}\n"
+        f"{get_emoji('loading')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
+        f"{get_emoji('kuning')} Processing promotion..."
     )
 
     success = await staff_system.promote_user(vzoel_client, event.chat_id, target_user)
 
     if success:
         await safe_edit_premium(promoting_msg,
-            f"{get_emoji('aktif')} **User Promoted Successfully!**\n\n"
-            f"{get_emoji('utama')} **New Admin:** {target_user.first_name}\n"
-            f"{get_emoji('proses')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n"
-            f"{get_emoji('centang')} **Rank:** Administrator\n"
-            f"{get_emoji('aktif')} **Privileges:** Standard admin rights granted\n\n"
-            f"{get_emoji('telegram')} **View all staff:** `.staff`\n\n"
+            f"{get_emoji('aktif')} User Promoted Successfully!\n\n"
+            f"{get_emoji('utama')} New Admin: {target_user.first_name}\n"
+            f"{get_emoji('proses')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
+            f"{get_emoji('centang')} Rank: Administrator\n"
+            f"{get_emoji('aktif')} Privileges: Standard admin rights granted\n\n"
+            f"{get_emoji('telegram')} View all staff: `.staff`\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
         )
     else:
         await safe_edit_premium(promoting_msg,
-            f"{get_emoji('merah')} **Promotion Failed!**\n\n"
+            f"{get_emoji('merah')} Promotion Failed!\n\n"
             f"{get_emoji('merah')} Unable to promote user to admin\n"
-            f"{get_emoji('kuning')} **Possible Issues:**\n"
+            f"{get_emoji('kuning')} Possible Issues:\n"
             f"  • Insufficient admin privileges\n"
             f"  • User is already an admin\n"
             f"  • Cannot promote this user type\n\n"
@@ -242,7 +242,7 @@ async def unadmin_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} Group Only!\n\n"
             f"{get_emoji('kuning')} Unadmin commands only work in groups."
         )
         return
@@ -252,9 +252,9 @@ async def unadmin_handler(event):
 
     if not target_user:
         await safe_send_premium(event,
-            f"{get_emoji('utama')} **PREMIUM ADMIN DEMOTION**\n\n"
-            f"{get_emoji('merah')} **No target specified!**\n\n"
-            f"{get_emoji('utama')} **Usage:**\n"
+            f"{get_emoji('utama')} PREMIUM ADMIN DEMOTION\n\n"
+            f"{get_emoji('merah')} No target specified!\n\n"
+            f"{get_emoji('utama')} Usage:\n"
             f"  • `.unadmin @username` - Demote by username\n"
             f"  • Reply to user + `.unadmin` - Demote by reply\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
@@ -262,28 +262,28 @@ async def unadmin_handler(event):
         return
 
     demoting_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Demoting Admin...**\n\n"
-        f"{get_emoji('proses')} **Target:** {target_user.first_name}\n"
-        f"{get_emoji('loading')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n"
-        f"{get_emoji('kuning')} **Processing demotion...**"
+        f"{get_emoji('loading')} Demoting Admin...\n\n"
+        f"{get_emoji('proses')} Target: {target_user.first_name}\n"
+        f"{get_emoji('loading')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
+        f"{get_emoji('kuning')} Processing demotion..."
     )
 
     success = await staff_system.demote_user(vzoel_client, event.chat_id, target_user)
 
     if success:
         await safe_edit_premium(demoting_msg,
-            f"{get_emoji('aktif')} **Admin Demoted Successfully!**\n\n"
-            f"{get_emoji('proses')} **Demoted User:** {target_user.first_name}\n"
-            f"{get_emoji('loading')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n"
-            f"{get_emoji('kuning')} **Status:** Regular Member\n"
-            f"{get_emoji('aktif')} **Admin Rights:** All privileges removed\n\n"
+            f"{get_emoji('aktif')} Admin Demoted Successfully!\n\n"
+            f"{get_emoji('proses')} Demoted User: {target_user.first_name}\n"
+            f"{get_emoji('loading')} Username: `@{target_user.username if target_user.username else 'No username'}`\n"
+            f"{get_emoji('kuning')} Status: Regular Member\n"
+            f"{get_emoji('aktif')} Admin Rights: All privileges removed\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
         )
     else:
         await safe_edit_premium(demoting_msg,
-            f"{get_emoji('merah')} **Demotion Failed!**\n\n"
+            f"{get_emoji('merah')} Demotion Failed!\n\n"
             f"{get_emoji('merah')} Unable to demote user from admin\n"
-            f"{get_emoji('kuning')} **Possible Issues:**\n"
+            f"{get_emoji('kuning')} Possible Issues:\n"
             f"  • Insufficient admin privileges\n"
             f"  • User is not an admin\n"
             f"  • User has higher privileges\n\n"
@@ -300,13 +300,13 @@ async def staff_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} Group Only!\n\n"
             f"{get_emoji('kuning')} Staff commands only work in groups."
         )
         return
 
     loading_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Loading Staff List...**\n\n"
+        f"{get_emoji('loading')} Loading Staff List...\n\n"
         f"{get_emoji('loading')} Collecting administrators..."
     )
 
@@ -314,7 +314,7 @@ async def staff_handler(event):
 
     if not admins:
         await safe_edit_premium(loading_msg,
-            f"{get_emoji('merah')} **Unable to Load Staff!**\n\n"
+            f"{get_emoji('merah')} Unable to Load Staff!\n\n"
             f"{get_emoji('merah')} Cannot access administrator list\n"
             f"{get_emoji('kuning')} This may be due to privacy settings\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
@@ -326,8 +326,8 @@ async def staff_handler(event):
     chat = await raw_client.get_entity(event.chat_id)
     chat_title = chat.title if hasattr(chat, 'title') else "Group"
 
-    staff_text = f"{get_emoji('telegram')} **STAFF LIST - {chat_title.upper()}**\n\n"
-    staff_text += f"{get_emoji('aktif')} **Total Administrators:** {len(admins)}\n\n"
+    staff_text = f"{get_emoji('telegram')} STAFF LIST - {chat_title.upper()}\n\n"
+    staff_text += f"{get_emoji('aktif')} Total Administrators: {len(admins)}\n\n"
 
     for index, admin in enumerate(admins[:15], 1):  # Limit to 15 admins
         user = admin['user']
@@ -344,14 +344,14 @@ async def staff_handler(event):
 
         username_text = f"@{user.username}" if user.username else "No username"
 
-        staff_text += f"{title_emoji} **{index}. {full_name}**\n"
+        staff_text += f"{title_emoji} {index}. {full_name}\n"
         staff_text += f"   {get_emoji('proses')} `{username_text}`\n"
         staff_text += f"   {get_emoji('loading')} *{title}*\n\n"
 
     if len(admins) > 15:
         staff_text += f"{get_emoji('kuning')} *... and {len(admins)-15} more admins*\n\n"
 
-    staff_text += f"{get_emoji('utama')} **Promote new admin:** `.admin @username`\n\n"
+    staff_text += f"{get_emoji('utama')} Promote new admin: `.admin @username`\n\n"
     staff_text += f"{get_emoji('telegram')} VZL2 Premium Staff System"
 
     await safe_edit_premium(loading_msg, staff_text)
@@ -366,13 +366,13 @@ async def reloadmin_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} Group Only!\n\n"
             f"{get_emoji('kuning')} Reload commands only work in groups."
         )
         return
 
     reload_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Reloading Admin Cache...**\n\n"
+        f"{get_emoji('loading')} Reloading Admin Cache...\n\n"
         f"{get_emoji('loading')} Refreshing administrator list..."
     )
 
@@ -384,11 +384,11 @@ async def reloadmin_handler(event):
         chat_title = chat.title if hasattr(chat, 'title') else "Group"
 
         if admins:
-            reload_text = f"{get_emoji('aktif')} **Admin Cache Reloaded!**\n\n"
-            reload_text += f"{get_emoji('utama')} **Group:** {chat_title}\n"
-            reload_text += f"{get_emoji('aktif')} **Total Admins:** {len(admins)}\n"
-            reload_text += f"{get_emoji('loading')} **Cache Status:** Fresh\n\n"
-            reload_text += f"{get_emoji('proses')} **Admin Preview:**\n"
+            reload_text = f"{get_emoji('aktif')} Admin Cache Reloaded!\n\n"
+            reload_text += f"{get_emoji('utama')} Group: {chat_title}\n"
+            reload_text += f"{get_emoji('aktif')} Total Admins: {len(admins)}\n"
+            reload_text += f"{get_emoji('loading')} Cache Status: Fresh\n\n"
+            reload_text += f"{get_emoji('proses')} Admin Preview:\n"
 
             for i, admin in enumerate(admins[:5], 1):
                 admin_name = admin['user'].first_name or "Unknown"
@@ -398,20 +398,20 @@ async def reloadmin_handler(event):
             if len(admins) > 5:
                 reload_text += f"  {get_emoji('kuning')} *... and {len(admins)-5} more*\n"
 
-            reload_text += f"\n{get_emoji('telegram')} **Full list:** `.staff`\n\n"
+            reload_text += f"\n{get_emoji('telegram')} Full list: `.staff`\n\n"
             reload_text += f"{get_emoji('telegram')} VZL2 Premium Staff System"
 
             await safe_edit_premium(reload_msg, reload_text)
         else:
             await safe_edit_premium(reload_msg,
-                f"{get_emoji('merah')} **Reload Failed!**\n\n"
+                f"{get_emoji('merah')} Reload Failed!\n\n"
                 f"{get_emoji('merah')} Unable to refresh admin cache\n"
                 f"{get_emoji('kuning')} This may be due to privacy restrictions\n\n"
                 f"{get_emoji('telegram')} VZL2 Premium Staff System"
             )
     except Exception as e:
         await safe_edit_premium(reload_msg,
-            f"{get_emoji('merah')} **Reload Error!**\n\n"
-            f"{get_emoji('merah')} **Error:** {str(e)[:100]}\n\n"
+            f"{get_emoji('merah')} Reload Error!\n\n"
+            f"{get_emoji('merah')} Error: {str(e)[:100]}\n\n"
             f"{get_emoji('telegram')} VZL2 Premium Staff System"
         )
