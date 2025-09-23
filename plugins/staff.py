@@ -150,7 +150,9 @@ class StaffSystem:
         if args:
             username = args.strip().lstrip('@')
             try:
-                user = await client.get_entity(username)
+                # Use raw client for get_entity
+                raw_client = client.client if hasattr(client, 'client') else client
+                user = await raw_client.get_entity(username)
                 return user
             except:
                 return None
@@ -319,7 +321,9 @@ async def staff_handler(event):
         )
         return
 
-    chat = await vzoel_client.get_entity(event.chat_id)
+    # Use raw client for get_entity
+    raw_client = vzoel_client.client if hasattr(vzoel_client, 'client') else vzoel_client
+    chat = await raw_client.get_entity(event.chat_id)
     chat_title = chat.title if hasattr(chat, 'title') else "Group"
 
     staff_text = f"{get_emoji('telegram')} **STAFF LIST - {chat_title.upper()}**\n\n"
@@ -374,7 +378,9 @@ async def reloadmin_handler(event):
 
     try:
         admins = await staff_system.get_chat_admins(vzoel_client, event.chat_id)
-        chat = await vzoel_client.get_entity(event.chat_id)
+        # Use raw client for get_entity
+        raw_client = vzoel_client.client if hasattr(vzoel_client, 'client') else vzoel_client
+        chat = await raw_client.get_entity(event.chat_id)
         chat_title = chat.title if hasattr(chat, 'title') else "Group"
 
         if admins:
