@@ -161,10 +161,10 @@ def get_help_page(page=0):
     total_plugins = len(all_plugins)
     total_pages = (total_plugins - 1) // plugins_per_page + 1
 
-    help_text = f"""{get_emoji('main')} {convert_font('VZOELFOX PLUGINS', 'bold')} (Page {page + 1}/{total_pages})
+    help_text = f"""{get_emoji('main')} **VZOELFOX PLUGINS** (Page {page + 1}/{total_pages})
 
-{get_emoji('check')} {convert_font('Total Plugins:', 'bold')} {total_plugins}
-{get_emoji('adder4')} {convert_font('Page:', 'bold')} {page + 1} of {total_pages}
+{get_emoji('check')} **Total Plugins:** {total_plugins}
+{get_emoji('adder4')} **Page:** {page + 1} of {total_pages}
 
 """
 
@@ -172,8 +172,8 @@ def get_help_page(page=0):
         if plugin_name == 'core':
             # Handle core commands
             core_commands = ['.alive', '.ping', '.restart', '.plugins']
-            help_text += f"{get_emoji('adder2')} {convert_font(f'{idx}.', 'bold')} {convert_font('core', 'mono')}\n"
-            help_text += f"   └ Commands: {convert_font(', '.join(core_commands), 'mono')}\n"
+            help_text += f"{get_emoji('adder2')} **{idx}.** `core`\n"
+            help_text += f"   └ Commands: `{', '.join(core_commands)}`\n"
             help_text += f"   └ Core userbot functions\n\n"
         else:
             # Handle plugin commands
@@ -181,27 +181,27 @@ def get_help_page(page=0):
             commands = plugin_info.get('commands', [])
             description = plugin_info.get('description', 'No description')[:50]
 
-            help_text += f"{get_emoji('adder2')} {convert_font(f'{idx}.', 'bold')} {convert_font(plugin_name, 'mono')}\n"
+            help_text += f"{get_emoji('adder2')} **{idx}.** `{plugin_name}`\n"
 
             if commands:
                 # Show commands in a more compact format
                 if len(commands) <= 3:
-                    help_text += f"   └ Commands: {convert_font(', '.join(commands), 'mono')}\n"
+                    help_text += f"   └ Commands: `{', '.join(commands)}`\n"
                 else:
-                    help_text += f"   └ Commands: {convert_font(', '.join(commands[:3]), 'mono')} + {len(commands)-3} more\n"
+                    help_text += f"   └ Commands: `{', '.join(commands[:3])}` + {len(commands)-3} more\n"
             else:
-                help_text += f"   └ Commands: {convert_font('See plugin for details', 'mono')}\n"
+                help_text += f"   └ Commands: `See plugin for details`\n"
 
             help_text += f"   └ {description}\n\n"
 
-    help_text += f"{get_emoji('adder6')} {convert_font('Navigation:', 'bold')}\n"
+    help_text += f"{get_emoji('adder6')} **Navigation:**\n"
     if page > 0:
-        help_text += f"{get_emoji('adder1')} {convert_font('.back', 'mono')} - Previous page\n"
+        help_text += f"{get_emoji('adder1')} `.back` - Previous page\n"
     if page < total_pages - 1:
-        help_text += f"{get_emoji('adder1')} {convert_font('.next', 'mono')} - Next page\n"
+        help_text += f"{get_emoji('adder1')} `.next` - Next page\n"
 
-    help_text += f"{get_emoji('adder3')} {convert_font('.help <plugin>', 'mono')} - Plugin details\n"
-    help_text += f"\n{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}\n"
+    help_text += f"{get_emoji('adder3')} `.help <plugin>` - Plugin details\n"
+    help_text += f"\n{get_emoji('main')} **VzoelFox Premium System**\n"
     help_text += f"{get_emoji('adder5')} Powered by Vzoel Fox's Technology\n"
     help_text += f"{get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"
 
@@ -211,34 +211,34 @@ def get_plugin_details(plugin_name):
     """Get detailed plugin information"""
     plugin_info = get_plugin_info_from_file(plugin_name)
     
-    help_text = f"""{get_emoji('main')} {convert_font(f'PLUGIN: {plugin_name.upper()}', 'bold')}
+    help_text = f"""{get_emoji('main')} **PLUGIN: {plugin_name.upper()}**
 
-{get_emoji('check')} {convert_font('Description:', 'bold')}
+{get_emoji('check')} **Description:**
 {plugin_info.get('description', 'Tidak ada deskripsi')}
 
-{get_emoji('adder2')} {convert_font('Commands:', 'bold')}
+{get_emoji('adder2')} **Commands:**
 """
     
     commands = plugin_info.get('commands', [])
     if commands:
         for cmd in commands:
-            help_text += f"{get_emoji('adder4')} {convert_font(cmd, 'mono')}\n"
+            help_text += f"{get_emoji('adder4')} `{cmd}`\n"
     else:
         help_text += f"{get_emoji('adder5')} Tidak ada commands tersedia\n"
     
     if 'features' in plugin_info:
-        help_text += f"\n{get_emoji('adder3')} {convert_font('Features:', 'bold')}\n"
+        help_text += f"\n{get_emoji('adder3')} **Features:**\n"
         for feature in plugin_info['features']:
             help_text += f"{get_emoji('adder6')} {feature}\n"
     
     if 'author' in plugin_info:
-        help_text += f"\n{get_emoji('main')} {convert_font('Author:', 'bold')} {plugin_info['author']}\n"
+        help_text += f"\n{get_emoji('main')} **Author:** {plugin_info['author']}\n"
     
     if 'version' in plugin_info:
-        help_text += f"{get_emoji('check')} {convert_font('Version:', 'bold')} {plugin_info['version']}\n"
+        help_text += f"{get_emoji('check')} **Version:** {plugin_info['version']}\n"
     
-    help_text += f"\n{get_emoji('adder1')} {convert_font('.help', 'mono')} - Back to main help\n"
-    help_text += f"\n{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}\n"
+    help_text += f"\n{get_emoji('adder1')} `.help` - Back to main help\n"
+    help_text += f"\n{get_emoji('main')} **VzoelFox Premium System**\n"
     help_text += f"{get_emoji('adder5')} Powered by Vzoel Fox's Technology\n"
     help_text += f"{get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"
     
@@ -291,6 +291,7 @@ async def is_owner_check(client, user_id):
 # Global client reference
 client = None
 
+@events.register(events.NewMessage(pattern=r'\.help'))
 async def help_handler(event):
     """Main help command handler"""
     global client
@@ -311,14 +312,14 @@ async def help_handler(event):
                 await safe_send_premium(event, help_text)
                 return
             else:
-                error_text = f"""{get_emoji('adder5')} {convert_font('Plugin tidak ditemukan:', 'bold')} {convert_font(plugin_name, 'mono')}
+                error_text = f"""{get_emoji('adder5')} **Plugin tidak ditemukan:** `{plugin_name}`
 
-{get_emoji('adder3')} {convert_font('Available plugins:', 'bold')}
-{', '.join([convert_font(p, 'mono') for p in all_plugins[:10]])}...
+{get_emoji('adder3')} **Available plugins:**
+{', '.join([f'`{p}`' for p in all_plugins[:10]])}...
 
-{get_emoji('adder1')} {convert_font('.help', 'mono')} - Show all plugins
+{get_emoji('adder1')} `.help` - Show all plugins
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+{get_emoji('main')} **VzoelFox Premium System**"""
                 await safe_send_premium(event, error_text)
                 return
         
@@ -328,12 +329,13 @@ async def help_handler(event):
         await safe_send_premium(event, help_text)
         
     except Exception as e:
-        error_text = f"""{get_emoji('adder5')} {convert_font('Help error:', 'bold')} {str(e)}
+        error_text = f"""{get_emoji('adder5')} **Help error:** {str(e)}
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}
+{get_emoji('main')} **VzoelFox Premium System**
 {get_emoji('adder6')} - 2025 Vzoel Fox's (LTPN)"""
         await safe_send_premium(event, error_text)
 
+@events.register(events.NewMessage(pattern=r'\.next'))
 async def next_handler(event):
     """Handle .next command for pagination"""
     global client
@@ -354,21 +356,22 @@ async def next_handler(event):
             help_text = get_help_page(HELP_STATE['current_page'])
             await safe_send_premium(event, help_text)
         else:
-            error_text = f"""{get_emoji('adder5')} {convert_font('Already at last page!', 'bold')}
+            error_text = f"""{get_emoji('adder5')} **Already at last page!**
 
 {get_emoji('check')} Current page: {current_page + 1}/{total_pages}
-{get_emoji('adder1')} {convert_font('.back', 'mono')} - Previous page
-{get_emoji('adder3')} {convert_font('.help', 'mono')} - First page
+{get_emoji('adder1')} `.back` - Previous page
+{get_emoji('adder3')} `.help` - First page
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+{get_emoji('main')} **VzoelFox Premium System**"""
             await safe_send_premium(event, error_text)
 
     except Exception as e:
-        error_text = f"""{get_emoji('adder5')} {convert_font('Next error:', 'bold')} {str(e)}
+        error_text = f"""{get_emoji('adder5')} **Next error:** {str(e)}
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+{get_emoji('main')} **VzoelFox Premium System**"""
         await safe_send_premium(event, error_text)
 
+@events.register(events.NewMessage(pattern=r'\.back'))
 async def back_handler(event):
     """Handle .back command for navigation"""
     global client
@@ -384,33 +387,29 @@ async def back_handler(event):
             help_text = get_help_page(HELP_STATE['current_page'])
             await safe_send_premium(event, help_text)
         else:
-            error_text = f"""{get_emoji('adder5')} {convert_font('Already at first page!', 'bold')}
+            error_text = f"""{get_emoji('adder5')} **Already at first page!**
 
 {get_emoji('check')} Current page: 1
-{get_emoji('adder1')} {convert_font('.next', 'mono')} - Next page
-{get_emoji('adder3')} {convert_font('.help <plugin>', 'mono')} - Plugin details
+{get_emoji('adder1')} `.next` - Next page
+{get_emoji('adder3')} `.help <plugin>` - Plugin details
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+{get_emoji('main')} **VzoelFox Premium System**"""
             await safe_send_premium(event, error_text)
         
     except Exception as e:
-        error_text = f"""{get_emoji('adder5')} {convert_font('Back error:', 'bold')} {str(e)}
+        error_text = f"""{get_emoji('adder5')} **Back error:** {str(e)}
 
-{get_emoji('main')} {convert_font('VzoelFox Premium System', 'bold')}"""
+{get_emoji('main')} **VzoelFox Premium System**"""
         await safe_send_premium(event, error_text)
 
 def get_plugin_info():
     return PLUGIN_INFO
 
-def setup(client_instance):
-    """Setup function untuk register event handlers"""
+async def vzoel_init(client_instance, emoji_handler):
+    """VZL2 Plugin initialization"""
     global client
     client = client_instance
-    
-    client.add_event_handler(help_handler, events.NewMessage(pattern=r'\.help(?:\s+(.+))?$'))
-    client.add_event_handler(next_handler, events.NewMessage(pattern=r'\.next$'))
-    client.add_event_handler(back_handler, events.NewMessage(pattern=r'\.back$'))
-    
+
     print(f"✅ [Help] Simple template system loaded v{PLUGIN_INFO['version']} - 10 plugins per page")
 
 def cleanup_plugin():
