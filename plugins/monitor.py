@@ -327,14 +327,26 @@ class UserMonitorSystem:
 # Initialize monitor system
 monitor_system = UserMonitorSystem()
 
-async def is_owner_check(client, user_id):
+async def is_owner_check(client, event):
     """Check if user is bot owner"""
     try:
+        # Get sender ID from event properly
+        sender_id = None
+        if hasattr(event, 'sender_id') and event.sender_id:
+            sender_id = event.sender_id
+        elif hasattr(event, 'from_id') and event.from_id:
+            sender_id = event.from_id.user_id if hasattr(event.from_id, 'user_id') else event.from_id
+        elif event.sender:
+            sender_id = event.sender.id
+
+        if not sender_id:
+            return False
+
         owner_id = os.getenv("OWNER_ID")
         if owner_id:
-            return user_id == int(owner_id)
+            return sender_id == int(owner_id)
         me = await client.get_me()
-        return user_id == me.id
+        return sender_id == me.id
     except Exception:
         return False
 
@@ -355,15 +367,25 @@ async def message_tracker(event):
         return
 
     try:
-        # Track user activity
-        await monitor_system.track_user_activity(event.sender_id, event.chat_id, event)
+        # Get sender ID properly
+        sender_id = None
+        if hasattr(event, 'sender_id') and event.sender_id:
+            sender_id = event.sender_id
+        elif hasattr(event, 'from_id') and event.from_id:
+            sender_id = event.from_id.user_id if hasattr(event.from_id, 'user_id') else event.from_id
+        elif event.sender:
+            sender_id = event.sender.id
+
+        if sender_id:
+            # Track user activity
+            await monitor_system.track_user_activity(sender_id, event.chat_id, event)
     except Exception as e:
         print(f"[Monitor] Tracking error: {e}")
 
 async def monitor_handler(event):
     """User monitoring handler (.monitor)"""
     global client
-    if not await is_owner_check(client, event.sender_id):
+    if not await is_owner_check(client, event):
         return
 
     # Check if in group
@@ -481,7 +503,7 @@ async def monitor_handler(event):
 async def stats_handler(event):
     """Detailed statistics handler (.stats)"""
     global client
-    if not await is_owner_check(client, event.sender_id):
+    if not await is_owner_check(client, event):
         return
 
     # Check if in group
