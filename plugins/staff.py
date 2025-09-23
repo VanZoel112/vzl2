@@ -30,8 +30,8 @@ PLUGIN_INFO = {
     "version": "1.0.0",
     "description": "Advanced staff management with admin promotion and listing",
     "author": "VanZoel112",
-    "commands": [".staff", ".admin <user>"],
-    "features": ["admin promotion", "staff listing", "premium emoji support", "hierarchy display"]
+    "commands": [".staff", ".admin <user>", ".unadmin <user>", ".reloadmin"],
+    "features": ["admin promotion", "admin demotion", "admin reload", "staff listing", "premium emoji support", "hierarchy display"]
 }
 
 # ===== PREMIUM EMOJI CONFIGURATION (VZL2 Format) =====
@@ -253,6 +253,44 @@ class StaffManagementSystem:
             print(f"[Staff] Error promoting user: {e}")
             return False
 
+    async def demote_user_from_admin(self, client, chat_id: int, target_user) -> bool:
+        """Demote user from administrator"""
+        try:
+            # Create empty admin rights (removes all admin privileges)
+            no_admin_rights = ChatAdminRights(
+                change_info=False,
+                post_messages=False,
+                edit_messages=False,
+                delete_messages=False,
+                ban_users=False,
+                invite_users=False,
+                pin_messages=False,
+                add_admins=False
+            )
+
+            # Demote user by removing admin rights
+            await client(EditAdminRequest(
+                channel=chat_id,
+                user_id=target_user.id,
+                admin_rights=no_admin_rights,
+                rank=""
+            ))
+
+            return True
+
+        except ChatAdminRequiredError:
+            print("[Staff] Chat admin privileges required to demote")
+            return False
+        except UserAdminInvalidError:
+            print("[Staff] Cannot demote this user")
+            return False
+        except RightForbiddenError:
+            print("[Staff] Insufficient rights to demote users")
+            return False
+        except Exception as e:
+            print(f"[Staff] Error demoting user: {e}")
+            return False
+
     async def resolve_target_user(self, client, event, args: str):
         """Resolve target user dari argument atau reply"""
 
@@ -374,6 +412,171 @@ async def admin_handler(event):
 
         await promoting_msg.edit(error_text)
 
+async def unadmin_handler(event):
+    """Admin demotion handler"""
+    global client
+    if not await is_owner_check(client, event.sender_id):
+        return
+
+    # Check if in group
+    if not (event.is_group or event.is_channel):
+        await safe_send_premium(event,
+            f"{get_emoji('adder5')} {convert_font('Group Only!', 'bold')}\n\n"
+            f"{get_emoji('adder3')} Unadmin commands only work in groups."
+        )
+        return
+
+    # Get arguments
+    args = event.text.split(maxsplit=1)[1] if len(event.text.split()) > 1 else ""
+
+    # Resolve target user
+    target_user = await staff_system.resolve_target_user(client, event, args)
+
+    if not target_user:
+        usage_text = f"""{get_emoji('main')} {convert_font('PREMIUM ADMIN DEMOTION', 'bold')}
+
+{get_emoji('adder5')} {convert_font('No target specified!', 'bold')}
+
+{get_emoji('main')} {convert_font('Usage:', 'bold')}
+  • {convert_font('.unadmin @username', 'mono')} - Demote by username
+  • Reply to user + {convert_font('.unadmin', 'mono')} - Demote by reply
+
+{get_emoji('check')} {convert_font('Examples:', 'bold')}
+  • {convert_font('.unadmin @johndoe', 'mono')}
+  • Reply to message + {convert_font('.unadmin', 'mono')}
+
+{get_emoji('adder1')} {convert_font('Requirements:', 'bold')} Admin with demote rights
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+        await safe_send_premium(event, usage_text)
+        return
+
+    # Show demoting status
+    demoting_msg = await safe_send_premium(event,
+        f"{get_emoji('check')} {convert_font('Demoting Admin...', 'bold')}\n\n"
+        f"{get_emoji('adder4')} {convert_font('Target:', 'bold')} {convert_font(target_user.first_name, 'bold')}\n"
+        f"{get_emoji('adder1')} {convert_font('Username:', 'bold')} {convert_font(f'@{target_user.username}' if target_user.username else 'No username', 'mono')}\n"
+        f"{get_emoji('adder3')} {convert_font('Processing demotion...', 'bold')}"
+    )
+
+    # Attempt demotion
+    success = await staff_system.demote_user_from_admin(client, event.chat_id, target_user)
+
+    if success:
+        success_text = f"""{get_emoji('adder2')} {convert_font('Admin Demoted Successfully!', 'bold')}
+
+{get_emoji('adder4')} {convert_font('Demoted User:', 'bold')} {convert_font(target_user.first_name, 'bold')}
+{get_emoji('adder1')} {convert_font('Username:', 'bold')} {convert_font(f'@{target_user.username}' if target_user.username else 'No username', 'mono')}
+{get_emoji('adder3')} {convert_font('Status:', 'bold')} {convert_font('Regular Member', 'bold')}
+{get_emoji('adder2')} {convert_font('Admin Rights:', 'bold')} All privileges removed
+
+{get_emoji('adder3')} {convert_font('View current staff:', 'bold')} {convert_font('.staff', 'mono')}
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+        await demoting_msg.edit(success_text)
+        print(f"[Staff] Successfully demoted {target_user.username or target_user.id} from admin")
+
+    else:
+        error_text = f"""{get_emoji('adder5')} {convert_font('Demotion Failed!', 'bold')}
+
+{get_emoji('adder5')} Unable to demote user from admin
+{get_emoji('adder3')} {convert_font('Possible Issues:', 'bold')}
+  • Insufficient admin privileges
+  • User is not an admin
+  • Cannot demote this user type
+  • User has higher privileges
+  • Group restrictions
+
+{get_emoji('adder3')} {convert_font('Current staff:', 'bold')} {convert_font('.staff', 'mono')}
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+        await demoting_msg.edit(error_text)
+
+async def reloadmin_handler(event):
+    """Admin reload/refresh handler"""
+    global client
+    if not await is_owner_check(client, event.sender_id):
+        return
+
+    # Check if in group
+    if not (event.is_group or event.is_channel):
+        await safe_send_premium(event,
+            f"{get_emoji('adder5')} {convert_font('Group Only!', 'bold')}\n\n"
+            f"{get_emoji('adder3')} Reload commands only work in groups."
+        )
+        return
+
+    # Show reloading status
+    reload_msg = await safe_send_premium(event,
+        f"{get_emoji('check')} {convert_font('Reloading Admin Cache...', 'bold')}\n\n"
+        f"{get_emoji('adder1')} Refreshing administrator list..."
+    )
+
+    try:
+        # Force reload admin cache by getting fresh admin list
+        admins = await staff_system.get_chat_admins(client, event.chat_id)
+
+        # Get chat info
+        chat = await client.get_entity(event.chat_id)
+        chat_title = chat.title if hasattr(chat, 'title') else "Group"
+
+        if admins:
+            reload_text = f"""{get_emoji('adder2')} {convert_font('Admin Cache Reloaded!', 'bold')}
+
+{get_emoji('main')} {convert_font('Group:', 'bold')} {convert_font(chat_title, 'bold')}
+{get_emoji('adder2')} {convert_font('Total Admins:', 'bold')} {convert_font(str(len(admins)), 'bold')}
+{get_emoji('adder1')} {convert_font('Cache Status:', 'bold')} {convert_font('Fresh', 'bold')}
+
+{get_emoji('adder4')} {convert_font('Admin List:', 'bold')}"""
+
+            # Add first 5 admins for preview
+            for i, admin in enumerate(admins[:5], 1):
+                admin_name = admin['user'].first_name or "Unknown"
+                admin_title = admin['title']
+                reload_text += f"\n  {get_emoji('check')} {convert_font(f'{i}. {admin_name}', 'mono')} - {convert_font(admin_title, 'italic')}"
+
+            if len(admins) > 5:
+                reload_text += f"\n  {get_emoji('adder3')} {convert_font(f'... and {len(admins)-5} more', 'italic')}"
+
+            reload_text += f"""
+
+{get_emoji('adder3')} {convert_font('Full list:', 'bold')} {convert_font('.staff', 'mono')}
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+            await reload_msg.edit(reload_text)
+            print(f"[Staff] Admin cache reloaded for chat {event.chat_id} - {len(admins)} admins")
+
+        else:
+            error_text = f"""{get_emoji('adder5')} {convert_font('Reload Failed!', 'bold')}
+
+{get_emoji('adder5')} Unable to refresh admin cache
+{get_emoji('adder3')} This may be due to:
+  • Privacy restrictions
+  • Network issues
+  • Insufficient permissions
+
+{get_emoji('adder1')} {convert_font('Try again later or use:', 'bold')} {convert_font('.staff', 'mono')}
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+            await reload_msg.edit(error_text)
+
+    except Exception as e:
+        error_text = f"""{get_emoji('adder5')} {convert_font('Reload Error!', 'bold')}
+
+{get_emoji('adder5')} {convert_font('Error:', 'bold')} {str(e)}
+
+{get_emoji('adder1')} {convert_font('Try again with:', 'bold')} {convert_font('.staff', 'mono')}
+
+{get_emoji('adder6')} VZL2 Premium Staff System"""
+
+        await reload_msg.edit(error_text)
+        print(f"[Staff] Admin reload error: {e}")
+
 async def staff_handler(event):
     """Staff listing handler"""
     global client
@@ -443,9 +646,11 @@ def setup(client_instance):
     client = client_instance
 
     client.add_event_handler(admin_handler, events.NewMessage(pattern=r'\.admin(?:\s+(.+))?$'))
+    client.add_event_handler(unadmin_handler, events.NewMessage(pattern=r'\.unadmin(?:\s+(.+))?$'))
     client.add_event_handler(staff_handler, events.NewMessage(pattern=r'\.staff$'))
+    client.add_event_handler(reloadmin_handler, events.NewMessage(pattern=r'\.reloadmin$'))
 
-    print(f"✅ [Staff] Premium staff management loaded v{PLUGIN_INFO['version']}")
+    print(f"✅ [Staff] Premium staff management loaded v{PLUGIN_INFO['version']} - admin/unadmin/staff/reloadmin commands ready")
 
 def cleanup_plugin():
     """Cleanup plugin resources"""
@@ -458,4 +663,4 @@ def cleanup_plugin():
         print(f"[Staff] Cleanup error: {e}")
 
 # Export functions
-__all__ = ['setup', 'cleanup_plugin', 'get_plugin_info', 'admin_handler', 'staff_handler']
+__all__ = ['setup', 'cleanup_plugin', 'get_plugin_info', 'admin_handler', 'unadmin_handler', 'staff_handler', 'reloadmin_handler']
