@@ -199,17 +199,17 @@ async def perform_batch_tagall(event, participants, message_text, chat_title):
                 total_batches = (total_users + batch_size - 1) // batch_size
                 progress_emoji = get_emoji(random.choice(status_emojis))
 
-                status_display = f"""**{get_emoji('petir')} VZL2 SMART BATCH TAGALL**
+                status_display = f"""{get_emoji('petir')} VZL2 SMART BATCH TAGALL
 
-{get_emoji('centang')} **Batch {batch_number}/{total_batches} - Target Users:**
+{get_emoji('centang')} Batch {batch_number}/{total_batches} - Target Users:
 
 """ + "\n".join(batch_display) + f"""
 
-{progress_emoji} **Progress:** {processed_count}/{total_users} users
-{get_emoji('aktif')} **Pesan:** {message_text or 'Default tagall'}
-{get_emoji('telegram')} **Grup:** {chat_title}
+{progress_emoji} Progress: {processed_count}/{total_users} users
+{get_emoji('aktif')} Pesan: {message_text or 'Default tagall'}
+{get_emoji('telegram')} Grup: {chat_title}
 
-**By Vzoel Fox's Assistant**"""
+By Vzoel Fox's Assistant"""
 
                 # Edit the main tracking message
                 await safe_edit_premium(event, status_display)
@@ -238,18 +238,18 @@ async def perform_batch_tagall(event, participants, message_text, chat_title):
         success_emojis = [get_emoji(key) for key in ['centang', 'utama', 'petir', 'aktif', 'adder1']]
         emoji_line = " ".join(success_emojis)
 
-        completion_msg = f"""**{emoji_line} TAGALL COMPLETED**
+        completion_msg = f"""{emoji_line} TAGALL COMPLETED
 
-{get_emoji('centang')} **Total Tagged:** {processed_count} users
-{get_emoji('utama')} **Batches Processed:** {(processed_count + batch_size - 1) // batch_size}
-{get_emoji('aktif')} **Message:** {message_text or 'Default tagall'}
-{get_emoji('petir')} **Group:** {chat_title}
-{get_emoji('adder1')} **Method:** Smart Batch Editing
+{get_emoji('centang')} Total Tagged: {processed_count} users
+{get_emoji('utama')} Batches Processed: {(processed_count + batch_size - 1) // batch_size}
+{get_emoji('aktif')} Message: {message_text or 'Default tagall'}
+{get_emoji('petir')} Group: {chat_title}
+{get_emoji('adder1')} Method: Smart Batch Editing
 
-{get_emoji('proses')} **Status:** Successfully Completed
-{get_emoji('telegram')} **System:** VZL2 Premium Tagall v4.0
+{get_emoji('proses')} Status: Successfully Completed
+{get_emoji('telegram')} System: VZL2 Premium Tagall v4.0
 
-**By Vzoel Fox's Assistant**"""
+By Vzoel Fox's Assistant"""
 
         await safe_edit_premium(event, completion_msg)
 
@@ -294,33 +294,33 @@ async def tagall_info_handler(event):
                 
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        tagall_info = f"""**{signature} Smart Batch Tagall System v4.0**
+        tagall_info = f"""{signature} Smart Batch Tagall System v4.0
 
-{get_emoji('utama')} **Apa itu Smart Batch Tagall?**
+{get_emoji('utama')} Apa itu Smart Batch Tagall?
 Sistem mention member grup dengan teknologi batch editing - tidak spam, lebih efisien, dan elegan dengan premium emoji mapping.
 
-{get_emoji('centang')} **Cara Penggunaan:**
-• `.tagall <pesan>` - Tag semua member dengan pesan
-• `.tagall` (reply) - Tag semua member dengan pesan yang direply
-• `.stop` - Hentikan proses tagall yang sedang berjalan
+{get_emoji('centang')} Cara Penggunaan:
+• .tagall <pesan> - Tag semua member dengan pesan
+• .tagall (reply) - Tag semua member dengan pesan yang direply
+• .stop - Hentikan proses tagall yang sedang berjalan
 
-{get_emoji('aktif')} **Fitur Smart Batch v4.0:**
-• **Batch Editing System** - 5 user per edit (tidak spam)
-• **Premium Emoji Mapping** - Visual appeal dengan VZL2 emojis
-• **Real-time Progress** - Track progress per batch
-• **Single Message Editing** - Satu pesan di-edit untuk semua mentions
-• **Smart Status Display** - Animated feedback dengan premium emojis
-• **Flood Protection** - 3 detik delay per batch
+{get_emoji('aktif')} Fitur Smart Batch v4.0:
+• Batch Editing System - 5 user per edit (tidak spam)
+• Premium Emoji Mapping - Visual appeal dengan VZL2 emojis
+• Real-time Progress - Track progress per batch
+• Single Message Editing - Satu pesan di-edit untuk semua mentions
+• Smart Status Display - Animated feedback dengan premium emojis
+• Flood Protection - 3 detik delay per batch
 
-{get_emoji('petir')} **Keunggulan v4.0:**
-• **Anti-Spam:** Tidak menghasilkan banyak pesan terpisah
-• **Batch Processing:** 5 user sekaligus per edit
-• **Premium Visual:** Setiap user mendapat emoji unik
-• **Progress Tracking:** Real-time batch dan user count
-• **Smart Cleanup:** Auto-cleanup tracking data
-• **Error Handling:** Skip batch bermasalah, lanjutkan proses
+{get_emoji('petir')} Keunggulan v4.0:
+• Anti-Spam: Tidak menghasilkan banyak pesan terpisah
+• Batch Processing: 5 user sekaligus per edit
+• Premium Visual: Setiap user mendapat emoji unik
+• Progress Tracking: Real-time batch dan user count
+• Smart Cleanup: Auto-cleanup tracking data
+• Error Handling: Skip batch bermasalah, lanjutkan proses
 
-{get_emoji('proses')} **Safety & Performance:**
+{get_emoji('proses')} Safety & Performance:
 • Skip bot accounts otomatis
 • Handle deleted accounts dengan aman
 • Flood wait protection dengan delay dinamis
@@ -328,14 +328,14 @@ Sistem mention member grup dengan teknologi batch editing - tidak spam, lebih ef
 • Batch error recovery system
 • Memory efficient dengan auto cleanup
 
-{get_emoji('adder1')} **Technical Specs:**
+{get_emoji('adder1')} Technical Specs:
 • Batch size: 5 users per message edit
 • Delay: 3 detik per batch (optimal anti-flood)
 • Emoji mapping: 5 premium emojis per batch
 • Progress tracking: Real-time batch/user counting
 • Memory management: Auto cleanup setelah selesai
 
-**By Vzoel Fox's Assistant - Premium Tagall Technology**"""
+By Vzoel Fox's Assistant - Premium Tagall Technology"""
         
         await safe_edit_premium(event, tagall_info)
         vzoel_client.increment_command_count()
