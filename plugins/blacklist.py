@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plugins.emoji_template import get_emoji, create_premium_entities, safe_send_premium, safe_edit_premium, is_owner, PREMIUM_EMOJIS
+from config import Config
 
 """
 Enhanced Blacklist Plugin for Vzoel Fox's Userbot - Premium Edition
@@ -46,9 +47,13 @@ async def vzoel_init(client, emoji_handler):
 
     # Load existing blacklist data
     load_blacklist_data()
-    
+
+    # Initialize config and load global locked users
+    Config.load_blacklist()
+
     signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
     print(f"{signature} Blacklist Plugin loaded - Word filtering ready")
+    print(f"{signature} Global locked users: {len(Config.LOCKED_USERS_GLOBAL)}")
 
 def load_blacklist_data():
     """Load blacklist data from file"""
@@ -274,29 +279,50 @@ Commands: .lock @user, .unlock @user, .locked
         if chat_id not in locked_users:
             locked_users[chat_id] = []
         
-        # Add user to locked list
+        # Add user to local and global locked list
+        local_added = False
+        global_added = False
+
+        # Add to local chat lock
         if target_user not in locked_users[chat_id]:
             locked_users[chat_id].append(target_user)
+            local_added = True
+
+        # Add to global config lock (auto-update config and env)
+        global_added = Config.add_locked_user(target_user)
+
+        if local_added or global_added:
             save_blacklist_data()
+
             # Get user info
             try:
                 user_info = await event.client.get_entity(target_user)
                 user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
             except:
                 user_display = f"User ID: {target_user}"
+
+            status_text = []
+            if local_added:
+                status_text.append(f"{get_emoji('telegram')} Local chat lock")
+            if global_added:
+                status_text.append(f"{get_emoji('petir')} Global config lock")
+
             lock_msg = f"""{get_emoji('merah')} USER LOCKED
 
 {get_emoji('aktif')} User: {user_display}
-{get_emoji('telegram')} Status: Semua pesan akan dihapus
-{get_emoji('petir')} Total Locked: {len(locked_users[chat_id])} user
-{get_emoji('proses')} Auto-delete: Aktif untuk user ini
+{get_emoji('proses')} Status: {' + '.join(status_text) if status_text else 'Already locked'}
+{get_emoji('centang')} Local locked: {len(locked_users[chat_id])} users
+{get_emoji('telegram')} Global locked: {len(Config.LOCKED_USERS_GLOBAL)} users
 
-{get_emoji('centang')} Perintah unlock: `.unlock {user_display}`
+{get_emoji('kuning')} Config.py & .env auto-updated
+{get_emoji('proses')} Semua pesan user ini akan dihapus
 
-Vzoel Fox's Lock System"""
+{get_emoji('centang')} Unlock: `.unlock {user_display}`
+
+Vzoel Fox's Enhanced Lock System"""
             await safe_edit_premium(event, lock_msg)
         else:
-            already_msg = f"{get_emoji('kuning')} User sudah di-lock sebelumnya"
+            already_msg = f"{get_emoji('kuning')} User sudah di-lock sebelumnya (local & global)"
             await safe_edit_premium(event, already_msg)
         
         vzoel_client.increment_command_count()
@@ -327,53 +353,95 @@ async def unlock_user_handler(event):
                     return
         
         if not target_user:
-            # Show locked users
-            if chat_id in locked_users and locked_users[chat_id]:
-                locked_list = []
-                for user_id in locked_users[chat_id][:10]:  # Max 10 users
+            # Show locked users (local and global)
+            local_locked = locked_users.get(chat_id, [])
+            global_locked = Config.LOCKED_USERS_GLOBAL
+
+            if local_locked or global_locked:
+                # Show local locked users
+                local_list = []
+                for user_id in local_locked[:5]:  # Max 5 users
                     try:
                         user_info = await event.client.get_entity(user_id)
                         user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
-                        locked_list.append(user_display)
+                        local_list.append(user_display)
                     except:
-                        locked_list.append(f"ID: {user_id}")
-                
-                locked_msg = f"""{get_emoji('telegram')} LOCKED USERS
+                        local_list.append(f"ID: {user_id}")
 
-{get_emoji('merah')} Total: {len(locked_users[chat_id])} user
-{get_emoji('aktif')} Users: {', '.join(locked_list)}
+                # Show global locked users
+                global_list = []
+                for user_id in global_locked[:5]:  # Max 5 users
+                    try:
+                        user_info = await event.client.get_entity(user_id)
+                        user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
+                        global_list.append(user_display)
+                    except:
+                        global_list.append(f"ID: {user_id}")
 
-{get_emoji('centang')} Untuk unlock: `.unlock @username`
-{get_emoji('kuning')} Clear semua: `.unlock clear`
+                locked_msg = f"""{get_emoji('telegram')} LOCKED USERS STATUS
 
-Vzoel Fox's Lock System"""
+{get_emoji('centang')} Local Chat ({len(local_locked)} users):
+{', '.join(local_list) if local_list else 'None'}
+
+{get_emoji('petir')} Global Config ({len(global_locked)} users):
+{', '.join(global_list) if global_list else 'None'}
+
+{get_emoji('aktif')} Total Effective: {len(set(local_locked + global_locked))} unique users
+
+{get_emoji('kuning')} Commands:
+• `.unlock @username` - Unlock user
+• `.unlock clear` - Clear local locks
+
+Vzoel Fox's Enhanced Lock System"""
             else:
-                locked_msg = f"{get_emoji('kuning')} Tidak ada user yang di-lock"
+                locked_msg = f"{get_emoji('kuning')} Tidak ada user yang di-lock (local atau global)"
             await safe_edit_premium(event, locked_msg)
             return
         
         if chat_id not in locked_users:
             locked_users[chat_id] = []
         
-        # Remove user from locked list
+        # Remove user from local and global locked list
+        local_removed = False
+        global_removed = False
+
+        # Remove from local chat lock
         if target_user in locked_users[chat_id]:
             locked_users[chat_id].remove(target_user)
+            local_removed = True
+
+        # Remove from global config lock (auto-update config and env)
+        global_removed = Config.remove_locked_user(target_user)
+
+        if local_removed or global_removed:
             save_blacklist_data()
+
             try:
                 user_info = await event.client.get_entity(target_user)
                 user_display = f"@{user_info.username}" if user_info.username else f"{user_info.first_name}"
             except:
                 user_display = f"User ID: {target_user}"
+
+            status_text = []
+            if local_removed:
+                status_text.append(f"{get_emoji('telegram')} Local chat unlock")
+            if global_removed:
+                status_text.append(f"{get_emoji('petir')} Global config unlock")
+
             unlock_msg = f"""{get_emoji('centang')} USER UNLOCKED
 
 {get_emoji('aktif')} User: {user_display}
-{get_emoji('telegram')} Status: Pesan tidak akan dihapus lagi
-{get_emoji('proses')} Sisa Locked: {len(locked_users[chat_id])} user
+{get_emoji('proses')} Removed: {' + '.join(status_text) if status_text else 'Not in lists'}
+{get_emoji('centang')} Local locked: {len(locked_users[chat_id])} users
+{get_emoji('telegram')} Global locked: {len(Config.LOCKED_USERS_GLOBAL)} users
 
-Vzoel Fox's Unlock System"""
+{get_emoji('kuning')} Config.py & .env auto-updated
+{get_emoji('proses')} Pesan user tidak akan dihapus lagi
+
+Vzoel Fox's Enhanced Unlock System"""
             await safe_edit_premium(event, unlock_msg)
         else:
-            not_locked_msg = f"{get_emoji('kuning')} User tidak dalam daftar lock"
+            not_locked_msg = f"{get_emoji('kuning')} User tidak dalam daftar lock (local atau global)"
             await safe_edit_premium(event, not_locked_msg)
         
         vzoel_client.increment_command_count()
@@ -389,8 +457,11 @@ async def auto_delete_handler(event):
     sender_id = event.sender_id
     
     try:
-        # Check if user is locked
-        if chat_id in locked_users and sender_id in locked_users[chat_id]:
+        # Check if user is locked (local or global)
+        local_locked = chat_id in locked_users and sender_id in locked_users[chat_id]
+        global_locked = Config.is_locked_user(sender_id)
+
+        if local_locked or global_locked:
             await event.delete()
             return
         
@@ -425,31 +496,84 @@ async def blacklist_info_handler(event):
         
         # Get stats
         word_count = len(blacklist_words.get(chat_id, []))
-        locked_count = len(locked_users.get(chat_id, []))
+        local_locked_count = len(locked_users.get(chat_id, []))
+        global_locked_count = len(Config.LOCKED_USERS_GLOBAL)
         status = "Aktif" if blacklist_active.get(chat_id, True) else "Non-aktif"
-        
-        blacklist_info = f"""{signature} Blacklist System Info
+
+        blacklist_info = f"""{signature} Enhanced Blacklist System
 
 {get_emoji('merah')} Blacklist Words: {word_count} kata
-{get_emoji('aktif')} Locked Users: {locked_count} user  
+{get_emoji('centang')} Local Locked: {local_locked_count} users
+{get_emoji('petir')} Global Locked: {global_locked_count} users
 {get_emoji('telegram')} Status: {status}
 
-{get_emoji('centang')} Commands:
+{get_emoji('centang')} Word Commands:
 • `.bl <kata>` - Add blacklist word
 • `.wl <kata>` - Remove blacklist word
-• `.lock @user` - Lock user (delete all messages)
-• `.unlock @user` - Unlock user
+• `.wl clear` - Clear all blacklist words
 
-{get_emoji('proses')} Features:
-• Auto-delete pesan dengan kata blacklist
-• Lock user untuk hapus semua pesan mereka
-• Support text dan reply mode
-• Persistent storage (saved to file)
+{get_emoji('aktif')} User Lock Commands:
+• `.lock @user` - Lock user (local + global)
+• `.unlock @user` - Unlock user (local + global)
+• `.unlock` - Show locked users status
+• `.blchat` - Lock entire chat globally
 
-{get_emoji('petir')} How it works:
-Sistem akan otomatis menghapus pesan yang mengandung kata blacklist atau dari user yang di-lock, bahkan jika hanya sebagian kata yang match.
+{get_emoji('proses')} Enhanced Features:
+• Dual-layer locking (local chat + global config)
+• Auto-update config.py and .env files
+• Persistent storage across restarts
+• Global user locks work in all chats
+• Smart status reporting
 
-Vzoel Fox's Blacklist System"""
+{get_emoji('petir')} Auto-Delete Logic:
+Sistem akan otomatis menghapus pesan dari:
+1. User yang di-lock secara lokal di chat ini
+2. User yang di-lock secara global (semua chat)
+3. Pesan yang mengandung kata blacklist
+
+{get_emoji('kuning')} Config Integration:
+Locked users otomatis tersimpan ke config.py dan .env untuk persistence maksimal.
+
+Vzoel Fox's Enhanced Blacklist System v3.0"""
         
         await safe_edit_premium(event, blacklist_info)
+        vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.blchat'))
+async def blacklist_chat_handler(event):
+    """Lock entire chat globally (blacklist chat)"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji
+
+        chat_id = event.chat_id
+
+        # Add chat to gcast blacklist using Config system
+        chat_added = Config.add_to_blacklist(chat_id)
+
+        if chat_added:
+            try:
+                chat_info = await event.client.get_entity(chat_id)
+                chat_display = chat_info.title if hasattr(chat_info, 'title') else f"Chat ID: {chat_id}"
+            except:
+                chat_display = f"Chat ID: {chat_id}"
+
+            blchat_msg = f"""{get_emoji('merah')} CHAT GLOBALLY LOCKED
+
+{get_emoji('aktif')} Chat: {chat_display}
+{get_emoji('telegram')} Chat ID: {chat_id}
+{get_emoji('petir')} Status: Ditambah ke gcast blacklist
+{get_emoji('proses')} Total Blacklisted Chats: {len(Config.GCAST_BLACKLIST)}
+
+{get_emoji('kuning')} Effects:
+• Gcast tidak akan dikirim ke chat ini
+• Chat ID tersimpan di config.py dan .env
+• Berlaku global untuk semua gcast operations
+
+{get_emoji('centang')} Untuk remove: hapus manual dari config
+
+Vzoel Fox's Chat Blacklist System"""
+        else:
+            blchat_msg = f"{get_emoji('kuning')} Chat sudah ada di gcast blacklist sebelumnya"
+
+        await safe_edit_premium(event, blchat_msg)
         vzoel_client.increment_command_count()

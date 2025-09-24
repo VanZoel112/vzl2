@@ -55,6 +55,9 @@ class Config:
     
     # Gcast Blacklist Settings
     GCAST_BLACKLIST: List[int] = []
+
+    # Locked Users Settings (Auto-delete all messages)
+    LOCKED_USERS_GLOBAL: List[int] = []
     
     # Heroku/Deploy Settings
     HEROKU_APP_NAME: Optional[str] = os.getenv("HEROKU_APP_NAME")
@@ -147,7 +150,103 @@ class Config:
                 cls.GCAST_BLACKLIST = json.loads(blacklist_env)
         except Exception:
             pass
-    
+
+        # Load locked users from environment
+        try:
+            locked_env = os.getenv("LOCKED_USERS_GLOBAL", "")
+            if locked_env:
+                import json
+                cls.LOCKED_USERS_GLOBAL = json.loads(locked_env)
+        except Exception:
+            pass
+
+    @classmethod
+    def add_locked_user(cls, user_id: int) -> bool:
+        """Add user ID to global locked users list"""
+        if user_id not in cls.LOCKED_USERS_GLOBAL:
+            cls.LOCKED_USERS_GLOBAL.append(user_id)
+            cls._save_locked_users()
+            cls._update_env_locked_users()
+            return True
+        return False
+
+    @classmethod
+    def remove_locked_user(cls, user_id: int) -> bool:
+        """Remove user ID from global locked users list"""
+        if user_id in cls.LOCKED_USERS_GLOBAL:
+            cls.LOCKED_USERS_GLOBAL.remove(user_id)
+            cls._save_locked_users()
+            cls._update_env_locked_users()
+            return True
+        return False
+
+    @classmethod
+    def is_locked_user(cls, user_id: int) -> bool:
+        """Check if user ID is globally locked"""
+        return user_id in cls.LOCKED_USERS_GLOBAL
+
+    @classmethod
+    def _save_locked_users(cls):
+        """Save locked users to config file"""
+        try:
+            # Read current config file
+            config_file = "config.py"
+            with open(config_file, 'r') as f:
+                content = f.read()
+
+            # Update LOCKED_USERS_GLOBAL line
+            if "LOCKED_USERS_GLOBAL: List[int] = []" in content:
+                content = content.replace(
+                    "LOCKED_USERS_GLOBAL: List[int] = []",
+                    f"LOCKED_USERS_GLOBAL: List[int] = {cls.LOCKED_USERS_GLOBAL}"
+                )
+            elif "LOCKED_USERS_GLOBAL: List[int] = [" in content:
+                import re
+                pattern = r"LOCKED_USERS_GLOBAL: List\[int\] = \[.*?\]"
+                content = re.sub(pattern, f"LOCKED_USERS_GLOBAL: List[int] = {cls.LOCKED_USERS_GLOBAL}", content)
+
+            # Write back to file
+            with open(config_file, 'w') as f:
+                f.write(content)
+
+        except Exception as e:
+            print(f"Failed to save locked users: {e}")
+
+    @classmethod
+    def _update_env_locked_users(cls):
+        """Update .env file with locked users"""
+        try:
+            import json
+
+            env_file = ".env"
+            env_content = []
+
+            # Read current .env file
+            if os.path.exists(env_file):
+                with open(env_file, 'r') as f:
+                    env_content = f.readlines()
+
+            # Find and update LOCKED_USERS_GLOBAL line
+            locked_users_line = f"LOCKED_USERS_GLOBAL={json.dumps(cls.LOCKED_USERS_GLOBAL)}\n"
+            found = False
+
+            for i, line in enumerate(env_content):
+                if line.startswith("LOCKED_USERS_GLOBAL="):
+                    env_content[i] = locked_users_line
+                    found = True
+                    break
+
+            # Add new line if not found
+            if not found:
+                env_content.append(locked_users_line)
+
+            # Write back to .env file
+            with open(env_file, 'w') as f:
+                f.writelines(env_content)
+
+        except Exception as e:
+            print(f"Failed to update .env with locked users: {e}")
+
     @classmethod
     def print_config(cls):
         """Print current configuration (hide sensitive data)"""
@@ -163,6 +262,7 @@ class Config:
    Premium Emojis: {'✅ Enabled' if cls.PREMIUM_EMOJIS_ENABLED else '❌ Disabled'}
    Workers: {cls.WORKERS}
    Gcast Blacklist: {len(cls.GCAST_BLACKLIST)} chats
+   Locked Users: {len(cls.LOCKED_USERS_GLOBAL)} users
 
 🎭 Vzoel Fox's Info:
    Version: {cls.VZOEL_VERSION}
@@ -195,6 +295,10 @@ EMOJI_MAPPING_FILE=emoji_mapping.json
 # Advanced Settings
 WORKERS=4
 LOAD_UNOFFICIAL_PLUGINS=false
+
+# Security Settings
+GCAST_BLACKLIST=[]
+LOCKED_USERS_GLOBAL=[]
 
 # Database
 DATABASE_URL=sqlite:///vzl2.db
