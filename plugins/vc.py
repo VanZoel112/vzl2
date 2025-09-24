@@ -155,7 +155,6 @@ async def vc_join_handler(event):
                             chat_id,
                             MediaStream(
                                 silence_file,
-                                audio_parameters=MediaStream.AudioParameters(),
                                 video_flags=MediaStream.Flags.IGNORE
                             )
                         )
@@ -169,27 +168,50 @@ async def vc_join_handler(event):
             except Exception as modern_error:
                 print(f"[VC] Modern API failed: {modern_error}")
 
-                # Method 2: Try direct join without audio stream
+                # Method 2: Try minimal MediaStream approach
                 try:
-                    # Simple join without audio stream (voice-only mode)
-                    await app.join_group_call(chat_id)
-                    join_success = True
-                    method_used = "Direct join (voice-only)"
+                    # Try with minimal MediaStream - just audio file
+                    silence_file = await create_silence_file()
+                    if silence_file:
+                        await app.play(chat_id, silence_file)
+                        join_success = True
+                        method_used = "Direct file play"
+                    else:
+                        raise Exception("Could not create silence file")
                 except Exception as direct_error:
-                    print(f"[VC] Direct join failed: {direct_error}")
+                    print(f"[VC] Direct file play failed: {direct_error}")
 
-                    # Method 3: Fallback to legacy API if available
+                    # Method 3: Try URL-based streaming as fallback
                     try:
-                        if api_info['api_type'] == 'legacy':
-                            from pytgcalls.types.input_stream import InputStream
-                            # Try legacy method with minimal stream
-                            await app.join_group_call(chat_id, InputStream())
+                        # Use silent audio URL or create one
+                        import tempfile
+                        import os
+
+                        # Create longer silent audio for stable connection
+                        temp_dir = tempfile.gettempdir()
+                        silence_webm = os.path.join(temp_dir, 'vzl2_silence.webm')
+
+                        if not os.path.exists(silence_webm):
+                            # Create 10-second silent WebM file
+                            try:
+                                import subprocess
+                                subprocess.run([
+                                    'ffmpeg', '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo',
+                                    '-t', '10', '-c:a', 'libopus', '-b:a', '128k',
+                                    silence_webm, '-y'
+                                ], capture_output=True, check=True)
+                            except (subprocess.CalledProcessError, FileNotFoundError):
+                                # Fallback to raw file if ffmpeg not available
+                                silence_webm = await create_silence_file()
+
+                        if silence_webm and os.path.exists(silence_webm):
+                            await app.play(chat_id, silence_webm)
                             join_success = True
-                            method_used = "Legacy API (fallback)"
+                            method_used = "WebM file streaming"
                         else:
-                            raise Exception("No compatible method available")
-                    except Exception as legacy_error:
-                        raise Exception(f"All join methods failed: Modern({modern_error}), Direct({direct_error}), Legacy({legacy_error})")
+                            raise Exception("Could not create compatible audio stream")
+                    except Exception as webm_error:
+                        raise Exception(f"All join methods failed: Modern({modern_error}), Direct({direct_error}), WebM({webm_error})")
 
             if join_success:
                 vc_status[chat_id] = {
@@ -260,18 +282,17 @@ async def vc_leave_handler(event):
 
             try:
                 # Modern API - stop playing
-                await app.pause(chat_id)
                 await app.stop(chat_id)
                 leave_success = True
-                method = "Modern stop/pause"
+                method = "Modern stop"
             except Exception as modern_error:
                 try:
-                    # Direct leave method
-                    await app.leave_group_call(chat_id)
+                    # Try pause method as alternative
+                    await app.pause(chat_id)
                     leave_success = True
-                    method = "Direct leave"
-                except Exception as direct_error:
-                    raise Exception(f"All leave methods failed: Modern({modern_error}), Direct({direct_error})")
+                    method = "Pause method"
+                except Exception as pause_error:
+                    raise Exception(f"All leave methods failed: Stop({modern_error}), Pause({pause_error})")
 
             # Update status
             vc_status[chat_id]['joined'] = False
@@ -318,17 +339,17 @@ async def vc_mute_handler(event):
 
             try:
                 # Modern mute method
-                await app.mute(chat_id)
+                await app.mute_stream(chat_id)
                 mute_success = True
-                method = "Modern mute"
-            except Exception as modern_error:
+                method = "Mute stream"
+            except Exception as mute_error:
                 try:
-                    # Fallback mute method
-                    await app.mute_stream(chat_id)
+                    # Try volume control as alternative mute
+                    await app.change_volume_call(chat_id, 0)
                     mute_success = True
-                    method = "Legacy mute"
+                    method = "Volume mute"
                 except Exception:
-                    raise Exception(f"Mute failed: {modern_error}")
+                    raise Exception(f"Mute failed: {mute_error}")
 
             vc_status[chat_id]['muted'] = True
 
@@ -374,17 +395,17 @@ async def vc_unmute_handler(event):
 
             try:
                 # Modern unmute method
-                await app.unmute(chat_id)
+                await app.unmute_stream(chat_id)
                 unmute_success = True
-                method = "Modern unmute"
-            except Exception as modern_error:
+                method = "Unmute stream"
+            except Exception as unmute_error:
                 try:
-                    # Fallback unmute method
-                    await app.unmute_stream(chat_id)
+                    # Try volume control as alternative unmute
+                    await app.change_volume_call(chat_id, 100)
                     unmute_success = True
-                    method = "Legacy unmute"
+                    method = "Volume unmute"
                 except Exception:
-                    raise Exception(f"Unmute failed: {modern_error}")
+                    raise Exception(f"Unmute failed: {unmute_error}")
 
             vc_status[chat_id]['muted'] = False
 
