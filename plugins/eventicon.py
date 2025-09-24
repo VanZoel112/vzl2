@@ -33,7 +33,7 @@ PLUGIN_INFO = {
     "version": "1.0.0",
     "description": "Custom seasonal profile icons untuk Halloween, Christmas, dll",
     "author": "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'𝑠",
-    "commands": [".eventicon", ".setevent", ".removeevent", ".eventlist", ".autoevent"],
+    "commands": [".eventicon", ".setevent", ".removeevent", ".eventlist", ".customevent", ".autoevent"],
     "features": ["seasonal icons", "auto profile change", "event templates", "custom overlays", "premium branding"]
 }
 
@@ -109,6 +109,46 @@ EVENT_TEMPLATES = {
         "overlay_type": "cake",
         "emoji": "🎂",
         "description": "Birthday celebration dengan cake decoration"
+    },
+    "vzoel": {
+        "name": "Vzoel Fox's Branding",
+        "dates": ["manual"],
+        "colors": ["#00D4FF", "#FF1493", "#FFD700"],
+        "overlay_type": "vzoel_brand",
+        "emoji": "🦊",
+        "description": "Premium Vzoel Fox's branding dengan main emoji"
+    },
+    "premium": {
+        "name": "VZL2 Premium",
+        "dates": ["manual"],
+        "colors": ["#8A2BE2", "#FF6347", "#00CED1"],
+        "overlay_type": "premium_badge",
+        "emoji": "💎",
+        "description": "VZL2 Premium user badge decoration"
+    },
+    "developer": {
+        "name": "Developer Mode",
+        "dates": ["manual"],
+        "colors": ["#32CD32", "#000000", "#FFFFFF"],
+        "overlay_type": "code_symbol",
+        "emoji": "👨‍💻",
+        "description": "Developer/coder themed decoration"
+    },
+    "gaming": {
+        "name": "Gaming Mode",
+        "dates": ["manual"],
+        "colors": ["#FF0000", "#00FF00", "#0000FF"],
+        "overlay_type": "gaming_controller",
+        "emoji": "🎮",
+        "description": "Gaming enthusiast decoration"
+    },
+    "music": {
+        "name": "Music Lover",
+        "dates": ["manual"],
+        "colors": ["#FF1493", "#8A2BE2", "#FFD700"],
+        "overlay_type": "musical_notes",
+        "emoji": "🎵",
+        "description": "Music lover themed decoration"
     }
 }
 
@@ -252,6 +292,88 @@ class EventIconSystem:
                 draw.line([cx, y+20, cx, y+30], fill=(255, 215, 0, 255), width=3)
                 # Flame
                 draw.ellipse([cx-2, y+15, cx+2, y+23], fill=(255, 69, 0, 200))
+
+        elif overlay_type == "vzoel_brand":
+            # Vzoel Fox's Premium Branding
+            x, y = size[0] - 120, size[1] - 60
+
+            # Premium badge background
+            draw.rounded_rectangle([x, y, x+100, y+50], radius=15, fill=(0, 212, 255, 180))
+
+            # VZL text
+            try:
+                font = ImageFont.truetype("/system/fonts/Roboto-Bold.ttf", 16)
+            except:
+                font = None
+
+            if font:
+                draw.text((x+15, y+10), "VZL2", font=font, fill=(255, 255, 255, 255))
+                draw.text((x+15, y+25), "FOX", font=font, fill=(255, 20, 147, 255))
+
+            # Fox emoji area (simplified fox ear shapes)
+            draw.polygon([x+70, y+10, x+80, y+5, x+85, y+15], fill=(255, 140, 0, 200))  # Ear 1
+            draw.polygon([x+75, y+10, x+85, y+5, x+90, y+15], fill=(255, 140, 0, 200))  # Ear 2
+
+        elif overlay_type == "premium_badge":
+            # VZL2 Premium Badge
+            x, y = 20, size[1] - 80
+
+            # Diamond shape badge
+            draw.polygon([x+30, y+10, x+50, y+30, x+30, y+50, x+10, y+30], fill=(138, 43, 226, 200))
+            # Inner diamond
+            draw.polygon([x+30, y+20, x+40, y+30, x+30, y+40, x+20, y+30], fill=(255, 215, 0, 255))
+
+            # Premium text
+            try:
+                font = ImageFont.truetype("/system/fonts/Roboto-Regular.ttf", 12)
+            except:
+                font = None
+
+            if font:
+                draw.text((x+55, y+25), "PREMIUM", font=font, fill=(138, 43, 226, 255))
+
+        elif overlay_type == "code_symbol":
+            # Developer Code Symbols
+            x, y = 20, 20
+
+            # Terminal window background
+            draw.rounded_rectangle([x, y, x+100, y+60], radius=8, fill=(0, 0, 0, 180))
+            draw.rounded_rectangle([x+5, y+5, x+95, y+20], radius=3, fill=(64, 64, 64, 200))
+
+            # Code brackets and symbols
+            symbols = ["</>", "{ }", "#!/", "def"]
+            for i, symbol in enumerate(symbols):
+                sy = y + 25 + (i * 8)
+                draw.text((x+10, sy), symbol, fill=(0, 255, 0, 200))
+
+        elif overlay_type == "gaming_controller":
+            # Gaming Controller
+            x, y = size[0] - 100, 20
+
+            # Controller body
+            draw.rounded_rectangle([x+10, y+15, x+80, y+45], radius=15, fill=(255, 0, 0, 200))
+
+            # D-pad
+            draw.rectangle([x+20, y+25, x+30, y+35], fill=(0, 0, 0, 255))
+            draw.rectangle([x+25, y+20, x+25, y+40], fill=(0, 0, 0, 255))
+
+            # Action buttons
+            draw.ellipse([x+60, y+20, x+70, y+30], fill=(0, 255, 0, 255))  # A
+            draw.ellipse([x+55, y+25, x+65, y+35], fill=(0, 0, 255, 255))  # B
+            draw.ellipse([x+65, y+25, x+75, y+35], fill=(255, 215, 0, 255))  # C
+
+        elif overlay_type == "musical_notes":
+            # Musical Notes scattered
+            notes_positions = [(50, 50), (150, 80), (300, 60), (200, 200), (350, 180)]
+
+            for x, y in notes_positions:
+                # Note stem
+                draw.line([x, y, x, y-30], fill=(255, 20, 147, 200), width=3)
+                # Note head
+                draw.ellipse([x-8, y-5, x+8, y+5], fill=(138, 43, 226, 200))
+                # Flag
+                if random.choice([True, False]):
+                    draw.polygon([x, y-30, x+15, y-25, x+10, y-15, x, y-20], fill=(255, 215, 0, 180))
 
         return overlay
 
@@ -492,6 +614,53 @@ async def remove_event_handler(event):
                 f"{get_emoji('kuning')} Error: {str(e)[:100]}\n\n"
                 f"{get_emoji('telegram')} VZL2 Event Icon System"
             )
+
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+@events.register(events.NewMessage(pattern=r'\.customevent'))
+async def custom_event_handler(event):
+    """Show available custom events and their descriptions"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vzoel_emoji
+
+        # Filter manual/custom events
+        custom_events = {k: v for k, v in EVENT_TEMPLATES.items() if v["dates"] == ["manual"]}
+
+        result_text = f"{get_emoji('utama')} CUSTOM EVENT ICONS\n\n"
+        result_text += f"{get_emoji('centang')} Personal & Custom Templates:\n\n"
+
+        for key, template in custom_events.items():
+            result_text += f"{template['emoji']} `.setevent {key}`\n"
+            result_text += f"   └ {template['name']}\n"
+            result_text += f"   └ {template['description']}\n"
+            result_text += f"   └ Colors: {', '.join(template['colors'][:2])}\n\n"
+
+        result_text += f"{get_emoji('telegram')} Featured Custom Events:\n\n"
+        result_text += f"🦊 **Vzoel Fox's Branding** - Premium VZL2 branding dengan fox logo\n"
+        result_text += f"💎 **VZL2 Premium** - Premium user badge decoration\n"
+        result_text += f"👨‍💻 **Developer Mode** - Coding/developer themed overlay\n"
+        result_text += f"🎮 **Gaming Mode** - Gaming controller decoration\n"
+        result_text += f"🎵 **Music Lover** - Musical notes scattered design\n"
+        result_text += f"🎂 **Birthday** - Birthday cake celebration\n\n"
+
+        result_text += f"{get_emoji('aktif')} Usage Examples:\n"
+        result_text += f".setevent vzoel - Vzoel Fox's branding\n"
+        result_text += f".setevent premium - VZL2 Premium badge\n"
+        result_text += f".setevent developer - Developer theme\n"
+        result_text += f".setevent gaming - Gaming controller\n"
+        result_text += f".setevent music - Musical notes\n"
+        result_text += f".setevent birthday - Birthday cake\n\n"
+
+        result_text += f"{get_emoji('kuning')} Tips:\n"
+        result_text += f"• Custom events tidak terikat tanggal\n"
+        result_text += f"• Bisa digunakan kapan saja\n"
+        result_text += f"• Backup profil otomatis sebelum ganti\n"
+        result_text += f"• Use .removeevent untuk restore\n\n"
+
+        result_text += f"{get_emoji('adder1')} VZL2 Custom Event System"
+
+        await safe_send_premium(event, result_text)
 
         if vzoel_client:
             vzoel_client.increment_command_count()
