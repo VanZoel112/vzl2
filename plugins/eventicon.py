@@ -160,6 +160,11 @@ AUTO_EVENT_SETTINGS = {
     "backup_original": True
 }
 
+def hex_to_rgb(hex_color):
+    """Convert hex color to RGB tuple"""
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
 class EventIconSystem:
     """Premium Event Icon Management System"""
 
@@ -404,7 +409,8 @@ class EventIconSystem:
             original = original.resize(size, Image.LANCZOS)
 
         # Apply color filter for theme
-        color_overlay = Image.new('RGBA', size, template["colors"][0] + (30,))
+        primary_color_rgb = hex_to_rgb(template["colors"][0])
+        color_overlay = Image.new('RGBA', size, primary_color_rgb + (30,))
         original = Image.alpha_composite(original, color_overlay)
 
         # Add decoration overlay
@@ -412,9 +418,9 @@ class EventIconSystem:
         final = Image.alpha_composite(original, decoration)
 
         # Add subtle border in theme colors
-        border_color = template["colors"][0]
+        border_color_rgb = hex_to_rgb(template["colors"][0])
         border = ImageDraw.Draw(final)
-        border.rectangle([0, 0, size[0]-1, size[1]-1], outline=border_color, width=3)
+        border.rectangle([0, 0, size[0]-1, size[1]-1], outline=border_color_rgb, width=3)
 
         # Save result
         result_path = EVENT_DIR / f"event_{event_key}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
