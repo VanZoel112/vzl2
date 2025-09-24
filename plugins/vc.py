@@ -222,12 +222,12 @@ async def vc_join_handler(event):
                     'api_version': pytgcalls_info['version']
                 }
 
-                success_msg = f"{get_emoji('centang')} **Voice Chat Joined Successfully**\n\n"
-                success_msg += f"{get_emoji('aktif')} **Group:** {chat.title}\n"
-                success_msg += f"{get_emoji('proses')} **Method:** {method_used}\n"
-                success_msg += f"{get_emoji('kuning')} **API:** PyTgCalls v{pytgcalls_info['version']}\n"
-                success_msg += f"{get_emoji('utama')} **Status:** Connected & Ready\n\n"
-                success_msg += f"{get_emoji('telegram')} **VZL2 Voice Chat v4.0**"
+                success_msg = f"{get_emoji('centang')} Voice Chat Joined Successfully\n\n"
+                success_msg += f"{get_emoji('aktif')} Group: {chat.title}\n"
+                success_msg += f"{get_emoji('proses')} Method: {method_used}\n"
+                success_msg += f"{get_emoji('kuning')} API: PyTgCalls v{pytgcalls_info['version']}\n"
+                success_msg += f"{get_emoji('utama')} Status: Connected & Ready\n\n"
+                success_msg += f"{get_emoji('telegram')} VZL2 Voice Chat v4.0"
 
                 await safe_edit_premium(msg, success_msg)
             else:
@@ -235,15 +235,15 @@ async def vc_join_handler(event):
 
         except Exception as e:
             error_details = str(e)[:200]  # Limit error length
-            error_msg = f"{get_emoji('merah')} **Voice Chat Join Failed**\n\n"
-            error_msg += f"{get_emoji('kuning')} **Error:** {error_details}\n"
-            error_msg += f"{get_emoji('aktif')} **API Type:** {api_info['api_type']}\n"
-            error_msg += f"{get_emoji('proses')} **Version:** {pytgcalls_info['version']}\n\n"
-            error_msg += f"{get_emoji('centang')} **Solutions:**\n"
-            error_msg += f"• Update PyTgCalls: `pip install py-tgcalls -U`\n"
+            error_msg = f"{get_emoji('merah')} Voice Chat Join Failed\n\n"
+            error_msg += f"{get_emoji('kuning')} Error: {error_details}\n"
+            error_msg += f"{get_emoji('aktif')} API Type: {api_info['api_type']}\n"
+            error_msg += f"{get_emoji('proses')} Version: {pytgcalls_info['version']}\n\n"
+            error_msg += f"{get_emoji('centang')} Solutions:\n"
+            error_msg += f"• Update PyTgCalls: pip install py-tgcalls -U\n"
             error_msg += f"• Check group voice chat is active\n"
             error_msg += f"• Verify user account permissions\n\n"
-            error_msg += f"{get_emoji('telegram')} **VZL2 Voice Chat v4.0**"
+            error_msg += f"{get_emoji('telegram')} VZL2 Voice Chat v4.0"
 
             await safe_edit_premium(msg, error_msg)
 
@@ -297,11 +297,11 @@ async def vc_leave_handler(event):
             # Update status
             vc_status[chat_id]['joined'] = False
 
-            success_msg = f"{get_emoji('centang')} **Voice Chat Left Successfully**\n\n"
-            success_msg += f"{get_emoji('aktif')} **Group:** {vc_status[chat_id]['chat_title']}\n"
-            success_msg += f"{get_emoji('proses')} **Method:** {method}\n"
-            success_msg += f"{get_emoji('kuning')} **Status:** Disconnected\n\n"
-            success_msg += f"{get_emoji('telegram')} **VZL2 Voice Chat v4.0**"
+            success_msg = f"{get_emoji('centang')} Voice Chat Left Successfully\n\n"
+            success_msg += f"{get_emoji('aktif')} Group: {vc_status[chat_id]['chat_title']}\n"
+            success_msg += f"{get_emoji('proses')} Method: {method}\n"
+            success_msg += f"{get_emoji('kuning')} Status: Disconnected\n\n"
+            success_msg += f"{get_emoji('telegram')} VZL2 Voice Chat v4.0"
 
             await safe_edit_premium(msg, success_msg)
         except Exception as e:
@@ -353,11 +353,11 @@ async def vc_mute_handler(event):
 
             vc_status[chat_id]['muted'] = True
 
-            muted_msg = f"{get_emoji('proses')} **Voice Chat Muted**\n\n"
-            muted_msg += f"{get_emoji('aktif')} **Group:** {vc_status[chat_id]['chat_title']}\n"
-            muted_msg += f"{get_emoji('kuning')} **Method:** {method}\n"
-            muted_msg += f"{get_emoji('centang')} **Status:** Audio muted\n\n"
-            muted_msg += f"{get_emoji('telegram')} **VZL2 Voice Chat v4.0**"
+            muted_msg = f"{get_emoji('proses')} Voice Chat Muted\n\n"
+            muted_msg += f"{get_emoji('aktif')} Group: {vc_status[chat_id]['chat_title']}\n"
+            muted_msg += f"{get_emoji('kuning')} Method: {method}\n"
+            muted_msg += f"{get_emoji('centang')} Status: Audio muted\n\n"
+            muted_msg += f"{get_emoji('telegram')} VZL2 Voice Chat v4.0"
 
             await safe_edit_premium(event, muted_msg)
         except Exception as e:
@@ -409,11 +409,11 @@ async def vc_unmute_handler(event):
 
             vc_status[chat_id]['muted'] = False
 
-            unmuted_msg = f"{get_emoji('centang')} **Voice Chat Unmuted**\n\n"
-            unmuted_msg += f"{get_emoji('aktif')} **Group:** {vc_status[chat_id]['chat_title']}\n"
-            unmuted_msg += f"{get_emoji('kuning')} **Method:** {method}\n"
-            unmuted_msg += f"{get_emoji('proses')} **Status:** Audio active\n\n"
-            unmuted_msg += f"{get_emoji('telegram')} **VZL2 Voice Chat v4.0**"
+            unmuted_msg = f"{get_emoji('centang')} Voice Chat Unmuted\n\n"
+            unmuted_msg += f"{get_emoji('aktif')} Group: {vc_status[chat_id]['chat_title']}\n"
+            unmuted_msg += f"{get_emoji('kuning')} Method: {method}\n"
+            unmuted_msg += f"{get_emoji('proses')} Status: Audio active\n\n"
+            unmuted_msg += f"{get_emoji('telegram')} VZL2 Voice Chat v4.0"
 
             await safe_edit_premium(event, unmuted_msg)
         except Exception as e:
@@ -463,30 +463,30 @@ async def vc_status_handler(event):
         
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         
-        status_text = f"""**{signature} VZL2 Voice Chat Status v4.0**
+        status_text = f"""{signature} VZL2 Voice Chat Status v4.0
 
-{get_emoji('utama')} **PyTgCalls:** {pytgcalls_status}
-{get_emoji('aktif')} **API Type:** {api_status}
-{get_emoji('proses')} **Connection:** {vc_connection}
-{get_emoji('kuning')} **Audio Status:** {audio_status}
-{get_emoji('centang')} **Runtime Version:** {api_version}
+{get_emoji('utama')} PyTgCalls: {pytgcalls_status}
+{get_emoji('aktif')} API Type: {api_status}
+{get_emoji('proses')} Connection: {vc_connection}
+{get_emoji('kuning')} Audio Status: {audio_status}
+{get_emoji('centang')} Runtime Version: {api_version}
 
-{get_emoji('petir')} **Available Commands:**
-• `.vcjoin` - Join voice chat (modern API)
-• `.vcleave` - Leave voice chat with cleanup
-• `.vcmute` - Mute microphone (smart method)
-• `.vcunmute` - Unmute microphone (smart method)
-• `.vcstatus` - Show comprehensive status
-• `.vcinstall` - Installation & setup guide
+{get_emoji('petir')} Available Commands:
+• .vcjoin - Join voice chat (modern API)
+• .vcleave - Leave voice chat with cleanup
+• .vcmute - Mute microphone (smart method)
+• .vcunmute - Unmute microphone (smart method)
+• .vcstatus - Show comprehensive status
+• .vcinstall - Installation & setup guide
 
-{get_emoji('telegram')} **Features:**
+{get_emoji('telegram')} Features:
 • Multi-method compatibility (Modern/Legacy/Direct)
 • Automatic API detection and fallback
 • Enhanced error handling and diagnostics
 • Voice-only joining without file streams
 • Premium VZL2 branding and feedback
 
-**By Vzoel Fox's Assistant - Voice Chat v4.0**"""
+By Vzoel Fox's Assistant - Voice Chat v4.0"""
         
         msg = await event.edit(status_text)
         if vzoel_client:
@@ -506,20 +506,17 @@ async def vc_install_handler(event):
         pytgcalls_info = check_pytgcalls()
         api_info = check_api_compatibility()
 
-        install_text = f"""**{signature} VZL2 Voice Chat Setup Guide v4.0**
+        install_text = f"""{signature} VZL2 Voice Chat Setup Guide v4.0
 
-{get_emoji('loading')} **Current Status:**
+{get_emoji('loading')} Current Status:
 • PyTgCalls: {'✅ Installed v' + pytgcalls_info['version'] if pytgcalls_info['available'] else '❌ Not Installed'}
 • API Type: {'✅ ' + api_info['api_type'].title() if api_info['api_type'] != 'none' else '❌ Not Available'}
 • Compatibility: {'✅ Ready' if pytgcalls_info['available'] and api_info['api_type'] != 'none' else '❌ Setup Required'}
 
-{get_emoji('utama')} **Step 1: Install Modern PyTgCalls**
-```bash
+{get_emoji('utama')} Step 1: Install Modern PyTgCalls
 pip install py-tgcalls -U
-```
 
-{get_emoji('centang')} **Step 2: Install System Dependencies**
-```bash
+{get_emoji('centang')} Step 2: Install System Dependencies
 # Ubuntu/Debian/WSL
 sudo apt update && sudo apt install ffmpeg
 
@@ -528,20 +525,15 @@ pkg update && pkg install ffmpeg
 
 # macOS
 brew install ffmpeg
-```
 
-{get_emoji('aktif')} **Step 3: Restart VZL2**
-```bash
+{get_emoji('aktif')} Step 3: Restart VZL2
 .restart
-```
 
-{get_emoji('petir')} **Step 4: Test Voice Chat**
-```bash
+{get_emoji('petir')} Step 4: Test Voice Chat
 .vcstatus  # Check system status
 .vcjoin    # Join voice chat in group
-```
 
-{get_emoji('proses')} **VZL2 Voice Chat v4.0 Features:**
+{get_emoji('proses')} VZL2 Voice Chat v4.0 Features:
 • Modern PyTgCalls API with automatic fallback
 • Voice-only joining (no audio files required)
 • Multi-method compatibility (Modern/Legacy/Direct)
@@ -549,19 +541,19 @@ brew install ffmpeg
 • Enhanced mute/unmute with method detection
 • Professional VZL2 premium branding
 
-{get_emoji('kuning')} **Requirements:**
+{get_emoji('kuning')} Requirements:
 • Python 3.9+ with PyTgCalls v2.2.8+
 • Telegram User Account (not bot account)
 • Group admin rights recommended
 • FFmpeg for advanced audio processing
 
-{get_emoji('telegram')} **Troubleshooting:**
+{get_emoji('telegram')} Troubleshooting:
 • If join fails: Update PyTgCalls and restart
 • Voice chat must be active in target group
 • Check user account has join permissions
 • Modern API preferred, legacy supported
 
-**By Vzoel Fox's Assistant - Voice Technology**"""
+By Vzoel Fox's Assistant - Voice Technology"""
         
         msg = await event.edit(install_text)
         if vzoel_client:
