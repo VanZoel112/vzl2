@@ -83,6 +83,10 @@ httpx>=0.25.0
 cryptography>=41.0.0
 pycryptodome>=3.19.0
 
+# ===== AUTO-DEPLOY BOT DEPENDENCIES =====
+# SSH connection for VPS deployment
+paramiko>=3.4.0
+
 # ===== OPTIONAL DEPENDENCIES =====
 # Uncomment if needed for specific features:
 # pandas>=2.0.0              # Data analysis
