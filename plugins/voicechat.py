@@ -3,7 +3,9 @@ Vzoel Fox's Lutpan - Voice Chat Plugin
 Pure userbot voice chat control
 
 Commands:
-- .jlvc - Join/Leave voice chat toggle
+- .join - Join voice chat
+- .leave - Leave voice chat
+- .jlvc - Join/Leave voice chat toggle (legacy)
 - .startvc - Create new voice chat in group
 
 Author: Vzoel Fox's
@@ -26,8 +28,8 @@ PLUGIN_INFO = {
     "version": "2.0.0",
     "description": "Pure userbot voice chat control",
     "author": "Vzoel Fox's",
-    "commands": [".jlvc", ".startvc"],
-    "features": ["VC join/leave toggle", "VC creation", "Pure userbot mode"]
+    "commands": [".join", ".leave", ".jlvc", ".startvc", ".vcinfo"],
+    "features": ["VC join/leave", "VC creation", "Pure userbot mode", "Status info"]
 }
 
 # Global references
@@ -50,6 +52,110 @@ async def vzoel_init(client, emoji_handler):
         print(f"{get_emoji('utama')} Vzoel Fox's Lutpan Voice Chat System loaded")
     except Exception as e:
         print(f"{get_emoji('merah')} Voice chat init error: {e}")
+
+
+@events.register(events.NewMessage(pattern=r'\.join'))
+async def join_vc_handler(event):
+    """Join voice chat"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vc_manager
+
+        if not vc_manager:
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**VZOEL ASSISTANT**\n**By Vzoel Fox's Lutpan**")
+            return
+
+        # Processing message
+        processing_msg = f"""{get_emoji('loading')} **Joining voice chat**
+
+{get_emoji('proses')} Connecting to voice chat
+{get_emoji('telegram')} Please wait
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**"""
+
+        await safe_edit_premium(event, processing_msg)
+
+        # Join voice chat
+        success = await vc_manager.join_voice_chat(event.chat_id)
+
+        if success:
+            response = f"""{get_emoji('centang')} **Joined voice chat**
+
+{get_emoji('aktif')} Connected successfully
+{get_emoji('telegram')} Ready for streaming
+
+{get_emoji('proses')} Use .play to stream music
+{get_emoji('kuning')} Use .leave to disconnect
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**
+~2025 Vzoel Fox's Lutpan"""
+        else:
+            response = f"""{get_emoji('merah')} **Join failed**
+
+{get_emoji('kuning')} Possible reasons:
+• PyTgCalls not installed
+• No active voice chat in group
+• Permission denied
+
+{get_emoji('aktif')} Try .startvc to create VC first
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**
+~2025 Vzoel Fox's Lutpan"""
+
+        await safe_edit_premium(event, response)
+
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+
+@events.register(events.NewMessage(pattern=r'\.leave'))
+async def leave_vc_handler(event):
+    """Leave voice chat"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, vc_manager
+
+        if not vc_manager:
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**VZOEL ASSISTANT**\n**By Vzoel Fox's Lutpan**")
+            return
+
+        # Processing message
+        processing_msg = f"""{get_emoji('loading')} **Leaving voice chat**
+
+{get_emoji('proses')} Disconnecting
+{get_emoji('telegram')} Please wait
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**"""
+
+        await safe_edit_premium(event, processing_msg)
+
+        # Leave voice chat
+        success = await vc_manager.leave_voice_chat(event.chat_id)
+
+        if success:
+            response = f"""{get_emoji('centang')} **Left voice chat**
+
+{get_emoji('aktif')} Disconnected successfully
+
+{get_emoji('telegram')} Use .join to rejoin
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**
+~2025 Vzoel Fox's Lutpan"""
+        else:
+            response = f"""{get_emoji('kuning')} **Not in voice chat**
+
+{get_emoji('telegram')} Use .join to connect first
+
+**VZOEL ASSISTANT**
+**By Vzoel Fox's Lutpan**"""
+
+        await safe_edit_premium(event, response)
+
+        if vzoel_client:
+            vzoel_client.increment_command_count()
 
 
 @events.register(events.NewMessage(pattern=r'\.jlvc'))

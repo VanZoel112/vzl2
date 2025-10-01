@@ -9,5 +9,6 @@ __author__ = "Vzoel Fox's"
 from .music import MusicManager
 from .voice_chat import VoiceChatManager
 from .git_manager import GitManager
+from .payment import PaymentManager
 
-__all__ = ['MusicManager', 'VoiceChatManager', 'GitManager']
+__all__ = ['MusicManager', 'VoiceChatManager', 'GitManager', 'PaymentManager']
