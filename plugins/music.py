@@ -1,20 +1,19 @@
 """
-Vzoel Fox's Lutpan - Music Plugin
-Pure userbot music system with yt-dlp
+VZOEL ASSISTANT - Music Plugin
+Pure userbot music system with yt-dlp and inline controls
 
 Commands:
-- .play <query> - Stream to voice chat or download MP3
-- .song <query> - Download song to device
+- .play <query> - Play music to voice chat or download
+- .song <query> - Download song as MP3
 - .pause - Pause current playback
-- .resume - Resume paused playback
-- .stop - Stop playback and clear queue
+- .resume - Resume playback
+- .stop - Stop and clear queue
 - .queue - Show music queue
 
-Author: Vzoel Fox's
-Contact: @VZLfxs
+~2025 by Vzoel Fox's Lutpan
 """
 
-from telethon import events
+from telethon import events, Button
 import asyncio
 import sys
 import os
@@ -23,17 +22,17 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from plugins.emoji_template import get_emoji, safe_edit_premium
+from plugins.emoji_template import get_emoji, safe_edit_premium, safe_send_premium
 from core.music import MusicManager
 
 # Plugin info
 PLUGIN_INFO = {
     "name": "music",
-    "version": "2.0.0",
-    "description": "Pure userbot music system with yt-dlp",
+    "version": "3.0.0",
+    "description": "Pure userbot music system with inline controls",
     "author": "Vzoel Fox's",
     "commands": [".play", ".song", ".pause", ".resume", ".stop", ".queue"],
-    "features": ["YouTube download", "Voice chat streaming", "MP3 high quality", "Cookie support"]
+    "features": ["YouTube download", "Voice chat streaming", "Inline buttons", "Queue system"]
 }
 
 # Global references
@@ -53,7 +52,7 @@ async def vzoel_init(client, emoji_handler):
     try:
         music_manager = MusicManager(client.client)
         await music_manager.start()
-        print(f"{get_emoji('utama')} Vzoel Fox's Lutpan Music System loaded")
+        print(f"{get_emoji('utama')} VZOEL ASSISTANT Music System loaded")
     except Exception as e:
         print(f"{get_emoji('merah')} Music system init error: {e}")
 
@@ -70,6 +69,21 @@ def format_duration(seconds):
         return "00:00"
 
 
+def create_music_buttons(chat_id):
+    """Create inline control buttons for music player"""
+    return [
+        [
+            Button.inline(f"{get_emoji('proses')} Pause", f"music_pause_{chat_id}"),
+            Button.inline(f"{get_emoji('centang')} Resume", f"music_resume_{chat_id}"),
+            Button.inline(f"{get_emoji('merah')} Stop", f"music_stop_{chat_id}")
+        ],
+        [
+            Button.inline(f"{get_emoji('aktif')} Queue", f"music_queue_{chat_id}"),
+            Button.inline(f"{get_emoji('kuning')} Download", f"music_download_{chat_id}")
+        ]
+    ]
+
+
 @events.register(events.NewMessage(pattern=r'\.play (.+)'))
 async def play_music_handler(event):
     """Play music command"""
@@ -77,7 +91,7 @@ async def play_music_handler(event):
         global vzoel_client, music_manager
 
         if not music_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Music system not initialized")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Music system not initialized\n\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan")
             return
 
         query = event.pattern_match.group(1).strip()
@@ -88,7 +102,7 @@ async def play_music_handler(event):
 {get_emoji('proses')} Searching YouTube
 {get_emoji('telegram')} Query: {query}
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -114,8 +128,8 @@ VZOEL FOX'S LUTPAN"""
 
 {get_emoji('telegram')} Playing next after current song
 
-VZOEL FOX'S LUTPAN Music System
-CONTACT: @VZLfxs"""
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
                 else:
                     response = f"""{get_emoji('utama')} NOW STREAMING
 
@@ -123,10 +137,12 @@ CONTACT: @VZLfxs"""
 {get_emoji('aktif')} Duration: {duration}
 {get_emoji('centang')} Mode: Voice chat streaming
 
-{get_emoji('telegram')} Controls: .pause .resume .stop
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
 
-VZOEL FOX'S LUTPAN Music System
-CONTACT: @VZLfxs"""
+                # Send with inline buttons
+                buttons = create_music_buttons(event.chat_id)
+                await safe_edit_premium(event, response, buttons=buttons)
             else:
                 # Downloaded locally
                 file_path = result.get('file_path', '')
@@ -140,8 +156,10 @@ CONTACT: @VZLfxs"""
 
 {get_emoji('telegram')} Saved to: downloads/musik/
 
-VZOEL FOX'S LUTPAN Music System
-CONTACT: @VZLfxs"""
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
+
+                await safe_edit_premium(event, response)
 
                 # Send file if downloaded
                 if file_path and os.path.exists(file_path):
@@ -149,7 +167,7 @@ CONTACT: @VZLfxs"""
                         await event.client.send_file(
                             event.chat_id,
                             file_path,
-                            caption=f"{song['title']}\n\nVZOEL FOX'S LUTPAN\nCONTACT: @VZLfxs",
+                            caption=f"{song['title']}\n\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan",
                             reply_to=event.id
                         )
                     except Exception as e:
@@ -164,10 +182,10 @@ CONTACT: @VZLfxs"""
 
 {get_emoji('aktif')} Please try again or check query
 
-VZOEL FOX'S LUTPAN Music System
-CONTACT: @VZLfxs"""
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
 
-        await safe_edit_premium(event, response)
+            await safe_edit_premium(event, response)
 
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -180,7 +198,7 @@ async def download_song_handler(event):
         global vzoel_client, music_manager
 
         if not music_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Music system not initialized")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Music system not initialized\n\nVZOEL ASSISTANT")
             return
 
         query = event.pattern_match.group(1).strip()
@@ -192,7 +210,7 @@ async def download_song_handler(event):
 {get_emoji('telegram')} Query: {query}
 {get_emoji('aktif')} Preparing download
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -200,7 +218,7 @@ VZOEL FOX'S LUTPAN"""
         song_info = await music_manager.search_song(query)
 
         if not song_info:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Song not found\n\nVZOEL FOX'S LUTPAN")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Song not found\n\nVZOEL ASSISTANT")
             return
 
         # Update status
@@ -210,7 +228,7 @@ VZOEL FOX'S LUTPAN"""
 {get_emoji('aktif')} Extracting MP3 (192kbps)
 {get_emoji('telegram')} Please wait
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, downloading_msg)
 
@@ -228,8 +246,8 @@ VZOEL FOX'S LUTPAN"""
 {get_emoji('biru')} File: {file_name}
 {get_emoji('kuning')} Quality: MP3 192kbps
 
-VZOEL FOX'S LUTPAN Music System
-CONTACT: @VZLfxs"""
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
 
             await safe_edit_premium(event, response)
 
@@ -238,7 +256,7 @@ CONTACT: @VZLfxs"""
                 await event.client.send_file(
                     event.chat_id,
                     file_path,
-                    caption=f"{song_info['title']}\n\nVZOEL FOX'S LUTPAN\nCONTACT: @VZLfxs",
+                    caption=f"{song_info['title']}\n\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan",
                     attributes=[],
                     reply_to=event.id
                 )
@@ -246,7 +264,7 @@ CONTACT: @VZLfxs"""
                 print(f"Send file error: {e}")
 
         else:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Download failed\n\nVZOEL FOX'S LUTPAN")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Download failed\n\nVZOEL ASSISTANT")
 
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -268,13 +286,13 @@ async def pause_handler(event):
 
 {get_emoji('aktif')} Use .resume to continue
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
         else:
             response = f"""{get_emoji('kuning')} NOT PLAYING
 
 {get_emoji('telegram')} No active playback to pause
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, response)
 
@@ -298,13 +316,13 @@ async def resume_handler(event):
 
 {get_emoji('aktif')} Now playing
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
         else:
             response = f"""{get_emoji('kuning')} NOT PAUSED
 
 {get_emoji('telegram')} No paused playback to resume
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, response)
 
@@ -331,13 +349,13 @@ async def stop_handler(event):
 {get_emoji('proses')} Last track: {track_name}
 {get_emoji('aktif')} Queue cleared
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
         else:
             response = f"""{get_emoji('kuning')} NOT PLAYING
 
 {get_emoji('telegram')} No active playback
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
 
         await safe_edit_premium(event, response)
 
@@ -362,7 +380,7 @@ async def queue_handler(event):
 
 {get_emoji('telegram')} Use .play to add songs
 
-VZOEL FOX'S LUTPAN"""
+VZOEL ASSISTANT"""
         else:
             response = f"""{get_emoji('utama')} MUSIC QUEUE\n\n"""
 
@@ -380,9 +398,90 @@ VZOEL FOX'S LUTPAN"""
                 if len(queue) > 5:
                     response += f"\n{get_emoji('telegram')} +{len(queue) - 5} more songs\n"
 
-            response += f"\nVZOEL FOX'S LUTPAN Music System\nCONTACT: @VZLfxs"
+            response += f"\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan"
 
-        await safe_edit_premium(event, response)
+        # Add buttons if music is playing
+        buttons = None
+        if current:
+            buttons = create_music_buttons(event.chat_id)
+
+        await safe_edit_premium(event, response, buttons=buttons)
 
         if vzoel_client:
             vzoel_client.increment_command_count()
+
+
+# Inline button callbacks
+@events.register(events.CallbackQuery(pattern=r'music_pause_(\d+)'))
+async def music_pause_callback(event):
+    """Handle pause button"""
+    chat_id = int(event.pattern_match.group(1))
+
+    if music_manager:
+        success = await music_manager.pause_stream(chat_id)
+        if success:
+            await event.answer(f"{get_emoji('centang')} Paused", alert=False)
+        else:
+            await event.answer(f"{get_emoji('kuning')} Not playing", alert=True)
+
+
+@events.register(events.CallbackQuery(pattern=r'music_resume_(\d+)'))
+async def music_resume_callback(event):
+    """Handle resume button"""
+    chat_id = int(event.pattern_match.group(1))
+
+    if music_manager:
+        success = await music_manager.resume_stream(chat_id)
+        if success:
+            await event.answer(f"{get_emoji('centang')} Resumed", alert=False)
+        else:
+            await event.answer(f"{get_emoji('kuning')} Not paused", alert=True)
+
+
+@events.register(events.CallbackQuery(pattern=r'music_stop_(\d+)'))
+async def music_stop_callback(event):
+    """Handle stop button"""
+    chat_id = int(event.pattern_match.group(1))
+
+    if music_manager:
+        await music_manager.stop_stream(chat_id)
+        await event.answer(f"{get_emoji('centang')} Stopped", alert=False)
+
+        # Update message
+        try:
+            await event.edit(f"{get_emoji('centang')} PLAYBACK STOPPED\n\nVZOEL ASSISTANT")
+        except:
+            pass
+
+
+@events.register(events.CallbackQuery(pattern=r'music_queue_(\d+)'))
+async def music_queue_callback(event):
+    """Handle queue button"""
+    chat_id = int(event.pattern_match.group(1))
+
+    if music_manager:
+        current = music_manager.get_current_song(chat_id)
+        queue = music_manager.get_queue(chat_id)
+
+        if not current and not queue:
+            await event.answer(f"{get_emoji('kuning')} Queue empty", alert=True)
+        else:
+            queue_text = f"{get_emoji('utama')} QUEUE\n\n"
+            if current:
+                queue_text += f"Now: {current.get('title', 'Unknown')}\n"
+            if queue:
+                queue_text += f"Next: {len(queue)} songs"
+            await event.answer(queue_text, alert=True)
+
+
+@events.register(events.CallbackQuery(pattern=r'music_download_(\d+)'))
+async def music_download_callback(event):
+    """Handle download button"""
+    chat_id = int(event.pattern_match.group(1))
+
+    if music_manager:
+        current = music_manager.get_current_song(chat_id)
+        if current:
+            await event.answer(f"{get_emoji('loading')} Use .song command to download", alert=True)
+        else:
+            await event.answer(f"{get_emoji('kuning')} Nothing playing", alert=True)

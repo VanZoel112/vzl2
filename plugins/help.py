@@ -59,6 +59,12 @@ def get_plugin_commands(plugin_name):
     if plugin_name == 'core':
         return ['.alive', '.ping', '.help', '.emojis']
 
+    # Music & VC commands
+    if plugin_name == 'music':
+        return ['.play', '.song', '.pause', '.resume', '.stop', '.queue']
+    if plugin_name == 'vc':
+        return ['.jvc', '.lvc', '.startvc', '.vcinfo']
+
     try:
         plugin_path = f"plugins/{plugin_name}.py"
         if os.path.exists(plugin_path):
