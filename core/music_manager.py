@@ -111,8 +111,11 @@ class MusicManager:
                 'extract_flat': False,
             }
 
-            if Config.YOUTUBE_COOKIES:
-                ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
+            # Add cookies
+            if Config.YOUTUBE_COOKIES_FROM_BROWSER:
+                ydl_opts['cookiesfrombrowser'] = (Config.YOUTUBE_COOKIES_FROM_BROWSER,)
+            elif Config.YOUTUBE_COOKIES_FILE and os.path.exists(Config.YOUTUBE_COOKIES_FILE):
+                ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES_FILE
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 # Search YouTube
@@ -157,8 +160,11 @@ class MusicManager:
                     'quiet': True,
                     'no_warnings': True,
                 }
-                if Config.YOUTUBE_COOKIES:
-                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
+                # Add cookies
+                if Config.YOUTUBE_COOKIES_FROM_BROWSER:
+                    ydl_opts['cookiesfrombrowser'] = (Config.YOUTUBE_COOKIES_FROM_BROWSER,)
+                elif Config.YOUTUBE_COOKIES_FILE and os.path.exists(Config.YOUTUBE_COOKIES_FILE):
+                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES_FILE
                 extensions = ['mp3', 'm4a', 'webm', 'opus']
             else:
                 ydl_opts = {
@@ -169,8 +175,11 @@ class MusicManager:
                     'quiet': True,
                     'no_warnings': True,
                 }
-                if Config.YOUTUBE_COOKIES:
-                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
+                # Add cookies
+                if Config.YOUTUBE_COOKIES_FROM_BROWSER:
+                    ydl_opts['cookiesfrombrowser'] = (Config.YOUTUBE_COOKIES_FROM_BROWSER,)
+                elif Config.YOUTUBE_COOKIES_FILE and os.path.exists(Config.YOUTUBE_COOKIES_FILE):
+                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES_FILE
                 extensions = ['mp4', 'mkv', 'webm']
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:

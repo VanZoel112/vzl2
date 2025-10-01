@@ -66,7 +66,13 @@ class Config:
     # Music System Configuration
     MUSIC_DOWNLOAD_PATH: str = os.getenv("MUSIC_DOWNLOAD_PATH", "downloads/musik")
     MUSIC_COOLDOWN: int = int(os.getenv("MUSIC_COOLDOWN", "3"))
-    YOUTUBE_COOKIES: Optional[str] = os.getenv("YOUTUBE_COOKIES", None)
+    MUSIC_ENABLED: bool = os.getenv("MUSIC_ENABLED", "true").lower() == "true"
+    MAX_FILE_SIZE: int = int(os.getenv("MAX_FILE_SIZE", str(50 * 1024 * 1024)))
+    AUDIO_QUALITY: str = os.getenv("AUDIO_QUALITY", "bestaudio[ext=m4a]/bestaudio")
+
+    # YouTube Cookies (helps bypass bot detection)
+    YOUTUBE_COOKIES_FROM_BROWSER: Optional[str] = os.getenv("YOUTUBE_COOKIES_FROM_BROWSER", "")
+    YOUTUBE_COOKIES_FILE: Optional[str] = os.getenv("YOUTUBE_COOKIES_FILE", "cookies.txt")
 
     # Vzoel Fox's Branding
     VZOEL_VERSION: str = "v2.0.0-lutpan"
