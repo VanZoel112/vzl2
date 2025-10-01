@@ -25,6 +25,9 @@ from typing import Dict, Optional
 
 from telethon import events
 from telethon.utils import get_display_name
+from telethon.tl.functions.phone import JoinGroupCallRequest, LeaveGroupCallRequest
+from telethon.tl.functions.channels import GetFullChannelRequest
+from telethon.tl.types import DataJSON
 
 # Ensure project root is on sys.path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -112,6 +115,53 @@ async def _format_group_title(event) -> str:
         return str(event.chat_id)
 
 
+async def _join_vc_silent(client, chat_id) -> bool:
+    """
+    Join voice chat silently using raw Telethon (no PyTgCalls streaming).
+    This joins as a listener only, like a regular user - no audio disturbance.
+    """
+    try:
+        # Get full chat info to find the active group call
+        chat = await client.get_entity(chat_id)
+        full_chat = await client(GetFullChannelRequest(chat))
+
+        if not full_chat.full_chat.call:
+            raise NoActiveGroupCall("No active voice chat in this group")
+
+        # Join as listener only with muted audio
+        # params: empty JSON means listen-only mode (no audio/video streaming)
+        await client(JoinGroupCallRequest(
+            call=full_chat.full_chat.call,
+            join_as=await client.get_me(),
+            params=DataJSON(data='{"ufrag":"","pwd":"","fingerprints":[],"ssrc":0}'),
+            muted=True,
+            video_stopped=True
+        ))
+        return True
+    except Exception:
+        # Fallback: if raw join fails, return False to use PyTgCalls method
+        return False
+
+
+async def _leave_vc_silent(client, chat_id) -> bool:
+    """
+    Leave voice chat using raw Telethon.
+    """
+    try:
+        chat = await client.get_entity(chat_id)
+        full_chat = await client(GetFullChannelRequest(chat))
+
+        if not full_chat.full_chat.call:
+            return False
+
+        await client(LeaveGroupCallRequest(
+            call=full_chat.full_chat.call
+        ))
+        return True
+    except Exception:
+        return False
+
+
 async def vzoel_init(client, emoji_handler):
     """Plugin initialization from plugin loader."""
     global vzoel_client, vzoel_emoji
@@ -161,42 +211,40 @@ async def join_voice_chat_handler(event):
 
     processing_msg = (
         f"{get_emoji('loading')} JOINING VOICE CHAT\n\n"
-        f"{get_emoji('proses')} Preparing silent session\n"
+        f"{get_emoji('proses')} Pure listener mode\n"
         f"{get_emoji('telegram')} Please wait\n\n"
         f"VZOEL ASSISTANT"
     )
     await safe_edit_premium(event, processing_msg)
 
     try:
-        # Ultra-silent join: Join VC without playing anything initially
-        # This prevents any audio interruption to ongoing conversations/music
-        config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
+        # Method 1: Try raw Telethon join (pure listener, ZERO audio streaming)
+        silent_join_success = await _join_vc_silent(event.client, event.chat_id)
 
-        # Join with minimal silent audio (0.1 second instead of 1 second)
-        # and immediately mute to achieve stealth presence
-        await voice_client.play(event.chat_id, SILENCE_URL, config=config)
-
-        # Instant mute - happens before audio even starts playing
-        try:
-            await voice_client.mute(event.chat_id)
-        except NotInCallError:  # type: ignore[attr-defined]
-            pass
-
-        # Small delay to ensure mute takes effect
-        await asyncio.sleep(0.1)
+        if not silent_join_success:
+            # Method 2: Fallback to PyTgCalls with instant mute
+            config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
+            await voice_client.play(event.chat_id, SILENCE_URL, config=config)
+            try:
+                await voice_client.mute(event.chat_id)
+            except NotInCallError:  # type: ignore[attr-defined]
+                pass
+            await asyncio.sleep(0.1)
 
         title = await _format_group_title(event)
         async with _state_lock:  # type: ignore[arg-type]
             _active_calls[event.chat_id] = {
                 "title": title,
                 "joined_at": time.time(),
+                "method": "silent" if silent_join_success else "pytgcalls"
             }
 
+        join_method = "Pure Listener" if silent_join_success else "Muted Stream"
         response = (
             f"{get_emoji('centang')} JOINED VOICE CHAT\n\n"
             f"{get_emoji('aktif')} Connected to: {title}\n"
-            f"{get_emoji('telegram')} Silent mode (no audio disturbance)\n"
-            f"{get_emoji('kuning')} You are now listening\n\n"
+            f"{get_emoji('telegram')} Mode: {join_method}\n"
+            f"{get_emoji('kuning')} Zero audio disturbance\n\n"
             f"VZOEL ASSISTANT\n"
             f"~2025 by Vzoel Fox's Lutpan"
         )
@@ -261,7 +309,21 @@ async def leave_voice_chat_handler(event):
     await safe_edit_premium(event, processing_msg)
 
     try:
-        await voice_client.leave_call(event.chat_id)
+        # Check which method was used to join
+        async with _state_lock:  # type: ignore[arg-type]
+            call_info = _active_calls.get(event.chat_id, {})
+            join_method = call_info.get("method", "pytgcalls")
+
+        # Try appropriate leave method
+        if join_method == "silent":
+            leave_success = await _leave_vc_silent(event.client, event.chat_id)
+            if not leave_success and voice_client:
+                # Fallback to PyTgCalls leave
+                await voice_client.leave_call(event.chat_id)
+        else:
+            # Use PyTgCalls leave
+            await voice_client.leave_call(event.chat_id)
+
         async with _state_lock:  # type: ignore[arg-type]
             _active_calls.pop(event.chat_id, None)
 
@@ -319,6 +381,9 @@ async def voice_chat_status_handler(event):
         for chat_id, info in active_copy.items():
             title = info.get("title", str(chat_id))
             joined_at = info.get("joined_at")
+            method = info.get("method", "unknown")
+            method_label = "🎧 Listener" if method == "silent" else "🔇 Muted"
+
             if isinstance(joined_at, (int, float)):
                 duration = int(now - joined_at)
                 minutes, seconds = divmod(duration, 60)
@@ -326,7 +391,7 @@ async def voice_chat_status_handler(event):
                 uptime = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
             else:
                 uptime = "--:--"
-            status_lines.append(f"• {title} ({chat_id}) — {uptime}")
+            status_lines.append(f"• {title} — {uptime} ({method_label})")
 
     status_lines.append("")
     status_lines.append("VZOEL ASSISTANT")
