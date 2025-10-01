@@ -194,7 +194,12 @@ async def help_handler(event):
                 Button.inline(f"{cat_emoji} Categories", b"help_toggle_categories")
             ])
 
-            await safe_send_premium(event, help_text, buttons=buttons)
+            # Send with buttons
+            entities = create_premium_entities(help_text)
+            if entities:
+                await event.respond(help_text, formatting_entities=entities, buttons=buttons)
+            else:
+                await event.respond(help_text, buttons=buttons)
 
         except Exception as e:
             error_text = f"{get_emoji('merah')} Help Error: `{str(e)}`\n\n"
@@ -470,7 +475,13 @@ async def help_toggle_details(event):
         Button.inline(f"{cat_emoji} Categories", b"help_toggle_categories")
     ])
 
-    await event.edit(help_text, buttons=buttons)
+    # Edit with buttons
+    entities = create_premium_entities(help_text)
+    if entities:
+        await event.edit(help_text, formatting_entities=entities, buttons=buttons)
+    else:
+        await event.edit(help_text, buttons=buttons)
+
     status = "ON" if HELP_STATE['show_details'] else "OFF"
     await event.answer(f"{get_emoji('centang')} Details: {status}")
 
