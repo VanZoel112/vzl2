@@ -5,7 +5,8 @@ Fitur: Plugin list dengan pagination dan premium emoji
 Version: 2.0.0 - VZL2 Native Help System
 """
 
-from telethon import events
+from telethon import events, Button
+from telethon.events import CallbackQuery
 import os
 import glob
 import sys
@@ -64,6 +65,8 @@ def get_plugin_commands(plugin_name):
         return ['.play', '.song', '.pause', '.resume', '.stop', '.queue']
     if plugin_name == 'vc':
         return ['.jvc', '.lvc', '.joinvc', '.leavevc', '.stopvc', '.vcstatus']
+    if plugin_name == 'report':
+        return ['.report', '.reports', '.unreport']
 
     try:
         plugin_path = f"plugins/{plugin_name}.py"
@@ -153,7 +156,28 @@ async def help_handler(event):
             help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
             help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
 
-            await safe_send_premium(event, help_text)
+            # Inline navigation buttons
+            buttons = []
+            if total_pages > 1:
+                nav_row = []
+                if HELP_STATE['current_page'] > 0:
+                    nav_row.append(Button.inline(f"{get_emoji('merah')} Back", b"help_back"))
+                if HELP_STATE['current_page'] < total_pages - 1:
+                    nav_row.append(Button.inline(f"{get_emoji('loading')} Next", b"help_next"))
+                if nav_row:
+                    buttons.append(nav_row)
+
+            # Category buttons
+            buttons.append([
+                Button.inline(f"{get_emoji('proses')} Core", b"help_cat_core"),
+                Button.inline(f"{get_emoji('telegram')} Tools", b"help_cat_tools")
+            ])
+            buttons.append([
+                Button.inline(f"{get_emoji('centang')} Report", b"help_cat_report"),
+                Button.inline(f"{get_emoji('aktif')} All", b"help_cat_all")
+            ])
+
+            await safe_send_premium(event, help_text, buttons=buttons)
 
         except Exception as e:
             error_text = f"{get_emoji('merah')} Help Error: `{str(e)}`\n\n"
@@ -292,3 +316,66 @@ async def back_handler(event):
             error_text = f"{get_emoji('merah')} Back Error: `{str(e)}`\n\n"
             error_text += f"{get_emoji('telegram')} VZL2 Help System"
             await safe_send_premium(event, error_text)
+
+
+# Inline button callbacks
+@events.register(CallbackQuery(pattern=b"help_next"))
+async def help_next_callback(event):
+    """Handle next button callback"""
+    await next_handler(event)
+    await event.answer()
+
+
+@events.register(CallbackQuery(pattern=b"help_back"))
+async def help_back_callback(event):
+    """Handle back button callback"""
+    await back_handler(event)
+    await event.answer()
+
+
+@events.register(CallbackQuery(pattern=b"help_cat_(.+)"))
+async def help_category_callback(event):
+    """Handle category filter callback"""
+    category = event.data.decode().split('_')[-1]
+
+    all_plugins = get_all_plugins()
+
+    # Filter by category
+    if category == 'core':
+        filtered = ['core']
+    elif category == 'tools':
+        filtered = [p for p in all_plugins if p in ['payment', 'gcast', 'tagall', 'blacklist']]
+    elif category == 'report':
+        filtered = [p for p in all_plugins if p == 'report']
+    else:  # all
+        filtered = all_plugins
+
+    # Build response
+    help_text = f"{get_emoji('utama')} VZOEL FOX'S - {category.upper()}\n\n"
+    help_text += f"{get_emoji('centang')} Total: {len(filtered)} plugins\n\n"
+
+    for idx, plugin_name in enumerate(filtered, 1):
+        commands = get_plugin_commands(plugin_name)
+        help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}`\n"
+
+        if commands:
+            help_text += f"   └ `{', '.join(commands)}`\n"
+        help_text += "\n"
+
+    help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
+    help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
+
+    # Category buttons
+    buttons = [
+        [
+            Button.inline(f"{get_emoji('proses')} Core", b"help_cat_core"),
+            Button.inline(f"{get_emoji('telegram')} Tools", b"help_cat_tools")
+        ],
+        [
+            Button.inline(f"{get_emoji('centang')} Report", b"help_cat_report"),
+            Button.inline(f"{get_emoji('aktif')} All", b"help_cat_all")
+        ]
+    ]
+
+    await event.edit(help_text, buttons=buttons)
+    await event.answer(f"{get_emoji('centang')} Showing {category} category")
