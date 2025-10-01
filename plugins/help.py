@@ -34,10 +34,13 @@ __author__ = "𝐹𝑜𝑢𝑛𝑑𝑒𝑟 : 𝑉𝑧𝑜𝑒𝑙 𝐹𝑜𝑥'�
 vzoel_client = None
 vzoel_emoji = None
 
-# Help state untuk pagination
+# Help state untuk pagination dan settings
 HELP_STATE = {
     'current_page': 0,
-    'plugins_per_page': 8
+    'plugins_per_page': 8,
+    'show_details': True,
+    'compact_mode': False,
+    'show_categories': True
 }
 
 def get_all_plugins():
@@ -168,13 +171,27 @@ async def help_handler(event):
                     buttons.append(nav_row)
 
             # Category buttons
+            if HELP_STATE['show_categories']:
+                buttons.append([
+                    Button.inline(f"{get_emoji('proses')} Core", b"help_cat_core"),
+                    Button.inline(f"{get_emoji('telegram')} Tools", b"help_cat_tools")
+                ])
+                buttons.append([
+                    Button.inline(f"{get_emoji('centang')} Report", b"help_cat_report"),
+                    Button.inline(f"{get_emoji('aktif')} All", b"help_cat_all")
+                ])
+
+            # Toggle settings buttons
+            details_emoji = get_emoji('centang') if HELP_STATE['show_details'] else get_emoji('kuning')
+            compact_emoji = get_emoji('centang') if HELP_STATE['compact_mode'] else get_emoji('kuning')
+            cat_emoji = get_emoji('centang') if HELP_STATE['show_categories'] else get_emoji('kuning')
+
             buttons.append([
-                Button.inline(f"{get_emoji('proses')} Core", b"help_cat_core"),
-                Button.inline(f"{get_emoji('telegram')} Tools", b"help_cat_tools")
+                Button.inline(f"{details_emoji} Details", b"help_toggle_details"),
+                Button.inline(f"{compact_emoji} Compact", b"help_toggle_compact")
             ])
             buttons.append([
-                Button.inline(f"{get_emoji('centang')} Report", b"help_cat_report"),
-                Button.inline(f"{get_emoji('aktif')} All", b"help_cat_all")
+                Button.inline(f"{cat_emoji} Categories", b"help_toggle_categories")
             ])
 
             await safe_send_premium(event, help_text, buttons=buttons)
@@ -379,3 +396,107 @@ async def help_category_callback(event):
 
     await event.edit(help_text, buttons=buttons)
     await event.answer(f"{get_emoji('centang')} Showing {category} category")
+
+
+@events.register(CallbackQuery(pattern=b"help_toggle_details"))
+async def help_toggle_details(event):
+    """Toggle show details"""
+    HELP_STATE['show_details'] = not HELP_STATE['show_details']
+
+    # Refresh help display
+    all_plugins = get_all_plugins()
+    total_plugins = len(all_plugins)
+    plugins_per_page = HELP_STATE['plugins_per_page']
+    total_pages = (total_plugins - 1) // plugins_per_page + 1
+    current_page = HELP_STATE['current_page']
+
+    start_idx = current_page * plugins_per_page
+    end_idx = start_idx + plugins_per_page
+    page_plugins = all_plugins[start_idx:end_idx]
+
+    # Build help text
+    help_text = f"{get_emoji('utama')} VZOEL FOX'S PLUGINS (Page {current_page + 1}/{total_pages})\n\n"
+    help_text += f"{get_emoji('centang')} Total Plugins: {total_plugins}\n"
+    help_text += f"{get_emoji('aktif')} Page: {current_page + 1} of {total_pages}\n\n"
+
+    for idx, plugin_name in enumerate(page_plugins, start_idx + 1):
+        commands = get_plugin_commands(plugin_name)
+
+        if plugin_name == 'core':
+            help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}` - Core functions\n"
+        else:
+            help_text += f"{get_emoji('proses')} {idx}. `{plugin_name}`\n"
+
+        if HELP_STATE['show_details'] and commands:
+            if len(commands) <= 3:
+                help_text += f"   └ Commands: `{', '.join(commands)}`\n"
+            else:
+                help_text += f"   └ Commands: `{', '.join(commands[:3])}` + {len(commands)-3} more\n"
+        help_text += "\n"
+
+    help_text += f"{get_emoji('telegram')} VZL2 Premium System\n"
+    help_text += f"{get_emoji('adder1')} Powered by Vzoel Fox's Technology"
+
+    # Rebuild buttons
+    buttons = []
+    if total_pages > 1:
+        nav_row = []
+        if current_page > 0:
+            nav_row.append(Button.inline(f"{get_emoji('merah')} Back", b"help_back"))
+        if current_page < total_pages - 1:
+            nav_row.append(Button.inline(f"{get_emoji('loading')} Next", b"help_next"))
+        if nav_row:
+            buttons.append(nav_row)
+
+    if HELP_STATE['show_categories']:
+        buttons.append([
+            Button.inline(f"{get_emoji('proses')} Core", b"help_cat_core"),
+            Button.inline(f"{get_emoji('telegram')} Tools", b"help_cat_tools")
+        ])
+        buttons.append([
+            Button.inline(f"{get_emoji('centang')} Report", b"help_cat_report"),
+            Button.inline(f"{get_emoji('aktif')} All", b"help_cat_all")
+        ])
+
+    details_emoji = get_emoji('centang') if HELP_STATE['show_details'] else get_emoji('kuning')
+    compact_emoji = get_emoji('centang') if HELP_STATE['compact_mode'] else get_emoji('kuning')
+    cat_emoji = get_emoji('centang') if HELP_STATE['show_categories'] else get_emoji('kuning')
+
+    buttons.append([
+        Button.inline(f"{details_emoji} Details", b"help_toggle_details"),
+        Button.inline(f"{compact_emoji} Compact", b"help_toggle_compact")
+    ])
+    buttons.append([
+        Button.inline(f"{cat_emoji} Categories", b"help_toggle_categories")
+    ])
+
+    await event.edit(help_text, buttons=buttons)
+    status = "ON" if HELP_STATE['show_details'] else "OFF"
+    await event.answer(f"{get_emoji('centang')} Details: {status}")
+
+
+@events.register(CallbackQuery(pattern=b"help_toggle_compact"))
+async def help_toggle_compact(event):
+    """Toggle compact mode"""
+    HELP_STATE['compact_mode'] = not HELP_STATE['compact_mode']
+
+    # Adjust plugins per page based on compact mode
+    HELP_STATE['plugins_per_page'] = 12 if HELP_STATE['compact_mode'] else 8
+
+    # Refresh display (trigger help handler)
+    await help_handler(event)
+
+    status = "ON" if HELP_STATE['compact_mode'] else "OFF"
+    await event.answer(f"{get_emoji('centang')} Compact Mode: {status}")
+
+
+@events.register(CallbackQuery(pattern=b"help_toggle_categories"))
+async def help_toggle_categories(event):
+    """Toggle category buttons"""
+    HELP_STATE['show_categories'] = not HELP_STATE['show_categories']
+
+    # Refresh display
+    await help_handler(event)
+
+    status = "Shown" if HELP_STATE['show_categories'] else "Hidden"
+    await event.answer(f"{get_emoji('centang')} Categories: {status}")
