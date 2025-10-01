@@ -1,7 +1,8 @@
 {
-  "last_check": "2025-10-01T07:31:22.999902",
-  "backup_count": 0,
-  "recovery_count": 0,
-  "last_recovery": null,
-  "session_type": "string"
+  "last_check": "2025-10-01T22:37:30.161227",
+  "backup_count": 4,
+  "recovery_count": 1,
+  "last_recovery": "2025-10-01T14:09:30.230347",
+  "session_type": "string",
+  "last_backup": "2025-10-01T14:40:59.810440"
 }
