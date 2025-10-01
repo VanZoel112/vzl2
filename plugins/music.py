@@ -1,10 +1,14 @@
 """
-VZOEL ASSISTANT - Music Plugin
-Simple music download with yt-dlp
+VZOEL ASSISTANT - Music Plugin  
+Pure userbot music with VC streaming
 
 Commands:
-- .play <query> - Download and send MP3
+- .play <query> - Play/stream music
 - .song <query> - Download song
+- .pause - Pause stream
+- .resume - Resume stream
+- .stop - Stop and clear
+- .queue - Show queue
 
 ~2025 by Vzoel Fox's Lutpan
 """
@@ -17,105 +21,27 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plugins.emoji_template import get_emoji, safe_edit_premium
-
-# Try import yt-dlp
-try:
-    import yt_dlp
-    YTDLP_AVAILABLE = True
-except ImportError:
-    YTDLP_AVAILABLE = False
+from core.music_manager import MusicManager
 
 # Global references
 vzoel_client = None
 vzoel_emoji = None
-
-# Download path
-DOWNLOAD_PATH = Path("downloads/musik")
-DOWNLOAD_PATH.mkdir(parents=True, exist_ok=True)
+music_manager = None
 
 
 async def vzoel_init(client, emoji_handler):
     """Plugin initialization"""
-    global vzoel_client, vzoel_emoji
+    global vzoel_client, vzoel_emoji, music_manager
 
     vzoel_client = client
     vzoel_emoji = emoji_handler
 
-    if YTDLP_AVAILABLE:
-        print(f"{get_emoji('utama')} Music Plugin loaded - yt-dlp ready")
-    else:
-        print(f"{get_emoji('kuning')} yt-dlp not installed")
-
-
-def search_song(query):
-    """Search song on YouTube"""
-    if not YTDLP_AVAILABLE:
-        return None
-
     try:
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'noplaylist': True,
-            'quiet': True,
-            'no_warnings': True,
-            'extract_flat': False,
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            search_query = f"ytsearch:{query}" if not query.startswith('http') else query
-            info = ydl.extract_info(search_query, download=False)
-
-            if 'entries' in info:
-                info = info['entries'][0]
-
-            return {
-                'title': info.get('title', 'Unknown'),
-                'url': info.get('url'),
-                'webpage_url': info.get('webpage_url'),
-                'duration': info.get('duration', 0),
-            }
-
+        music_manager = MusicManager(client.client)
+        await music_manager.start()
+        print(f"{get_emoji('utama')} Music Plugin loaded")
     except Exception as e:
-        print(f"Search error: {e}")
-        return None
-
-
-def download_audio(url, title):
-    """Download audio as MP3"""
-    if not YTDLP_AVAILABLE:
-        return None
-
-    try:
-        safe_title = "".join(c for c in title if c.isalnum() or c in (' ', '-', '_'))[:50]
-        output_template = str(DOWNLOAD_PATH / f"{safe_title}.%(ext)s")
-
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': output_template,
-            'noplaylist': True,
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'quiet': True,
-            'no_warnings': True,
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-
-        # Find downloaded file
-        for ext in ['mp3', 'm4a', 'webm', 'opus']:
-            file_path = DOWNLOAD_PATH / f"{safe_title}.{ext}"
-            if file_path.exists():
-                return str(file_path)
-
-        return None
-
-    except Exception as e:
-        print(f"Download error: {e}")
-        return None
+        print(f"{get_emoji('merah')} Music init error: {e}")
 
 
 def format_duration(seconds):
@@ -132,70 +58,76 @@ def format_duration(seconds):
 
 @events.register(events.NewMessage(pattern=r'\.play (.+)'))
 async def play_handler(event):
-    """Play/download music"""
+    """Play music"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client
+        global vzoel_client, music_manager
 
-        if not YTDLP_AVAILABLE:
-            await safe_edit_premium(event, f"{get_emoji('merah')} yt-dlp not installed\n\n{get_emoji('telegram')} Install: pip install yt-dlp\n\nVZOEL ASSISTANT")
+        if not music_manager:
+            await safe_edit_premium(event, f"{get_emoji('merah')} Music system not initialized\n\nVZOEL ASSISTANT")
             return
 
         query = event.pattern_match.group(1).strip()
 
-        processing_msg = f"""{get_emoji('loading')} PROCESSING REQUEST
+        processing_msg = f"""{get_emoji('loading')} PROCESSING
 
-{get_emoji('proses')} Searching YouTube
-{get_emoji('telegram')} Query: {query}
+{get_emoji('proses')} Searching: {query}
 
 VZOEL ASSISTANT"""
         await safe_edit_premium(event, processing_msg)
 
-        # Search song
-        song_info = search_song(query)
+        result = await music_manager.play_stream(event.chat_id, query, event.sender_id)
 
-        if not song_info:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Song not found\n\nVZOEL ASSISTANT")
-            return
+        if result['success']:
+            song = result['song']
+            duration = format_duration(song.get('duration', 0))
 
-        # Download
-        downloading_msg = f"""{get_emoji('loading')} DOWNLOADING
+            if result.get('streaming'):
+                if result.get('queued'):
+                    response = f"""{get_emoji('centang')} QUEUED
 
-{get_emoji('proses')} {song_info['title']}
-{get_emoji('aktif')} Extracting MP3
+{get_emoji('proses')} {song['title']}
+{get_emoji('aktif')} Duration: {duration}
+{get_emoji('kuning')} Position: #{result['position']}
 
-VZOEL ASSISTANT"""
-        await safe_edit_premium(event, downloading_msg)
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
+                else:
+                    response = f"""{get_emoji('utama')} NOW STREAMING
 
-        file_path = download_audio(song_info['url'], song_info['title'])
+{get_emoji('proses')} {song['title']}
+{get_emoji('aktif')} Duration: {duration}
+{get_emoji('centang')} Mode: Voice chat
 
-        if file_path and os.path.exists(file_path):
-            duration = format_duration(song_info.get('duration', 0))
-            file_name = Path(file_path).name
+VZOEL ASSISTANT
+~2025 by Vzoel Fox's Lutpan"""
+            else:
+                file_path = result.get('file_path', '')
+                file_name = Path(file_path).name if file_path else 'Unknown'
+                response = f"""{get_emoji('centang')} DOWNLOADED
 
-            response = f"""{get_emoji('centang')} DOWNLOAD COMPLETE
-
-{get_emoji('proses')} {song_info['title']}
+{get_emoji('proses')} {song['title']}
 {get_emoji('aktif')} Duration: {duration}
 {get_emoji('biru')} File: {file_name}
 
 VZOEL ASSISTANT
 ~2025 by Vzoel Fox's Lutpan"""
+                await safe_edit_premium(event, response)
+                if file_path and os.path.exists(file_path):
+                    try:
+                        await event.client.send_file(event.chat_id, file_path, caption=f"{song['title']}\n\nVZOEL ASSISTANT", reply_to=event.id)
+                    except:
+                        pass
+                return
 
             await safe_edit_premium(event, response)
-
-            # Send file
-            try:
-                await event.client.send_file(
-                    event.chat_id,
-                    file_path,
-                    caption=f"{song_info['title']}\n\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan",
-                    reply_to=event.id
-                )
-            except Exception as e:
-                print(f"Send file error: {e}")
-
         else:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Download failed\n\nVZOEL ASSISTANT")
+            error = result.get('error', 'Unknown error')
+            response = f"""{get_emoji('merah')} FAILED
+
+{get_emoji('kuning')} Error: {error}
+
+VZOEL ASSISTANT"""
+            await safe_edit_premium(event, response)
 
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -204,5 +136,110 @@ VZOEL ASSISTANT
 @events.register(events.NewMessage(pattern=r'\.song (.+)'))
 async def song_handler(event):
     """Download song"""
-    # Same as play handler
     await play_handler(event)
+
+
+@events.register(events.NewMessage(pattern=r'\.pause'))
+async def pause_handler(event):
+    """Pause playback"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, music_manager
+        if not music_manager:
+            return
+        success = await music_manager.pause_stream(event.chat_id)
+        if success:
+            response = f"""{get_emoji('centang')} PAUSED
+
+{get_emoji('aktif')} Use .resume to continue
+
+VZOEL ASSISTANT"""
+        else:
+            response = f"""{get_emoji('kuning')} NOT PLAYING
+
+VZOEL ASSISTANT"""
+        await safe_edit_premium(event, response)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+
+@events.register(events.NewMessage(pattern=r'\.resume'))
+async def resume_handler(event):
+    """Resume playback"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, music_manager
+        if not music_manager:
+            return
+        success = await music_manager.resume_stream(event.chat_id)
+        if success:
+            response = f"""{get_emoji('centang')} RESUMED
+
+{get_emoji('aktif')} Now playing
+
+VZOEL ASSISTANT"""
+        else:
+            response = f"""{get_emoji('kuning')} NOT PAUSED
+
+VZOEL ASSISTANT"""
+        await safe_edit_premium(event, response)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+
+@events.register(events.NewMessage(pattern=r'\.stop'))
+async def stop_handler(event):
+    """Stop playback"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, music_manager
+        if not music_manager:
+            return
+        current = music_manager.get_current_song(event.chat_id)
+        success = await music_manager.stop_stream(event.chat_id)
+        if success or current:
+            track = current.get('title', 'Unknown') if current else 'Unknown'
+            response = f"""{get_emoji('centang')} STOPPED
+
+{get_emoji('proses')} Last: {track}
+{get_emoji('aktif')} Queue cleared
+
+VZOEL ASSISTANT"""
+        else:
+            response = f"""{get_emoji('kuning')} NOT PLAYING
+
+VZOEL ASSISTANT"""
+        await safe_edit_premium(event, response)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
+
+
+@events.register(events.NewMessage(pattern=r'\.queue'))
+async def queue_handler(event):
+    """Show queue"""
+    if event.is_private or event.sender_id == (await event.client.get_me()).id:
+        global vzoel_client, music_manager
+        if not music_manager:
+            return
+        current = music_manager.get_current_song(event.chat_id)
+        queue = music_manager.get_queue(event.chat_id)
+        if not current and not queue:
+            response = f"""{get_emoji('kuning')} QUEUE EMPTY
+
+{get_emoji('telegram')} Use .play to add songs
+
+VZOEL ASSISTANT"""
+        else:
+            response = f"""{get_emoji('utama')} MUSIC QUEUE\n\n"""
+            if current:
+                duration = format_duration(current.get('duration', 0))
+                response += f"""{get_emoji('proses')} NOW PLAYING:
+{current.get('title', 'Unknown')} ({duration})\n\n"""
+            if queue:
+                response += f"""{get_emoji('aktif')} QUEUE ({len(queue)}):\n"""
+                for i, song in enumerate(queue[:5], 1):
+                    duration = format_duration(song.get('duration', 0))
+                    response += f"{i}. {song.get('title', 'Unknown')} ({duration})\n"
+                if len(queue) > 5:
+                    response += f"\n{get_emoji('telegram')} +{len(queue) - 5} more\n"
+            response += f"\nVZOEL ASSISTANT\n~2025 by Vzoel Fox's Lutpan"
+        await safe_edit_premium(event, response)
+        if vzoel_client:
+            vzoel_client.increment_command_count()
