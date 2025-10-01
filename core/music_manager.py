@@ -108,6 +108,7 @@ class MusicManager:
                 'quiet': True,
                 'no_warnings': True,
                 'extract_flat': False,
+                'cookiefile': 'cookies.txt',
             }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -152,6 +153,7 @@ class MusicManager:
                     }],
                     'quiet': True,
                     'no_warnings': True,
+                    'cookiefile': 'cookies.txt',
                 }
                 extensions = ['mp3', 'm4a', 'webm', 'opus']
             else:
@@ -162,6 +164,7 @@ class MusicManager:
                     'merge_output_format': 'mp4',
                     'quiet': True,
                     'no_warnings': True,
+                    'cookiefile': 'cookies.txt',
                 }
                 extensions = ['mp4', 'mkv', 'webm']
 
