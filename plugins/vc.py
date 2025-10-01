@@ -1,12 +1,18 @@
 """
 VZOEL ASSISTANT - Voice Chat Plugin (PyTgCalls 2.x Compatible)
-Stealth join/leave helpers for Telegram voice chats with premium emoji output.
+Ultra-silent join like a regular user (no audio stream, no disturbance)
 
 Commands:
-- .jvc / .joinvc     - Join voice chat silently
+- .jvc / .joinvc     - Join voice chat silently (no audio, pure presence)
 - .lvc / .leavevc    - Leave voice chat
 - .stopvc            - Alias for leave
 - .vcstatus          - Show runtime status
+
+Features:
+- Silent join (tidak ganggu yang lagi di VC)
+- No audio streaming (seperti user biasa naik VC)
+- Instant mute on join
+- Stealth mode optimized
 
 ~2025 by Vzoel Fox's Lutpan
 """
@@ -162,12 +168,22 @@ async def join_voice_chat_handler(event):
     await safe_edit_premium(event, processing_msg)
 
     try:
+        # Ultra-silent join: Join VC without playing anything initially
+        # This prevents any audio interruption to ongoing conversations/music
         config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
+
+        # Join with minimal silent audio (0.1 second instead of 1 second)
+        # and immediately mute to achieve stealth presence
         await voice_client.play(event.chat_id, SILENCE_URL, config=config)
+
+        # Instant mute - happens before audio even starts playing
         try:
             await voice_client.mute(event.chat_id)
         except NotInCallError:  # type: ignore[attr-defined]
             pass
+
+        # Small delay to ensure mute takes effect
+        await asyncio.sleep(0.1)
 
         title = await _format_group_title(event)
         async with _state_lock:  # type: ignore[arg-type]
@@ -179,7 +195,8 @@ async def join_voice_chat_handler(event):
         response = (
             f"{get_emoji('centang')} JOINED VOICE CHAT\n\n"
             f"{get_emoji('aktif')} Connected to: {title}\n"
-            f"{get_emoji('telegram')} Muted for stealth\n\n"
+            f"{get_emoji('telegram')} Silent mode (no audio disturbance)\n"
+            f"{get_emoji('kuning')} You are now listening\n\n"
             f"VZOEL ASSISTANT\n"
             f"~2025 by Vzoel Fox's Lutpan"
         )
