@@ -1,0 +1,35 @@
+{
+  "description": "VZL2 Plugin Whitelist for User Deployments",
+  "version": "1.0.0",
+  "allowed_plugins": [
+    "gcast.py",
+    "blacklist.py",
+    "lock.py",
+    "tagall.py",
+    "vc.py",
+    "id.py",
+    "ping.py",
+    "alive.py",
+    "limit.py"
+  ],
+  "allowed_commands": {
+    "gcast": [".gcast", ".gucast"],
+    "blacklist": [".addbl", ".delbl", ".listbl"],
+    "lock": [".lock", ".unlock"],
+    "tagall": [".tagall", ".stoptagall"],
+    "vc": [".joinvc", ".jvc", ".leavevc", ".lvc"],
+    "id": [".id"],
+    "ping": [".ping", ".pink", ".pong", ".ponk"],
+    "alive": [".alive"],
+    "limit": [".limit"]
+  },
+  "blocked_plugins": [
+    "payment.py",
+    "report.py",
+    "music.py",
+    "admin.py",
+    "system.py"
+  ],
+  "deployment_type": "user",
+  "notes": "Limited feature set for non-developer users"
+}

@@ -27,9 +27,12 @@ from datetime import datetime
 load_dotenv()
 
 # Bot credentials (dari BotFather)
-BOT_TOKEN = os.getenv("DEPLOY_BOT_TOKEN")
+BOT_TOKEN = os.getenv("DEPLOY_BOT_TOKEN", "8235912270:AAFYAKRTXnw5nxEGn7HkYoRIahc0zQygqwI")
 API_ID = int(os.getenv("API_ID", "29919905"))
 API_HASH = os.getenv("API_HASH", "717957f0e3ae20a7db004d08b66bfd30")
+
+# Deployment mode
+DEPLOYMENT_MODE = os.getenv("DEPLOYMENT_MODE", "user")  # "user" or "developer"
 
 # VPS credentials
 VPS_HOST = os.getenv("VPS_HOST")  # IP VPS
@@ -108,8 +111,8 @@ async def create_session(phone, code, password=None):
         return None, str(e)
 
 
-async def deploy_to_vps(session_string, user_info, owner_id):
-    """Deploy userbot ke VPS via SSH"""
+async def deploy_to_vps(session_string, user_info, owner_id, deployment_mode="user"):
+    """Deploy userbot ke VPS via SSH with plugin filtering"""
     try:
         # Create SSH client
         ssh = paramiko.SSHClient()
@@ -127,23 +130,80 @@ async def deploy_to_vps(session_string, user_info, owner_id):
         username = user_info.get('username', f"user_{user_info['id']}")
         deploy_name = f"vzl2_{username}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
+        # Plugin filtering for user mode
+        plugin_filter_cmd = ""
+        if deployment_mode == "user":
+            # Allowed plugins for user deployment
+            allowed_plugins = [
+                "gcast.py", "blacklist.py", "lock.py", "tagall.py",
+                "vc.py", "id.py", "ping.py", "alive.py", "limit.py",
+                "emoji_template.py", "__init__.py"  # Required
+            ]
+
+            # Create command to remove blocked plugins
+            plugin_filter_cmd = f"""
+            cd {deploy_name}/plugins
+            for plugin in *.py; do
+                if [[ ! "$plugin" =~ ^({'|'.join(allowed_plugins)})$ ]]; then
+                    rm -f "$plugin"
+                    echo "Removed: $plugin"
+                fi
+            done
+            cd ..
+            """
+
         # Commands untuk deploy
         commands = [
             f"cd ~",
             f"git clone https://github.com/VanZoel112/vzl2.git {deploy_name}",
             f"cd {deploy_name}",
+        ]
+
+        # Add plugin filtering if user mode
+        if plugin_filter_cmd:
+            commands.append(plugin_filter_cmd)
+
+        commands.extend([
             f"python3 -m venv venv",
             f"source venv/bin/activate && pip install -r requirements.txt",
             # Update .env dengan session
-            f"cat > .env << 'EOL'\nAPI_ID={API_ID}\nAPI_HASH={API_HASH}\nSTRING_SESSION={session_string}\nVZOEL_OWNER_ID={owner_id}\nEOL",
+            f"""cat > .env << 'EOL'
+API_ID={API_ID}
+API_HASH={API_HASH}
+STRING_SESSION={session_string}
+VZOEL_OWNER_ID={owner_id}
+VZOEL_PREFIX=.
+PREMIUM_EMOJIS_ENABLED=true
+DEPLOYMENT_MODE={deployment_mode}
+EOL""",
+            # Create info file
+            f"""cat > deployment_info.txt << 'EOL'
+Deployment Type: {deployment_mode.upper()}
+Owner: {user_info.get('first_name', 'User')} (@{user_info.get('username', 'N/A')})
+User ID: {owner_id}
+Deployed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Allowed Features ({deployment_mode} mode):
+✅ .gcast - Broadcast messages
+✅ .addbl/.delbl - Blacklist management
+✅ .lock/.unlock - User locking
+✅ .tagall/.stoptagall - Tag all members
+✅ .joinvc/.leavevc - Voice chat
+✅ .id - Get user/chat ID
+✅ .ping/.pink/.pong/.ponk - Ping variations
+✅ .alive - Check bot status
+✅ .limit - Check Telegram limits
+
+Contact: @VZLfxs
+EOL""",
             # Start dengan PM2
             f"pm2 start main.py --name {deploy_name} --interpreter python3",
             f"pm2 save"
-        ]
+        ])
 
         # Execute commands
         full_command = " && ".join(commands)
-        stdin, stdout, stderr = ssh.exec_command(full_command)
+        stdin, stdout, stderr = ssh.exec_command(full_command, timeout=600)
 
         # Get output
         output = stdout.read().decode()
@@ -151,13 +211,15 @@ async def deploy_to_vps(session_string, user_info, owner_id):
 
         ssh.close()
 
-        if error and "error" in error.lower():
+        # Check for critical errors
+        if error and any(err in error.lower() for err in ['fatal', 'cannot', 'failed', 'error:']):
             return False, f"Deployment error:\n{error[:500]}"
 
         return True, {
             'deploy_name': deploy_name,
             'output': output[:500],
-            'vps_host': VPS_HOST
+            'vps_host': VPS_HOST,
+            'deployment_mode': deployment_mode
         }
 
     except Exception as e:
@@ -187,6 +249,17 @@ Halo! Saya akan membantu deploy userbot VZL2 ke VPS secara otomatis.
 ✅ Kode OTP dari Telegram
 ✅ Password 2FA (jika aktif)
 
+**🎯 Fitur yang Tersedia:**
+✅ `.gcast` - Broadcast pesan ke semua grup
+✅ `.addbl` / `.delbl` - Blacklist grup
+✅ `.lock` / `.unlock` - Lock/unlock user
+✅ `.tagall` / `.stoptagall` - Tag semua member
+✅ `.joinvc` / `.leavevc` - Join/leave voice chat
+✅ `.id` - Get user/chat ID
+✅ `.ping` / `.pink` / `.pong` / `.ponk` - Ping bot
+✅ `.alive` - Cek status bot
+✅ `.limit` - Cek Telegram limits
+
 **🚀 Proses Deploy:**
 1. Kirim nomor HP Anda
 2. Terima kode OTP di Telegram
@@ -197,9 +270,11 @@ Halo! Saya akan membantu deploy userbot VZL2 ke VPS secara otomatis.
 **💡 Keuntungan:**
 • Tidak perlu akses SSH
 • Tidak perlu setup manual
-• Deploy dalam hitungan menit
+• Deploy dalam 2-3 menit
 • Auto-start dengan PM2
+• Limited features (aman untuk pemula)
 
+**📝 Mode:** USER (Limited Features)
 Klik tombol di bawah untuk mulai!"""
 
     buttons = [
@@ -367,20 +442,28 @@ Please wait...""")
 🏷️ Name: `{deploy_result['deploy_name']}`
 🖥️ VPS: `{deploy_result['vps_host']}`
 👤 Owner: {result['first_name']} (`{result['id']}`)
+📝 Mode: **USER** (Limited Features)
 
 **🎮 Cara Menggunakan:**
 1. Buka Telegram Anda
 2. Kirim pesan `.alive` di Saved Messages
 3. Bot akan merespon jika aktif
 
-**⚙️ Management Commands:**
-• `.help` - Lihat semua command
-• `.ping` - Cek status bot
-• `.restart` - Restart bot
+**🎯 Available Commands:**
+• `.gcast <text>` - Broadcast ke semua grup
+• `.addbl` / `.delbl` - Manage blacklist
+• `.lock <user_id>` / `.unlock <user_id>` - Lock user
+• `.tagall` / `.stoptagall` - Tag semua member
+• `.joinvc` / `.leavevc` - Voice chat control
+• `.id` - Get user/chat ID
+• `.ping` / `.pink` / `.pong` / `.ponk` - Check latency
+• `.alive` - Check bot status
+• `.limit` - Check Telegram limits
 
 **📝 Notes:**
 • Bot berjalan 24/7 di VPS
 • Auto-restart jika crash
+• Limited features untuk keamanan
 • Gunakan dengan bijak
 
 **💬 Butuh bantuan?**
