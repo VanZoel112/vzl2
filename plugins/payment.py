@@ -63,16 +63,16 @@ async def get_file_id_handler(event):
 
         # Check if replying to message
         if not event.is_reply:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Reply to an image to get file_id\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('kuning')} Reply to an image to get file_id\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Extracting file_id**
+        processing_msg = f"""{get_emoji('loading')} EXTRACTING FILE_ID
 
 {get_emoji('proses')} Reading message
 {get_emoji('telegram')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -91,21 +91,21 @@ async def get_file_id_handler(event):
             file_type = "Document"
 
         if file_id:
-            response = f"""{get_emoji('centang')} **File ID extracted**
+            response = f"""{get_emoji('centang')} FILE ID EXTRACTED
 
 {get_emoji('aktif')} Type: {file_type}
 {get_emoji('proses')} File ID: `{file_id}`
 
-{get_emoji('telegram')} **Usage:**
+{get_emoji('telegram')} USAGE:
 Copy the file_id above or use .setgetqr to store as QR code
 
-{get_emoji('biru')} **Tips:**
+{get_emoji('biru')} TIPS:
 Reply to this message with .setgetqr to save automatically
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
         else:
-            response = f"""{get_emoji('merah')} **No file found**
+            response = f"""{get_emoji('merah')} NO FILE FOUND
 
 {get_emoji('kuning')} Please reply to a message containing:
 • Photo
@@ -113,7 +113,7 @@ Reply to this message with .setgetqr to save automatically
 
 {get_emoji('telegram')} Then use .getfileid again
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -128,7 +128,7 @@ async def set_qr_handler(event):
         global vzoel_client, payment_manager
 
         if not payment_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Get description if provided
@@ -139,16 +139,16 @@ async def set_qr_handler(event):
 
         # Check if replying to message
         if not event.is_reply:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Reply to QR image with .setgetqr\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('kuning')} Reply to QR image with .setgetqr\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing
-        processing_msg = f"""{get_emoji('loading')} **Storing QR code**
+        processing_msg = f"""{get_emoji('loading')} STORING QR CODE
 
 {get_emoji('proses')} Extracting file_id
 {get_emoji('telegram')} Saving to database
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -168,30 +168,30 @@ async def set_qr_handler(event):
 
             if success:
                 qr_count = payment_manager.get_stats()['qr_codes_count']
-                response = f"""{get_emoji('centang')} **QR code saved**
+                response = f"""{get_emoji('centang')} QR CODE SAVED
 
 {get_emoji('aktif')} File ID: `{file_id}`
 {get_emoji('proses')} Description: {description or 'Payment QR Code'}
 {get_emoji('telegram')} Total QR codes: {qr_count}
 
-{get_emoji('biru')} **Quick Access:**
+{get_emoji('biru')} QUICK ACCESS:
 Use .getqr to display this QR code instantly
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
             else:
-                response = f"""{get_emoji('merah')} **Save failed**
+                response = f"""{get_emoji('merah')} SAVE FAILED
 
 {get_emoji('kuning')} Please try again
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('merah')} **No image found**
+            response = f"""{get_emoji('merah')} NO IMAGE FOUND
 
 {get_emoji('kuning')} Reply to QR code image
 {get_emoji('telegram')} Then use .setgetqr
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -206,15 +206,15 @@ async def get_qr_handler(event):
         global vzoel_client, payment_manager
 
         if not payment_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing
-        processing_msg = f"""{get_emoji('loading')} **Loading QR code**
+        processing_msg = f"""{get_emoji('loading')} LOADING QR CODE
 
 {get_emoji('proses')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -233,29 +233,29 @@ async def get_qr_handler(event):
                 await event.client.send_file(
                     event.chat_id,
                     file_id,
-                    caption=f"""{get_emoji('utama')} **{description}**
+                    caption=f"""{get_emoji('utama')} {description}
 
 {get_emoji('centang')} Scan QR code to pay
 {get_emoji('telegram')} Quick payment access
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
                 )
             except Exception as e:
-                await event.respond(f"{get_emoji('merah')} Failed to send QR: {e}\n\n**Vzoel Fox's Lutpan**")
+                await event.respond(f"{get_emoji('merah')} Failed to send QR: {e}\n\nVZOEL FOX'S LUTPAN")
 
         else:
-            response = f"""{get_emoji('kuning')} **No QR code stored**
+            response = f"""{get_emoji('kuning')} NO QR CODE STORED
 
 {get_emoji('telegram')} Use .setgetqr to store QR code first
 
-{get_emoji('aktif')} **Steps:**
+{get_emoji('aktif')} STEPS:
 1. Find your payment QR image
 2. Reply to it with .getfileid
 3. Reply to it with .setgetqr
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
 
             await safe_edit_premium(event, response)
 
@@ -270,17 +270,17 @@ async def set_payment_info_handler(event):
         global vzoel_client, payment_manager
 
         if not payment_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         info_text = event.pattern_match.group(1).strip()
 
         # Processing
-        processing_msg = f"""{get_emoji('loading')} **Storing payment info**
+        processing_msg = f"""{get_emoji('loading')} STORING PAYMENT INFO
 
 {get_emoji('proses')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -298,22 +298,22 @@ async def set_payment_info_handler(event):
         success = payment_manager.set_payment_info(payment_info)
 
         if success:
-            response = f"""{get_emoji('centang')} **Payment info saved**
+            response = f"""{get_emoji('centang')} PAYMENT INFO SAVED
 
 {get_emoji('aktif')} Information stored successfully
 {get_emoji('telegram')} Use .get to display payment info
 
-{get_emoji('biru')} **Stored data:**
+{get_emoji('biru')} STORED DATA:
 {info_text[:200]}{'...' if len(info_text) > 200 else ''}
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
         else:
-            response = f"""{get_emoji('merah')} **Save failed**
+            response = f"""{get_emoji('merah')} SAVE FAILED
 
 {get_emoji('kuning')} Please try again
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -328,15 +328,15 @@ async def get_payment_info_handler(event):
         global vzoel_client, payment_manager
 
         if not payment_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Payment manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing
-        processing_msg = f"""{get_emoji('loading')} **Loading payment info**
+        processing_msg = f"""{get_emoji('loading')} LOADING PAYMENT INFO
 
 {get_emoji('proses')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -346,7 +346,7 @@ async def get_payment_info_handler(event):
 
         if info:
             # Build response
-            response = f"""{get_emoji('utama')} **Payment Information**
+            response = f"""{get_emoji('utama')} PAYMENT INFORMATION
 
 """
             # Show structured data if available
@@ -354,30 +354,30 @@ async def get_payment_info_handler(event):
             if raw_text:
                 response += f"{raw_text}\n\n"
 
-            response += f"""{get_emoji('telegram')} **Quick Actions:**
+            response += f"""{get_emoji('telegram')} QUICK ACTIONS:
 • .getqr - Show QR code ({stats['qr_codes_count']} stored)
 • .setget - Update payment info
 • .setgetqr - Add QR code
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
 
         else:
-            response = f"""{get_emoji('kuning')} **No payment info set**
+            response = f"""{get_emoji('kuning')} NO PAYMENT INFO SET
 
 {get_emoji('telegram')} Use .setget to configure payment details
 
-{get_emoji('aktif')} **Example:**
+{get_emoji('aktif')} EXAMPLE:
 .setget Bank: BCA
 Account: 1234567890
 Name: Vzoel Fox's
 
-{get_emoji('biru')} **Or multiline:**
+{get_emoji('biru')} OR MULTILINE:
 .setget Payment Gateway: Dana/Gopay/OVO
 Number: 081234567890
 
-**Vzoel Fox's Lutpan** Payment System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Payment System
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 

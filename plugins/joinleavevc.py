@@ -171,7 +171,7 @@ async def auto_join_handler(event):
             auto_vc_settings['auto_join_groups'].append(chat_id)
             await save_settings()
 
-        success_msg = f"""{get_emoji('centang')} **Auto Join VC Enabled**
+        success_msg = f"""{get_emoji('centang')} AUTO JOIN VC ENABLED
 
 {get_emoji('aktif')} Group: {chat.title}
 {get_emoji('utama')} Mode: Stealth Clone
@@ -191,7 +191,7 @@ async def auto_join_handler(event):
         # Leave if currently joined
         await auto_leave_vc(event.client, chat_id, "disabled")
 
-        success_msg = f"""{get_emoji('kuning')} **Auto Join VC Disabled**
+        success_msg = f"""{get_emoji('kuning')} AUTO JOIN VC DISABLED
 
 {get_emoji('merah')} Group: {chat.title}
 {get_emoji('centang')} Left voice chat"""
@@ -201,13 +201,13 @@ async def auto_join_handler(event):
         status = "enabled" if chat_id in auto_vc_settings['auto_join_groups'] else "disabled"
         vc_conn = "connected" if vc_status.get(chat_id, {}).get('joined', False) else "not connected"
 
-        info_msg = f"""{get_emoji('utama')} **Auto Join VC Status**
+        info_msg = f"""{get_emoji('utama')} AUTO JOIN VC STATUS
 
 {get_emoji('aktif')} Group: {chat.title}
 {get_emoji('proses')} Status: {status}
 {get_emoji('centang')} VC: {vc_conn}
 
-{get_emoji('kuning')} **Usage:**
+{get_emoji('kuning')} USAGE:
 • `.autojoin on` - Enable auto join
 • `.autojoin off` - Disable auto join"""
 
@@ -230,7 +230,7 @@ async def auto_vc_handler(event):
         auto_vc_settings['enabled'] = True
         await save_settings()
 
-        success_msg = f"""{get_emoji('centang')} **Auto VC System Enabled**
+        success_msg = f"""{get_emoji('centang')} AUTO VC SYSTEM ENABLED
 
 {get_emoji('aktif')} Clone mode: Active
 {get_emoji('utama')} Stealth mode: Enabled
@@ -248,7 +248,7 @@ async def auto_vc_handler(event):
             if vc_status[chat_id].get('auto_joined', False):
                 await auto_leave_vc(event.client, chat_id, "system_disabled")
 
-        success_msg = f"""{get_emoji('kuning')} **Auto VC System Disabled**
+        success_msg = f"""{get_emoji('kuning')} AUTO VC SYSTEM DISABLED
 
 {get_emoji('merah')} All auto joins stopped
 {get_emoji('centang')} Left all voice chats"""
@@ -261,7 +261,7 @@ async def auto_vc_handler(event):
             auto_vc_settings['auto_leave_delay'] = delay
             await save_settings()
 
-            success_msg = f"""{get_emoji('centang')} **Auto Leave Delay Updated**
+            success_msg = f"""{get_emoji('centang')} AUTO LEAVE DELAY UPDATED
 
 {get_emoji('proses')} New delay: {delay} seconds"""
 
@@ -273,27 +273,27 @@ async def auto_vc_handler(event):
         signature = f"{get_emoji('utama')}{get_emoji('adder1')}{get_emoji('petir')}"
         status = "enabled" if auto_vc_settings['enabled'] else "disabled"
 
-        info_msg = f"""**{signature} Auto VC System**
+        info_msg = f"""{SIGNATURE} AUTO VC SYSTEM
 
-{get_emoji('aktif')} **Status:** {status}
-{get_emoji('utama')} **Clone Mode:** {auto_vc_settings['clone_mode']}
-{get_emoji('proses')} **Stealth Mode:** {auto_vc_settings['stealth_mode']}
-{get_emoji('centang')} **Auto Groups:** {len(auto_vc_settings['auto_join_groups'])}
-{get_emoji('loading')} **Auto Leave:** {auto_vc_settings['auto_leave_delay']}s
+{get_emoji('aktif')} STATUS: {status}
+{get_emoji('utama')} CLONE MODE: {auto_vc_settings['clone_mode']}
+{get_emoji('proses')} STEALTH MODE: {auto_vc_settings['stealth_mode']}
+{get_emoji('centang')} AUTO GROUPS: {len(auto_vc_settings['auto_join_groups'])}
+{get_emoji('loading')} AUTO LEAVE: {auto_vc_settings['auto_leave_delay']}s
 
-{get_emoji('centang')} **Commands:**
+{get_emoji('centang')} COMMANDS:
 • `.autovc on/off` - Enable/disable system
 • `.autovc delay <seconds>` - Set auto leave delay
 • `.autojoin on/off` - Enable for current group
 • `.vcstatus` - Show detailed status
 
-{get_emoji('aktif')} **Features:**
+{get_emoji('aktif')} FEATURES:
 • Clone account voice chat
 • Stealth mode (muted join)
 • Auto leave timer
 • Group-specific settings
 
-**By Vzoel Fox's Assistant**"""
+BY VZOEL FOX'S ASSISTANT"""
 
         msg = await event.edit(info_msg)
 
@@ -337,7 +337,7 @@ async def manual_join_handler(event):
     success = await auto_join_vc(event.client, chat_id, stealth=True)
 
     if success:
-        success_msg = f"""{get_emoji('centang')} **Voice Chat Joined - Clone Mode**
+        success_msg = f"""{get_emoji('centang')} VOICE CHAT JOINED - CLONE MODE
 
 {get_emoji('aktif')} Mode: Stealth Clone
 {get_emoji('utama')} Audio: Muted (Silent)
@@ -426,47 +426,47 @@ async def vc_status_handler(event):
 
         auto_join_enabled = chat_id in auto_vc_settings['auto_join_groups']
 
-        status_text = f"""**{signature} Voice Chat Status**
+        status_text = f"""{SIGNATURE} VOICE CHAT STATUS
 
-{get_emoji('utama')} **System Status:**
+{get_emoji('utama')} SYSTEM STATUS:
 • PyTgCalls: {pytgcalls_status}
 • Auto VC: {system_status}
 • Active VCs: {active_vcs}
 • Auto Groups: {auto_groups}
 
-{get_emoji('aktif')} **Current Group:**
+{get_emoji('aktif')} CURRENT GROUP:
 • Connection: {vc_connection}
 • Join Mode: {join_mode}
 • Auto Join: {'Enabled' if auto_join_enabled else 'Disabled'}
 • Auto Leave: {auto_vc_settings['auto_leave_delay']}s
 
-{get_emoji('centang')} **Commands:**
+{get_emoji('centang')} COMMANDS:
 • `.joinvc` - Join in clone mode
 • `.leavevc` - Leave voice chat
 • `.autojoin on/off` - Auto join this group
 • `.autovc on/off` - Enable/disable system
 
-**By Vzoel Fox's Assistant**"""
+BY VZOEL FOX'S ASSISTANT"""
     else:
-        status_text = f"""**{signature} Voice Chat System**
+        status_text = f"""{SIGNATURE} VOICE CHAT SYSTEM
 
-{get_emoji('utama')} **Global Status:**
+{get_emoji('utama')} GLOBAL STATUS:
 • PyTgCalls: {pytgcalls_status}
 • Auto VC: {system_status}
 • Active VCs: {active_vcs}
 • Auto Groups: {auto_groups}
 • Auto Leave: {auto_vc_settings['auto_leave_delay']}s
 
-{get_emoji('aktif')} **Features:**
+{get_emoji('aktif')} FEATURES:
 • Clone mode voice chat
 • Stealth joining (muted)
 • Auto join/leave system
 • Group-specific settings
 
-{get_emoji('centang')} **Setup:**
+{get_emoji('centang')} SETUP:
 Use `.vcinstall` for installation guide
 
-**By Vzoel Fox's Assistant**"""
+BY VZOEL FOX'S ASSISTANT"""
 
     msg = await event.edit(status_text)
     if vzoel_client:

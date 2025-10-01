@@ -60,18 +60,18 @@ async def set_token_handler(event):
         global vzoel_client, git_manager
 
         if not git_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         token = event.pattern_match.group(1).strip()
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Configuring GitHub token**
+        processing_msg = f"""{get_emoji('loading')} CONFIGURING GITHUB TOKEN
 
 {get_emoji('proses')} Validating token
 {get_emoji('telegram')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -85,7 +85,7 @@ async def set_token_handler(event):
         success = git_manager.set_token(token)
 
         if success:
-            response = f"""{get_emoji('centang')} **GitHub token configured**
+            response = f"""{get_emoji('centang')} GITHUB TOKEN CONFIGURED
 
 {get_emoji('aktif')} Token saved securely
 {get_emoji('telegram')} Ready for push/pull operations
@@ -93,14 +93,14 @@ async def set_token_handler(event):
 {get_emoji('proses')} Use .push to push changes
 {get_emoji('biru')} Use .pull to pull updates
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
         else:
-            response = f"""{get_emoji('merah')} **Token configuration failed**
+            response = f"""{get_emoji('merah')} TOKEN CONFIGURATION FAILED
 
 {get_emoji('kuning')} Please try again
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         # Send as new message (original deleted)
         await event.respond(response)
@@ -116,7 +116,7 @@ async def push_handler(event):
         global vzoel_client, git_manager
 
         if not git_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Get custom message if provided
@@ -126,13 +126,13 @@ async def push_handler(event):
             custom_message = match.strip()
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Pushing to GitHub**
+        processing_msg = f"""{get_emoji('loading')} PUSHING TO GITHUB
 
 {get_emoji('proses')} Checking repository status
 {get_emoji('telegram')} Committing changes
 {get_emoji('aktif')} Preparing push
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -141,7 +141,7 @@ async def push_handler(event):
 
         if success:
             status = git_manager.get_status()
-            response = f"""{get_emoji('centang')} **Push successful**
+            response = f"""{get_emoji('centang')} PUSH SUCCESSFUL
 
 {get_emoji('aktif')} Branch: {status['branch']}
 {get_emoji('telegram')} Last commit: {status['last_commit']}
@@ -149,10 +149,10 @@ async def push_handler(event):
 
 {get_emoji('biru')} Your code is now on GitHub
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
         else:
-            response = f"""{get_emoji('merah')} **Push failed**
+            response = f"""{get_emoji('merah')} PUSH FAILED
 
 {get_emoji('kuning')} Error: {message}
 
@@ -161,8 +161,8 @@ async def push_handler(event):
 • Pull latest changes first (.pull)
 • Check repository permissions
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 
@@ -177,17 +177,17 @@ async def pull_handler(event):
         global vzoel_client, git_manager
 
         if not git_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Pulling from GitHub**
+        processing_msg = f"""{get_emoji('loading')} PULLING FROM GITHUB
 
 {get_emoji('proses')} Fetching remote changes
 {get_emoji('telegram')} Checking for conflicts
 {get_emoji('aktif')} Applying updates
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -196,7 +196,7 @@ async def pull_handler(event):
 
         if success:
             status = git_manager.get_status()
-            response = f"""{get_emoji('centang')} **Pull successful**
+            response = f"""{get_emoji('centang')} PULL SUCCESSFUL
 
 {get_emoji('aktif')} Branch: {status['branch']}
 {get_emoji('telegram')} Last commit: {status['last_commit']}
@@ -204,10 +204,10 @@ async def pull_handler(event):
 
 {get_emoji('biru')} Your code is now up to date
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
         else:
-            response = f"""{get_emoji('merah')} **Pull failed**
+            response = f"""{get_emoji('merah')} PULL FAILED
 
 {get_emoji('kuning')} Error: {message}
 
@@ -216,8 +216,8 @@ async def pull_handler(event):
 • Resolve merge conflicts manually
 • Check repository permissions
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 
@@ -232,15 +232,15 @@ async def git_status_handler(event):
         global vzoel_client, git_manager
 
         if not git_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Git manager not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Checking repository status**
+        processing_msg = f"""{get_emoji('loading')} CHECKING REPOSITORY STATUS
 
 {get_emoji('proses')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -248,44 +248,44 @@ async def git_status_handler(event):
         info = git_manager.get_git_info()
 
         if 'error' in info:
-            response = f"""{get_emoji('merah')} **Status check failed**
+            response = f"""{get_emoji('merah')} STATUS CHECK FAILED
 
 {get_emoji('kuning')} Error: {info['error']}
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
             # Build status message
             has_changes_icon = get_emoji('centang') if info['has_changes'] else get_emoji('kuning')
             changes_status = "Yes" if info['has_changes'] else "No"
             token_status = "Configured" if info['has_token'] else "Not configured"
 
-            response = f"""{get_emoji('utama')} **Repository Status**
+            response = f"""{get_emoji('utama')} REPOSITORY STATUS
 
-{get_emoji('proses')} **Branch:** {info['branch']}
-{get_emoji('telegram')} **Remote:** {info['remote']}
-{get_emoji('aktif')} **Total commits:** {info['total_commits']}
+{get_emoji('proses')} BRANCH: {info['branch']}
+{get_emoji('telegram')} REMOTE: {info['remote']}
+{get_emoji('aktif')} TOTAL COMMITS: {info['total_commits']}
 
-{get_emoji('biru')} **Changes:**
+{get_emoji('biru')} CHANGES:
 • Modified files: {info['modified']}
 • Untracked files: {info['untracked']}
 • Has changes: {changes_status}
 
-{get_emoji('kuning')} **Sync Status:**
+{get_emoji('kuning')} SYNC STATUS:
 • Commits ahead: {info['commits_ahead']}
 • Commits behind: {info['commits_behind']}
 
-{get_emoji('centang')} **Last Commit:**
+{get_emoji('centang')} LAST COMMIT:
 {info['last_commit']}
 
-{has_changes_icon} **GitHub Token:** {token_status}
+{has_changes_icon} GITHUB TOKEN: {token_status}
 
-{get_emoji('adder1')} **Available Commands:**
+{get_emoji('adder1')} AVAILABLE COMMANDS:
 • .push - Push changes
 • .pull - Pull updates
 • .settoken - Configure token
 
-**Vzoel Fox's Lutpan** GitHub Integration
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN GitHub Integration
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 

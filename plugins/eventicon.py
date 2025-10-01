@@ -643,12 +643,12 @@ async def custom_event_handler(event):
             result_text += f"   └ Colors: {', '.join(template['colors'][:2])}\n\n"
 
         result_text += f"{get_emoji('telegram')} Featured Custom Events:\n\n"
-        result_text += f"🦊 **Vzoel Fox's Branding** - Premium VZL2 branding dengan fox logo\n"
-        result_text += f"💎 **VZL2 Premium** - Premium user badge decoration\n"
-        result_text += f"👨‍💻 **Developer Mode** - Coding/developer themed overlay\n"
-        result_text += f"🎮 **Gaming Mode** - Gaming controller decoration\n"
-        result_text += f"🎵 **Music Lover** - Musical notes scattered design\n"
-        result_text += f"🎂 **Birthday** - Birthday cake celebration\n\n"
+        result_text += f"🦊 VZOEL FOX'S BRANDING - Premium VZL2 branding dengan fox logo\n"
+        result_text += f"💎 VZL2 PREMIUM - Premium user badge decoration\n"
+        result_text += f"👨‍💻 DEVELOPER MODE - Coding/developer themed overlay\n"
+        result_text += f"🎮 GAMING MODE - Gaming controller decoration\n"
+        result_text += f"🎵 MUSIC LOVER - Musical notes scattered design\n"
+        result_text += f"🎂 BIRTHDAY - Birthday cake celebration\n\n"
 
         result_text += f"{get_emoji('aktif')} Usage Examples:\n"
         result_text += f".setevent vzoel - Vzoel Fox's branding\n"

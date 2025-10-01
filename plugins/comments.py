@@ -135,12 +135,12 @@ class VzoelComments:
             }
         }
     
-    def get(self, category: str, key: str, **kwargs) -> str:
-        """Get comment with optional formatting"""
-        try:
-            comment = self.comments[category][key]
-            if kwargs:
-                return comment.format(**kwargs)
+    def get(self, category: str, key: str, KWARGS) -> STR:
+        """GET COMMENT WITH OPTIONAL FORMATTING"""
+        TRY:
+            COMMENT = SELF.COMMENTS[CATEGORY][KEY]
+            IF KWARGS:
+                RETURN COMMENT.FORMAT(kwargs)
             return comment
         except KeyError:
             return f"❓ Comment tidak ditemukan: {category}.{key}"
@@ -157,12 +157,12 @@ class VzoelComments:
         """Get error comment"""
         return self.get("error", key)
     
-    def get_command(self, command: str, key: str, **kwargs) -> str:
-        """Get command-specific comment"""
-        try:
-            comment = self.comments["commands"][command][key]
-            if kwargs:
-                return comment.format(**kwargs)
+    def get_command(self, command: str, key: str, KWARGS) -> STR:
+        """GET COMMAND-SPECIFIC COMMENT"""
+        TRY:
+            COMMENT = SELF.COMMENTS["COMMANDS"][COMMAND][KEY]
+            IF KWARGS:
+                RETURN COMMENT.FORMAT(kwargs)
             return comment
         except KeyError:
             return f"❓ Command comment tidak ditemukan: {command}.{key}"

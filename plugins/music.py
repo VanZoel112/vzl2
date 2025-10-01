@@ -83,12 +83,12 @@ async def play_music_handler(event):
         query = event.pattern_match.group(1).strip()
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Processing music request**
+        processing_msg = f"""{get_emoji('loading')} PROCESSING MUSIC REQUEST
 
 {get_emoji('proses')} Searching YouTube
 {get_emoji('telegram')} Query: {query}
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -106,7 +106,7 @@ async def play_music_handler(event):
             if result.get('streaming'):
                 # Streaming to voice chat
                 if result.get('queued'):
-                    response = f"""{get_emoji('centang')} **Added to queue**
+                    response = f"""{get_emoji('centang')} ADDED TO QUEUE
 
 {get_emoji('proses')} {song['title']}
 {get_emoji('aktif')} Duration: {duration}
@@ -114,10 +114,10 @@ async def play_music_handler(event):
 
 {get_emoji('telegram')} Playing next after current song
 
-**Vzoel Fox's Lutpan** Music System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Music System
+CONTACT: @VZLfxs"""
                 else:
-                    response = f"""{get_emoji('utama')} **Now streaming**
+                    response = f"""{get_emoji('utama')} NOW STREAMING
 
 {get_emoji('proses')} {song['title']}
 {get_emoji('aktif')} Duration: {duration}
@@ -125,14 +125,14 @@ async def play_music_handler(event):
 
 {get_emoji('telegram')} Controls: .pause .resume .stop
 
-**Vzoel Fox's Lutpan** Music System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Music System
+CONTACT: @VZLfxs"""
             else:
                 # Downloaded locally
                 file_path = result.get('file_path', '')
                 file_name = Path(file_path).name if file_path else 'Unknown'
 
-                response = f"""{get_emoji('centang')} **Download complete**
+                response = f"""{get_emoji('centang')} DOWNLOAD COMPLETE
 
 {get_emoji('proses')} {song['title']}
 {get_emoji('aktif')} Duration: {duration}
@@ -140,8 +140,8 @@ async def play_music_handler(event):
 
 {get_emoji('telegram')} Saved to: downloads/musik/
 
-**Vzoel Fox's Lutpan** Music System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Music System
+CONTACT: @VZLfxs"""
 
                 # Send file if downloaded
                 if file_path and os.path.exists(file_path):
@@ -149,7 +149,7 @@ async def play_music_handler(event):
                         await event.client.send_file(
                             event.chat_id,
                             file_path,
-                            caption=f"**{song['title']}**\n\n**Vzoel Fox's Lutpan**\n**Contact:** @VZLfxs",
+                            caption=f"{song['title']}\n\nVZOEL FOX'S LUTPAN\nCONTACT: @VZLfxs",
                             reply_to=event.id
                         )
                     except Exception as e:
@@ -158,14 +158,14 @@ async def play_music_handler(event):
         else:
             # Error
             error_msg = result.get('error', 'Unknown error')
-            response = f"""{get_emoji('merah')} **Request failed**
+            response = f"""{get_emoji('merah')} REQUEST FAILED
 
 {get_emoji('kuning')} Error: {error_msg}
 
 {get_emoji('aktif')} Please try again or check query
 
-**Vzoel Fox's Lutpan** Music System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Music System
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 
@@ -186,13 +186,13 @@ async def download_song_handler(event):
         query = event.pattern_match.group(1).strip()
 
         # Processing
-        processing_msg = f"""{get_emoji('loading')} **Downloading song**
+        processing_msg = f"""{get_emoji('loading')} DOWNLOADING SONG
 
 {get_emoji('proses')} Searching YouTube
 {get_emoji('telegram')} Query: {query}
 {get_emoji('aktif')} Preparing download
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -200,17 +200,17 @@ async def download_song_handler(event):
         song_info = await music_manager.search_song(query)
 
         if not song_info:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Song not found\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Song not found\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Update status
-        downloading_msg = f"""{get_emoji('loading')} **Downloading**
+        downloading_msg = f"""{get_emoji('loading')} DOWNLOADING
 
 {get_emoji('proses')} {song_info['title']}
 {get_emoji('aktif')} Extracting MP3 (192kbps)
 {get_emoji('telegram')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, downloading_msg)
 
@@ -221,15 +221,15 @@ async def download_song_handler(event):
             duration = format_duration(song_info.get('duration', 0))
             file_name = Path(file_path).name
 
-            response = f"""{get_emoji('centang')} **Download complete**
+            response = f"""{get_emoji('centang')} DOWNLOAD COMPLETE
 
 {get_emoji('proses')} {song_info['title']}
 {get_emoji('aktif')} Duration: {duration}
 {get_emoji('biru')} File: {file_name}
 {get_emoji('kuning')} Quality: MP3 192kbps
 
-**Vzoel Fox's Lutpan** Music System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Music System
+CONTACT: @VZLfxs"""
 
             await safe_edit_premium(event, response)
 
@@ -238,7 +238,7 @@ async def download_song_handler(event):
                 await event.client.send_file(
                     event.chat_id,
                     file_path,
-                    caption=f"**{song_info['title']}**\n\n**Vzoel Fox's Lutpan**\n**Contact:** @VZLfxs",
+                    caption=f"{song_info['title']}\n\nVZOEL FOX'S LUTPAN\nCONTACT: @VZLfxs",
                     attributes=[],
                     reply_to=event.id
                 )
@@ -246,7 +246,7 @@ async def download_song_handler(event):
                 print(f"Send file error: {e}")
 
         else:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Download failed\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Download failed\n\nVZOEL FOX'S LUTPAN")
 
         if vzoel_client:
             vzoel_client.increment_command_count()
@@ -264,17 +264,17 @@ async def pause_handler(event):
         success = await music_manager.pause_stream(event.chat_id)
 
         if success:
-            response = f"""{get_emoji('centang')} **Playback paused**
+            response = f"""{get_emoji('centang')} PLAYBACK PAUSED
 
 {get_emoji('aktif')} Use .resume to continue
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('kuning')} **Not playing**
+            response = f"""{get_emoji('kuning')} NOT PLAYING
 
 {get_emoji('telegram')} No active playback to pause
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -294,17 +294,17 @@ async def resume_handler(event):
         success = await music_manager.resume_stream(event.chat_id)
 
         if success:
-            response = f"""{get_emoji('centang')} **Playback resumed**
+            response = f"""{get_emoji('centang')} PLAYBACK RESUMED
 
 {get_emoji('aktif')} Now playing
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('kuning')} **Not paused**
+            response = f"""{get_emoji('kuning')} NOT PAUSED
 
 {get_emoji('telegram')} No paused playback to resume
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -326,18 +326,18 @@ async def stop_handler(event):
 
         if success or current:
             track_name = current.get('title', 'Unknown') if current else 'Unknown'
-            response = f"""{get_emoji('centang')} **Playback stopped**
+            response = f"""{get_emoji('centang')} PLAYBACK STOPPED
 
 {get_emoji('proses')} Last track: {track_name}
 {get_emoji('aktif')} Queue cleared
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('kuning')} **Not playing**
+            response = f"""{get_emoji('kuning')} NOT PLAYING
 
 {get_emoji('telegram')} No active playback
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -358,21 +358,21 @@ async def queue_handler(event):
         queue = music_manager.get_queue(event.chat_id)
 
         if not current and not queue:
-            response = f"""{get_emoji('kuning')} **Queue empty**
+            response = f"""{get_emoji('kuning')} QUEUE EMPTY
 
 {get_emoji('telegram')} Use .play to add songs
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('utama')} **Music Queue**\n\n"""
+            response = f"""{get_emoji('utama')} MUSIC QUEUE\n\n"""
 
             if current:
                 duration = format_duration(current.get('duration', 0))
-                response += f"""{get_emoji('proses')} **Now playing:**
+                response += f"""{get_emoji('proses')} NOW PLAYING:
 {current.get('title', 'Unknown')} ({duration})\n\n"""
 
             if queue:
-                response += f"""{get_emoji('aktif')} **Queue ({len(queue)} songs):**\n"""
+                response += f"""{get_emoji('aktif')} QUEUE ({len(queue)} SONGS):\n"""
                 for i, song in enumerate(queue[:5], 1):
                     duration = format_duration(song.get('duration', 0))
                     response += f"{i}. {song.get('title', 'Unknown')} ({duration})\n"
@@ -380,7 +380,7 @@ async def queue_handler(event):
                 if len(queue) > 5:
                     response += f"\n{get_emoji('telegram')} +{len(queue) - 5} more songs\n"
 
-            response += f"\n**Vzoel Fox's Lutpan** Music System\n**Contact:** @VZLfxs"
+            response += f"\nVZOEL FOX'S LUTPAN Music System\nCONTACT: @VZLfxs"
 
         await safe_edit_premium(event, response)
 

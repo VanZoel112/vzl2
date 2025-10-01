@@ -127,7 +127,7 @@ async def perform_limit_check(event, msg):
 {get_emoji('telegram')} Durasi: {account_status['duration']}
 {get_emoji('proses')} Pesan Bot: {account_status['bot_message']}
 
-{get_emoji('kuning')} **Saran:**
+{get_emoji('kuning')} SARAN:
 • Tunggu hingga pembatasan berakhir
 • Kurangi aktivitas spam
 • Gunakan delay lebih lama antar pesan
@@ -150,9 +150,9 @@ Vzoel Fox's Limit Checker"""
 • Account dalam kondisi baik
 • Siap untuk broadcast/gcast
 
-{get_emoji('proses')} **Bot Message:** {account_status['bot_message']}
+{get_emoji('proses')} BOT MESSAGE: {account_status['bot_message']}
 
-**Vzoel Fox's Aman!**"""
+VZOEL FOX'S AMAN!"""
             await safe_edit_premium(msg, safe_msg)
         else:
             # Unclear response or other status
@@ -162,12 +162,12 @@ Vzoel Fox's Limit Checker"""
 {get_emoji('proses')} Respons Bot: {account_status['bot_message']}
 {get_emoji('telegram')} Saran: Coba lagi dalam beberapa menit
 
-{get_emoji('utama')} **Kemungkinan:**
+{get_emoji('utama')} KEMUNGKINAN:
 • @spambot sedang maintenance
 • Koneksi tidak stabil
 • Respons bot tidak standar
 
-**Vzoel Fox's Limit Checker**"""
+VZOEL FOX'S LIMIT CHECKER"""
             await safe_edit_premium(msg, unclear_msg)
     
     except Exception as e:

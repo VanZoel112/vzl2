@@ -269,7 +269,7 @@ async def monitor_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} GROUP ONLY!\n\n"
             f"{get_emoji('kuning')} Monitor commands only work in groups.\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
@@ -280,35 +280,35 @@ async def monitor_handler(event):
 
     if not target_user:
         await safe_send_premium(event,
-            f"{get_emoji('utama')} **USER ACTIVITY MONITOR**\n\n"
-            f"{get_emoji('merah')} **No target specified!**\n\n"
-            f"{get_emoji('utama')} **Usage:**\n"
+            f"{get_emoji('utama')} USER ACTIVITY MONITOR\n\n"
+            f"{get_emoji('merah')} NO TARGET SPECIFIED!\n\n"
+            f"{get_emoji('utama')} USAGE:\n"
             f"  • `.monitor @username` - Monitor by username\n"
             f"  • Reply to user + `.monitor` - Monitor by reply\n\n"
-            f"{get_emoji('centang')} **Examples:**\n"
+            f"{get_emoji('centang')} EXAMPLES:\n"
             f"  • `.monitor @johndoe`\n"
             f"  • Reply to message + `.monitor`\n\n"
-            f"{get_emoji('loading')} **Note:** Tracking starts after first command use\n\n"
+            f"{get_emoji('loading')} NOTE: Tracking starts after first command use\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
         return
 
     monitoring_msg = await safe_send_premium(event,
-        f"{get_emoji('loading')} **Analyzing User Activity...**\n\n"
-        f"{get_emoji('proses')} **Target:** {target_user.first_name}\n"
-        f"{get_emoji('loading')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n"
-        f"{get_emoji('kuning')} **Processing statistics...**"
+        f"{get_emoji('loading')} ANALYZING USER ACTIVITY...\n\n"
+        f"{get_emoji('proses')} TARGET: {target_user.first_name}\n"
+        f"{get_emoji('loading')} USERNAME: `@{target_user.username if target_user.username else 'No username'}`\n"
+        f"{get_emoji('kuning')} PROCESSING STATISTICS..."
     )
 
     stats = monitor_system.get_user_statistics(target_user.id, event.chat_id)
 
     if not stats:
         await safe_edit_premium(monitoring_msg,
-            f"{get_emoji('merah')} **No Activity Data!**\n\n"
+            f"{get_emoji('merah')} NO ACTIVITY DATA!\n\n"
             f"{get_emoji('kuning')} User has not sent any tracked messages yet\n"
             f"{get_emoji('loading')} Monitoring will start from now on\n\n"
-            f"{get_emoji('proses')} **Target User:** {target_user.first_name}\n"
-            f"{get_emoji('aktif')} **Username:** `@{target_user.username if target_user.username else 'No username'}`\n\n"
+            f"{get_emoji('proses')} TARGET USER: {target_user.first_name}\n"
+            f"{get_emoji('aktif')} USERNAME: `@{target_user.username if target_user.username else 'No username'}`\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
         return
@@ -319,7 +319,7 @@ async def monitor_handler(event):
     media_breakdown = []
     for media_type, percentage in stats['media_percentages'].items():
         if percentage > 0:
-            media_breakdown.append(f"`{media_type.title()}`: **{percentage}%**")
+            media_breakdown.append(f"`{media_type.title()}`: {PERCENTAGE}%")
 
     media_text = " • ".join(media_breakdown[:4])  # Show top 4
     if len(media_breakdown) > 4:
@@ -335,26 +335,26 @@ async def monitor_handler(event):
             preview += f": {msg['text_preview'][:25]}..."
         recent_preview.append(preview)
 
-    stats_text = f"{get_emoji('utama')} **USER ACTIVITY STATISTICS**\n\n"
-    stats_text += f"{get_emoji('aktif')} **User Info:**\n"
-    stats_text += f"  • Name: **{user_info.get('first_name', 'Unknown')}**\n"
+    stats_text = f"{get_emoji('utama')} USER ACTIVITY STATISTICS\n\n"
+    stats_text += f"{get_emoji('aktif')} USER INFO:\n"
+    stats_text += f"  • Name: {USER_INFO.GET('FIRST_NAME', 'UNKNOWN')}\n"
     stats_text += f"  • Username: `@{user_info.get('username')}` " if user_info.get('username') else "  • Username: `No username`\n"
     stats_text += f"  • Premium: `{'Yes' if user_info.get('is_premium') else 'No'}`\n\n"
 
-    stats_text += f"{get_emoji('centang')} **Activity Summary:**\n"
-    stats_text += f"  • Total Messages: **{stats['total_messages']}**\n"
-    stats_text += f"  • Recent 7 Days: **{stats['recent_activity_7d']}** messages\n"
-    stats_text += f"  • Daily Average: **{stats['avg_messages_per_day']}** messages\n"
-    stats_text += f"  • Days Tracked: **{stats['days_tracked']}** days\n\n"
+    stats_text += f"{get_emoji('centang')} ACTIVITY SUMMARY:\n"
+    stats_text += f"  • Total Messages: {STATS['TOTAL_MESSAGES']}\n"
+    stats_text += f"  • Recent 7 Days: {STATS['RECENT_ACTIVITY_7D']} messages\n"
+    stats_text += f"  • Daily Average: {STATS['AVG_MESSAGES_PER_DAY']} messages\n"
+    stats_text += f"  • Days Tracked: {STATS['DAYS_TRACKED']} days\n\n"
 
-    stats_text += f"{get_emoji('proses')} **Activity Pattern:**\n"
-    stats_text += f"  • Most Active: **{stats['most_active_time'].title()}** time\n"
+    stats_text += f"{get_emoji('proses')} ACTIVITY PATTERN:\n"
+    stats_text += f"  • Most Active: {STATS['MOST_ACTIVE_TIME'].TITLE()} time\n"
     stats_text += f"  • Last Seen: `{datetime.fromisoformat(stats['last_seen']).strftime('%Y-%m-%d %H:%M')}`\n\n"
 
-    stats_text += f"{get_emoji('loading')} **Content Breakdown:**\n"
+    stats_text += f"{get_emoji('loading')} CONTENT BREAKDOWN:\n"
     stats_text += f"  {media_text}\n\n"
 
-    stats_text += f"{get_emoji('kuning')} **Recent Messages (Last 3):**\n"
+    stats_text += f"{get_emoji('kuning')} RECENT MESSAGES (LAST 3):\n"
     for preview in recent_preview:
         stats_text += f"  • {preview}\n"
 
@@ -373,7 +373,7 @@ async def stats_handler(event):
 
     if not (event.is_group or event.is_channel):
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **Group Only!**\n\n"
+            f"{get_emoji('merah')} GROUP ONLY!\n\n"
             f"{get_emoji('kuning')} Stats commands only work in groups.\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
@@ -384,7 +384,7 @@ async def stats_handler(event):
 
     if not target_user:
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **No target specified!**\n\n"
+            f"{get_emoji('merah')} NO TARGET SPECIFIED!\n\n"
             f"{get_emoji('loading')} Use `.stats @username` or reply + `.stats`\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
@@ -394,7 +394,7 @@ async def stats_handler(event):
 
     if not stats:
         await safe_send_premium(event,
-            f"{get_emoji('merah')} **No Data Available!**\n\n"
+            f"{get_emoji('merah')} NO DATA AVAILABLE!\n\n"
             f"{get_emoji('kuning')} User has not sent any tracked messages\n\n"
             f"{get_emoji('telegram')} VZL2 Monitor System"
         )
@@ -405,36 +405,36 @@ async def stats_handler(event):
     for media_type, count in stats['media_stats'].items():
         if count > 0:
             percentage = stats['media_percentages'].get(media_type, 0)
-            media_details.append(f"  • **{media_type.title()}:** `{count}` (**{percentage}%**)")
+            media_details.append(f"  • {MEDIA_TYPE.TITLE()}: `{count}` ({PERCENTAGE}%)")
 
     activity_details = []
     for time_period, count in stats['activity_patterns'].items():
         if count > 0:
             percentage = round((count / stats['total_messages']) * 100, 1)
-            activity_details.append(f"  • **{time_period.title()}:** `{count}` (**{percentage}%**)")
+            activity_details.append(f"  • {TIME_PERIOD.TITLE()}: `{count}` ({PERCENTAGE}%)")
 
-    detailed_text = f"{get_emoji('utama')} **DETAILED USER STATISTICS**\n\n"
-    detailed_text += f"{get_emoji('aktif')} **Target User:** **{stats['user_info']['first_name']}**\n\n"
+    detailed_text = f"{get_emoji('utama')} DETAILED USER STATISTICS\n\n"
+    detailed_text += f"{get_emoji('aktif')} TARGET USER: {STATS['USER_INFO']['FIRST_NAME']}\n\n"
 
-    detailed_text += f"{get_emoji('centang')} **Media Breakdown:**\n"
+    detailed_text += f"{get_emoji('centang')} MEDIA BREAKDOWN:\n"
     detailed_text += "\n".join(media_details[:6])  # Show max 6 types
     detailed_text += "\n\n"
 
-    detailed_text += f"{get_emoji('proses')} **Time Patterns:**\n"
+    detailed_text += f"{get_emoji('proses')} TIME PATTERNS:\n"
     detailed_text += "\n".join(activity_details)
     detailed_text += "\n\n"
 
-    detailed_text += f"{get_emoji('loading')} **Daily Activity (Last 7 Days):**\n"
+    detailed_text += f"{get_emoji('loading')} DAILY ACTIVITY (LAST 7 DAYS):\n"
     recent_days = sorted(stats['daily_stats'].items(), key=lambda x: x[0])[-7:]
     for date_str, count in recent_days:
         date_obj = datetime.fromisoformat(date_str + 'T00:00:00')
         day_name = date_obj.strftime('%a')
-        detailed_text += f"  • **{day_name}** `{date_str[-5:]}`: **{count}** messages\n"
+        detailed_text += f"  • {DAY_NAME} `{date_str[-5:]}`: {COUNT} messages\n"
 
-    detailed_text += f"\n{get_emoji('kuning')} **Summary Metrics:**\n"
-    detailed_text += f"  • Average per day: **{stats['avg_messages_per_day']}**\n"
-    detailed_text += f"  • Peak activity: **{stats['most_active_time'].title()}**\n"
-    detailed_text += f"  • Tracking period: **{stats['days_tracked']}** days\n\n"
+    detailed_text += f"\n{get_emoji('kuning')} SUMMARY METRICS:\n"
+    detailed_text += f"  • Average per day: {STATS['AVG_MESSAGES_PER_DAY']}\n"
+    detailed_text += f"  • Peak activity: {STATS['MOST_ACTIVE_TIME'].TITLE()}\n"
+    detailed_text += f"  • Tracking period: {STATS['DAYS_TRACKED']} days\n\n"
 
     detailed_text += f"{get_emoji('telegram')} VZL2 Detailed Statistics"
 

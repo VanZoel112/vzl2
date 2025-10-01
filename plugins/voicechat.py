@@ -61,17 +61,17 @@ async def join_vc_handler(event):
         global vzoel_client, vc_manager
 
         if not vc_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**VZOEL ASSISTANT**\n**By Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\nVZOEL ASSISTANT\nBY VZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Joining voice chat**
+        processing_msg = f"""{get_emoji('loading')} JOINING VOICE CHAT
 
 {get_emoji('proses')} Connecting to voice chat
 {get_emoji('telegram')} Please wait
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**"""
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -79,7 +79,7 @@ async def join_vc_handler(event):
         success = await vc_manager.join_voice_chat(event.chat_id)
 
         if success:
-            response = f"""{get_emoji('centang')} **Joined voice chat**
+            response = f"""{get_emoji('centang')} JOINED VOICE CHAT
 
 {get_emoji('aktif')} Connected successfully
 {get_emoji('telegram')} Ready for streaming
@@ -87,11 +87,11 @@ async def join_vc_handler(event):
 {get_emoji('proses')} Use .play to stream music
 {get_emoji('kuning')} Use .leave to disconnect
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN
 ~2025 Vzoel Fox's Lutpan"""
         else:
-            response = f"""{get_emoji('merah')} **Join failed**
+            response = f"""{get_emoji('merah')} JOIN FAILED
 
 {get_emoji('kuning')} Possible reasons:
 • PyTgCalls not installed
@@ -100,8 +100,8 @@ async def join_vc_handler(event):
 
 {get_emoji('aktif')} Try .startvc to create VC first
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN
 ~2025 Vzoel Fox's Lutpan"""
 
         await safe_edit_premium(event, response)
@@ -117,17 +117,17 @@ async def leave_vc_handler(event):
         global vzoel_client, vc_manager
 
         if not vc_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**VZOEL ASSISTANT**\n**By Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\nVZOEL ASSISTANT\nBY VZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Leaving voice chat**
+        processing_msg = f"""{get_emoji('loading')} LEAVING VOICE CHAT
 
 {get_emoji('proses')} Disconnecting
 {get_emoji('telegram')} Please wait
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**"""
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -135,22 +135,22 @@ async def leave_vc_handler(event):
         success = await vc_manager.leave_voice_chat(event.chat_id)
 
         if success:
-            response = f"""{get_emoji('centang')} **Left voice chat**
+            response = f"""{get_emoji('centang')} LEFT VOICE CHAT
 
 {get_emoji('aktif')} Disconnected successfully
 
 {get_emoji('telegram')} Use .join to rejoin
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN
 ~2025 Vzoel Fox's Lutpan"""
         else:
-            response = f"""{get_emoji('kuning')} **Not in voice chat**
+            response = f"""{get_emoji('kuning')} NOT IN VOICE CHAT
 
 {get_emoji('telegram')} Use .join to connect first
 
-**VZOEL ASSISTANT**
-**By Vzoel Fox's Lutpan**"""
+VZOEL ASSISTANT
+BY VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, response)
 
@@ -165,16 +165,16 @@ async def join_leave_vc_handler(event):
         global vzoel_client, vc_manager
 
         if not vc_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Processing voice chat request**
+        processing_msg = f"""{get_emoji('loading')} PROCESSING VOICE CHAT REQUEST
 
 {get_emoji('proses')} Checking voice chat status
 {get_emoji('telegram')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -183,32 +183,32 @@ async def join_leave_vc_handler(event):
 
         if success:
             if action == 'joined':
-                response = f"""{get_emoji('centang')} **Joined voice chat**
+                response = f"""{get_emoji('centang')} JOINED VOICE CHAT
 
 {get_emoji('aktif')} Ready for streaming
 {get_emoji('telegram')} Use .play to stream music
 
 {get_emoji('proses')} Use .jlvc again to leave
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
             elif action == 'left':
-                response = f"""{get_emoji('centang')} **Left voice chat**
+                response = f"""{get_emoji('centang')} LEFT VOICE CHAT
 
 {get_emoji('aktif')} Disconnected successfully
 
 {get_emoji('telegram')} Use .jlvc to rejoin
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
             else:
-                response = f"""{get_emoji('kuning')} **Voice chat action completed**
+                response = f"""{get_emoji('kuning')} VOICE CHAT ACTION COMPLETED
 
 {get_emoji('telegram')} Status updated
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
         else:
-            response = f"""{get_emoji('merah')} **Voice chat operation failed**
+            response = f"""{get_emoji('merah')} VOICE CHAT OPERATION FAILED
 
 {get_emoji('kuning')} Possible reasons:
 • PyTgCalls not installed
@@ -217,8 +217,8 @@ async def join_leave_vc_handler(event):
 
 {get_emoji('aktif')} Try creating VC with .startvc
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 
@@ -233,21 +233,21 @@ async def start_vc_handler(event):
         global vzoel_client, vc_manager
 
         if not vc_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Check if in private chat
         if event.is_private:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} This command only works in groups\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('kuning')} This command only works in groups\n\nVZOEL FOX'S LUTPAN")
             return
 
         # Processing message
-        processing_msg = f"""{get_emoji('loading')} **Creating voice chat**
+        processing_msg = f"""{get_emoji('loading')} CREATING VOICE CHAT
 
 {get_emoji('proses')} Initializing voice chat
 {get_emoji('telegram')} Please wait
 
-**Vzoel Fox's Lutpan**"""
+VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
@@ -255,7 +255,7 @@ async def start_vc_handler(event):
         success = await vc_manager.create_voice_chat(event.chat_id)
 
         if success:
-            response = f"""{get_emoji('centang')} **Voice chat created**
+            response = f"""{get_emoji('centang')} VOICE CHAT CREATED
 
 {get_emoji('aktif')} Voice chat started successfully
 {get_emoji('telegram')} Ready for audio streaming
@@ -263,13 +263,13 @@ async def start_vc_handler(event):
 {get_emoji('proses')} Use .jlvc to join
 {get_emoji('biru')} Use .play to stream music
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
 
             # Auto-join after creation
             join_success, _ = await vc_manager.toggle_voice_chat(event.chat_id)
             if join_success:
-                response = f"""{get_emoji('centang')} **Voice chat created and joined**
+                response = f"""{get_emoji('centang')} VOICE CHAT CREATED AND JOINED
 
 {get_emoji('aktif')} Connected successfully
 {get_emoji('telegram')} Ready for audio streaming
@@ -277,11 +277,11 @@ async def start_vc_handler(event):
 {get_emoji('proses')} Use .play to stream music
 {get_emoji('kuning')} Use .jlvc to leave
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
 
         else:
-            response = f"""{get_emoji('merah')} **Voice chat creation failed**
+            response = f"""{get_emoji('merah')} VOICE CHAT CREATION FAILED
 
 {get_emoji('kuning')} Possible reasons:
 • Admin rights required
@@ -290,8 +290,8 @@ async def start_vc_handler(event):
 
 {get_emoji('aktif')} Check permissions and try again
 
-**Vzoel Fox's Lutpan** Voice Chat
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 
@@ -306,37 +306,37 @@ async def vc_info_handler(event):
         global vzoel_client, vc_manager
 
         if not vc_manager:
-            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\n**Vzoel Fox's Lutpan**")
+            await safe_edit_premium(event, f"{get_emoji('merah')} Voice chat system not initialized\n\nVZOEL FOX'S LUTPAN")
             return
 
         stats = vc_manager.get_stats()
         active_chats = vc_manager.get_active_chats()
         is_connected = vc_manager.is_in_voice_chat(event.chat_id)
 
-        response = f"""{get_emoji('utama')} **Voice Chat System Info**
+        response = f"""{get_emoji('utama')} VOICE CHAT SYSTEM INFO
 
-{get_emoji('centang')} **System Status:**
+{get_emoji('centang')} SYSTEM STATUS:
 • Available: {'Yes' if stats['available'] else 'No'}
 • Initialized: {'Yes' if stats['initialized'] else 'No'}
 • Active chats: {stats['active_chats']}
 
-{get_emoji('proses')} **Current Chat:**
+{get_emoji('proses')} CURRENT CHAT:
 • Connected: {'Yes' if is_connected else 'No'}
 • Chat ID: {event.chat_id}
 
-{get_emoji('aktif')} **Available Commands:**
+{get_emoji('aktif')} AVAILABLE COMMANDS:
 • .jlvc - Join/leave voice chat toggle
 • .startvc - Create new voice chat
 • .play - Stream music to VC
 • .vcinfo - Show this info
 
-{get_emoji('telegram')} **Architecture:**
+{get_emoji('telegram')} ARCHITECTURE:
 • Pure userbot mode
 • PyTgCalls integration
 • Direct voice chat control
 
-**Vzoel Fox's Lutpan** Voice Chat System
-**Contact:** @VZLfxs"""
+VZOEL FOX'S LUTPAN Voice Chat System
+CONTACT: @VZLfxs"""
 
         await safe_edit_premium(event, response)
 

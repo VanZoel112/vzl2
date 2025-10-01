@@ -31,45 +31,45 @@ async def session_status_handler(event):
         recovery_status = recovery_manager.get_recovery_status()
         
         # Build status message
-        status_msg = "🔍 **Session Status Report**\n\n"
+        status_msg = "🔍 SESSION STATUS REPORT\n\n"
         
         if check_result["valid"]:
             user_info = check_result.get("user_info", {})
-            status_msg += f"✅ **Session:** Valid\n"
-            status_msg += f"👤 **User:** {user_info.get('first_name', 'Unknown')}\n"
-            status_msg += f"🆔 **ID:** `{user_info.get('id', 'Unknown')}`\n"
-            status_msg += f"📞 **Username:** @{user_info.get('username') or 'None'}\n"
+            status_msg += f"✅ SESSION: Valid\n"
+            status_msg += f"👤 USER: {user_info.get('first_name', 'Unknown')}\n"
+            status_msg += f"🆔 ID: `{user_info.get('id', 'Unknown')}`\n"
+            status_msg += f"📞 USERNAME: @{user_info.get('username') or 'None'}\n"
         else:
-            status_msg += f"❌ **Session:** Invalid\n"
-            status_msg += f"🔧 **Error Type:** {check_result.get('error_type', 'Unknown')}\n"
-            status_msg += f"📝 **Error:** {check_result.get('error', 'Unknown')}\n"
+            status_msg += f"❌ SESSION: Invalid\n"
+            status_msg += f"🔧 ERROR TYPE: {check_result.get('error_type', 'Unknown')}\n"
+            status_msg += f"📝 ERROR: {check_result.get('error', 'Unknown')}\n"
             if check_result.get('needs_recovery'):
-                status_msg += f"⚠️ **Recovery Needed:** Yes\n"
+                status_msg += f"⚠️ RECOVERY NEEDED: Yes\n"
         
-        status_msg += f"\n📊 **Recovery Statistics:**\n"
-        status_msg += f"🔄 **Total Recoveries:** {recovery_status.get('total_recoveries', 0)}\n"
-        status_msg += f"📁 **Backup Count:** {recovery_status.get('backup_count', 0)}\n"
+        status_msg += f"\n📊 RECOVERY STATISTICS:\n"
+        status_msg += f"🔄 TOTAL RECOVERIES: {recovery_status.get('total_recoveries', 0)}\n"
+        status_msg += f"📁 BACKUP COUNT: {recovery_status.get('backup_count', 0)}\n"
         
         last_check = recovery_status.get('last_check')
         if last_check:
             try:
                 check_time = datetime.fromisoformat(last_check)
-                status_msg += f"🕐 **Last Check:** {check_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                status_msg += f"🕐 LAST CHECK: {check_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
             except:
-                status_msg += f"🕐 **Last Check:** {last_check}\n"
+                status_msg += f"🕐 LAST CHECK: {last_check}\n"
         
         last_recovery = recovery_status.get('last_recovery')
         if last_recovery:
             try:
                 recovery_time = datetime.fromisoformat(last_recovery)
-                status_msg += f"🔧 **Last Recovery:** {recovery_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
+                status_msg += f"🔧 LAST RECOVERY: {recovery_time.strftime('%Y-%m-%d %H:%M:%S')}\n"
             except:
-                status_msg += f"🔧 **Last Recovery:** {last_recovery}\n"
+                status_msg += f"🔧 LAST RECOVERY: {last_recovery}\n"
         
-        status_msg += f"\n📂 **Backup Directory:** `{recovery_status.get('backup_dir', 'Unknown')}`\n"
+        status_msg += f"\n📂 BACKUP DIRECTORY: `{recovery_status.get('backup_dir', 'Unknown')}`\n"
         
         if not check_result["valid"] and check_result.get('needs_recovery'):
-            status_msg += f"\n🚨 **Action Required:**\n"
+            status_msg += f"\n🚨 ACTION REQUIRED:\n"
             status_msg += f"Run: `python session_recovery.py`"
         
         await event.edit(status_msg)
@@ -97,17 +97,17 @@ async def session_check_handler(event):
         
         if check_result["valid"]:
             user_info = check_result.get("user_info", {})
-            msg = f"✅ **Session Valid**\n\n"
-            msg += f"👤 **User:** {user_info.get('first_name', 'Unknown')}\n"
-            msg += f"🆔 **ID:** `{user_info.get('id', 'Unknown')}`\n"
-            msg += f"📞 **Username:** @{user_info.get('username') or 'None'}\n"
-            msg += f"🕐 **Checked:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            msg = f"✅ SESSION VALID\n\n"
+            msg += f"👤 USER: {user_info.get('first_name', 'Unknown')}\n"
+            msg += f"🆔 ID: `{user_info.get('id', 'Unknown')}`\n"
+            msg += f"📞 USERNAME: @{user_info.get('username') or 'None'}\n"
+            msg += f"🕐 CHECKED: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         else:
-            msg = f"❌ **Session Invalid**\n\n"
-            msg += f"🔧 **Error Type:** {check_result.get('error_type', 'Unknown')}\n"
-            msg += f"📝 **Error:** {check_result.get('error', 'Unknown')}\n"
+            msg = f"❌ SESSION INVALID\n\n"
+            msg += f"🔧 ERROR TYPE: {check_result.get('error_type', 'Unknown')}\n"
+            msg += f"📝 ERROR: {check_result.get('error', 'Unknown')}\n"
             if check_result.get('needs_recovery'):
-                msg += f"\n⚠️ **Recovery needed!**\n"
+                msg += f"\n⚠️ RECOVERY NEEDED!\n"
                 msg += f"Run: `python session_recovery.py`"
         
         await event.edit(msg)
@@ -136,12 +136,12 @@ async def session_backup_handler(event):
         if success:
             # Get backup info
             recovery_status = recovery_manager.get_recovery_status()
-            msg = f"✅ **Session Backup Created**\n\n"
-            msg += f"📁 **Backup Count:** {recovery_status.get('backup_count', 0)}\n"
-            msg += f"📂 **Backup Directory:** `{recovery_status.get('backup_dir', 'Unknown')}`\n"
-            msg += f"🕐 **Created:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            msg = f"✅ SESSION BACKUP CREATED\n\n"
+            msg += f"📁 BACKUP COUNT: {recovery_status.get('backup_count', 0)}\n"
+            msg += f"📂 BACKUP DIRECTORY: `{recovery_status.get('backup_dir', 'Unknown')}`\n"
+            msg += f"🕐 CREATED: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         else:
-            msg = f"❌ **Backup Failed**\n\nNo session files found to backup"
+            msg = f"❌ BACKUP FAILED\n\nNo session files found to backup"
         
         await event.edit(msg)
         
@@ -153,32 +153,32 @@ async def session_backup_handler(event):
 async def session_recovery_info_handler(event):
     """Show session recovery information and instructions"""
     try:
-        msg = f"🔧 **Session Recovery Guide**\n\n"
-        msg += f"**When to use recovery:**\n"
+        msg = f"🔧 SESSION RECOVERY GUIDE\n\n"
+        msg += f"WHEN TO USE RECOVERY:\n"
         msg += f"• Session expired/revoked errors\n"
         msg += f"• AUTH_KEY_UNREGISTERED errors\n"
         msg += f"• Unauthorized access errors\n"
         msg += f"• Bot fails to start due to session issues\n\n"
         
-        msg += f"**Recovery methods:**\n"
-        msg += f"1. **Interactive Recovery:**\n"
+        msg += f"RECOVERY METHODS:\n"
+        msg += f"1. INTERACTIVE RECOVERY:\n"
         msg += f"   `python session_recovery.py`\n\n"
         
-        msg += f"2. **Check session status:**\n"
+        msg += f"2. CHECK SESSION STATUS:\n"
         msg += f"   `.session` - Full status report\n"
         msg += f"   `.sessioncheck` - Quick validity check\n\n"
         
-        msg += f"3. **Manual backup:**\n"
+        msg += f"3. MANUAL BACKUP:\n"
         msg += f"   `.sessionbackup` - Create session backup\n\n"
         
-        msg += f"**What recovery does:**\n"
+        msg += f"WHAT RECOVERY DOES:\n"
         msg += f"• ✅ Backs up current session\n"
         msg += f"• ✅ Removes expired session files\n"
         msg += f"• ✅ Creates new session interactively\n"
         msg += f"• ✅ Updates .env file automatically\n"
         msg += f"• ✅ Maintains session history\n\n"
         
-        msg += f"**Recovery process:**\n"
+        msg += f"RECOVERY PROCESS:\n"
         msg += f"1. Run `python session_recovery.py`\n"
         msg += f"2. Enter phone number with country code\n"
         msg += f"3. Enter verification code from Telegram\n"
@@ -186,7 +186,7 @@ async def session_recovery_info_handler(event):
         msg += f"5. New session saved to .env automatically\n"
         msg += f"6. Restart bot: `python main.py`\n\n"
         
-        msg += f"**Security notes:**\n"
+        msg += f"SECURITY NOTES:\n"
         msg += f"⚠️ Never share your string session\n"
         msg += f"⚠️ Backup files contain sensitive data\n"
         msg += f"⚠️ Recovery requires phone access"
