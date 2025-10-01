@@ -11,6 +11,9 @@ vzl2_session*
 .env.prod
 .env.production
 
+# GitHub token (sensitive)
+.git_token
+
 # Python
 __pycache__/
 *.py[cod]
