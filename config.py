@@ -63,10 +63,16 @@ class Config:
     HEROKU_APP_NAME: Optional[str] = os.getenv("HEROKU_APP_NAME")
     HEROKU_API_KEY: Optional[str] = os.getenv("HEROKU_API_KEY")
     
+    # Music System Configuration
+    MUSIC_DOWNLOAD_PATH: str = os.getenv("MUSIC_DOWNLOAD_PATH", "downloads/musik")
+    MUSIC_COOLDOWN: int = int(os.getenv("MUSIC_COOLDOWN", "3"))
+    YOUTUBE_COOKIES_FILE: Optional[str] = os.getenv("YOUTUBE_COOKIES_FILE", "cookies.txt")
+
     # Vzoel Fox's Branding
-    VZOEL_VERSION: str = "v2.0.0-vzoel"
+    VZOEL_VERSION: str = "v2.0.0-lutpan"
     VZOEL_CREATOR: str = "Vzoel Fox's"
-    VZOEL_ENHANCED_BY: str = "Vzoel Fox's Ltpn"
+    VZOEL_ENHANCED_BY: str = "Vzoel Fox's Lutpan"
+    VZOEL_CONTACT: str = "@VZLfxs"
     
     def __init__(self):
         """Initialize config values safely"""
