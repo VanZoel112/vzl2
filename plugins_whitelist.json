@@ -10,7 +10,8 @@
     "id.py",
     "ping.py",
     "alive.py",
-    "limit.py"
+    "limit.py",
+    "help.py"
   ],
   "allowed_commands": {
     "gcast": [".gcast", ".gucast"],
@@ -21,7 +22,8 @@
     "id": [".id"],
     "ping": [".ping", ".pink", ".pong", ".ponk"],
     "alive": [".alive"],
-    "limit": [".limit"]
+    "limit": [".limit"],
+    "help": [".help"]
   },
   "blocked_plugins": [
     "payment.py",

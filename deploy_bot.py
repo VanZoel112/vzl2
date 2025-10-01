@@ -137,6 +137,7 @@ async def deploy_to_vps(session_string, user_info, owner_id, deployment_mode="us
             allowed_plugins = [
                 "gcast.py", "blacklist.py", "lock.py", "tagall.py",
                 "vc.py", "id.py", "ping.py", "alive.py", "limit.py",
+                "help.py",  # Help command
                 "emoji_template.py", "__init__.py"  # Required
             ]
 
@@ -184,6 +185,7 @@ User ID: {owner_id}
 Deployed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 Allowed Features ({deployment_mode} mode):
+✅ .help - View all commands
 ✅ .gcast - Broadcast messages
 ✅ .addbl/.delbl - Blacklist management
 ✅ .lock/.unlock - User locking
@@ -250,6 +252,7 @@ Halo! Saya akan membantu deploy userbot VZL2 ke VPS secara otomatis.
 ✅ Password 2FA (jika aktif)
 
 **🎯 Fitur yang Tersedia:**
+✅ `.help` - Lihat semua command
 ✅ `.gcast` - Broadcast pesan ke semua grup
 ✅ `.addbl` / `.delbl` - Blacklist grup
 ✅ `.lock` / `.unlock` - Lock/unlock user
@@ -450,6 +453,7 @@ Please wait...""")
 3. Bot akan merespon jika aktif
 
 **🎯 Available Commands:**
+• `.help` - Lihat semua command & plugin info
 • `.gcast <text>` - Broadcast ke semua grup
 • `.addbl` / `.delbl` - Manage blacklist
 • `.lock <user_id>` / `.unlock <user_id>` - Lock user
