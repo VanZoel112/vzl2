@@ -1,15 +1,21 @@
 """
-VZOEL USERBOT - Voice Chat Controller (PyTgCalls Multi-API)
-Clone-mode silent join helpers that mirror the vzoelupgrade reference
-implementation with MediaStream, direct play, and legacy fallbacks.
+VZOEL USERBOT – Voice Chat Controller
 
-Commands:
-- .jvc / .joinvc / .vcjoin    - Join voice chat silently
-- .lvc / .leavevc / .stopvc   - Leave voice chat
-- .vcstatus                   - Show runtime diagnostics
+This plugin provides reliable join/leave helpers for Telegram voice chats
+using the official PyTgCalls API. It mirrors the behaviour from the
+vzoelupgrade reference while staying compatible with both the current
+PyTgCalls 2.x releases and the legacy 1.x stream helpers.
 
-~2025 by Vzoel Fox's Lutpan
+Commands
+--------
+.jvc / .joinvc          Join the current voice chat silently
+.leavevc / .stopvc      Leave the current voice chat session
+.vcstatus               Show PyTgCalls diagnostics and active sessions
+
+All responses preserve VZOEL USERBOT branding and premium emoji styling.
 """
+
+from __future__ import annotations
 
 import asyncio
 import os
@@ -24,97 +30,102 @@ from typing import Dict, List, Optional
 from telethon import events
 from telethon.utils import get_display_name
 
-# Ensure project root is on sys.path for imports
+# Ensure the project root is available for shared helpers
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plugins.emoji_template import get_emoji, safe_edit_premium
 
-# ===== PyTgCalls Runtime Detection =====
-try:  # pragma: no cover - optional dependency
+# --- PyTgCalls runtime detection -------------------------------------------------
+try:  # pragma: no cover - optional dependency at runtime
     import pytgcalls
-
     from pytgcalls import PyTgCalls
     from pytgcalls.exceptions import (
         NoActiveGroupCall,
         NotInCallError,
         PyTgCallsAlreadyRunning,
     )
-    from pytgcalls.types import GroupCallConfig
+    from pytgcalls.types import GroupCallConfig, MediaStream
 
     PYTGCALLS_AVAILABLE = True
     PYTGCALLS_VERSION = getattr(pytgcalls, "__version__", "unknown")
 except ImportError:  # pragma: no cover - optional dependency
     class NoActiveGroupCall(Exception):
-        """Placeholder when PyTgCalls is not installed."""
+        """Placeholder when PyTgCalls is missing."""
 
     class NotInCallError(Exception):
-        """Placeholder when PyTgCalls is not installed."""
+        """Placeholder when PyTgCalls is missing."""
 
     class PyTgCallsAlreadyRunning(Exception):
-        """Placeholder when PyTgCalls is not installed."""
+        """Placeholder when PyTgCalls is missing."""
 
     PyTgCalls = None  # type: ignore
     GroupCallConfig = None  # type: ignore
+    MediaStream = None  # type: ignore
     pytgcalls = None  # type: ignore
     PYTGCALLS_AVAILABLE = False
     PYTGCALLS_VERSION = "not-installed"
 
-MediaStream = None
+# Legacy imports for PyTgCalls 1.x fallbacks
 LegacyInputStream = None
 LegacyStreamType = None
-
+LegacyAudioPiped = None
 if PYTGCALLS_AVAILABLE:
-    try:  # Modern silent stream helper
-        from pytgcalls.types import MediaStream  # type: ignore[attr-defined]
-    except ImportError:  # pragma: no cover - version dependent
-        try:
-            from pytgcalls.types.stream import MediaStream  # type: ignore[attr-defined]
-        except ImportError:
-            MediaStream = None
-
-    try:  # Legacy fallback helper
-        from pytgcalls.types.input_stream import InputStream as _LegacyInputStream
-
+    try:  # pragma: no cover - dependent on library version
+        from pytgcalls.types import InputStream as _LegacyInputStream  # type: ignore[attr-defined]
         LegacyInputStream = _LegacyInputStream
-    except ImportError:  # pragma: no cover - version dependent
+    except ImportError:
         try:
-            from pytgcalls.types import InputStream as _LegacyInputStream  # type: ignore[attr-defined]
-
+            from pytgcalls.types.input_stream import InputStream as _LegacyInputStream  # type: ignore[attr-defined]
             LegacyInputStream = _LegacyInputStream
         except ImportError:
             LegacyInputStream = None
 
-    try:
-        from pytgcalls import StreamType as _LegacyStreamType  # type: ignore[attr-defined]
-
+    try:  # pragma: no cover - dependent on library version
+        from pytgcalls.types import StreamType as _LegacyStreamType  # type: ignore[attr-defined]
         LegacyStreamType = _LegacyStreamType
-    except Exception:  # pragma: no cover - optional in new API
-        LegacyStreamType = None
+    except ImportError:
+        try:
+            from pytgcalls import StreamType as _LegacyStreamType  # type: ignore[attr-defined]
+            LegacyStreamType = _LegacyStreamType
+        except Exception:
+            LegacyStreamType = None
+
+    try:  # pragma: no cover - dependent on library version
+        from pytgcalls.types import AudioPiped as _LegacyAudioPiped  # type: ignore[attr-defined]
+        LegacyAudioPiped = _LegacyAudioPiped
+    except ImportError:
+        try:
+            from pytgcalls.types.input_stream import AudioPiped as _LegacyAudioPiped  # type: ignore[attr-defined]
+            LegacyAudioPiped = _LegacyAudioPiped
+        except ImportError:
+            LegacyAudioPiped = None
 
 
 @dataclass
 class AttemptError:
+    """Container for join/leave attempt failures."""
+
     method: str
     error: str
 
 
 class VoiceJoinError(Exception):
-    """Raised when all join attempts fail."""
+    """Raised when every join strategy has failed."""
 
     def __init__(self, attempts: List[AttemptError]):
-        self.attempts = attempts
         super().__init__("All join methods failed")
+        self.attempts = attempts
 
 
 class VoiceLeaveError(Exception):
-    """Raised when all leave attempts fail."""
+    """Raised when every leave strategy has failed."""
 
     def __init__(self, attempts: List[AttemptError]):
-        self.attempts = attempts
         super().__init__("All leave methods failed")
+        self.attempts = attempts
 
 
-# ===== Global Runtime State =====
+# --- Global runtime state --------------------------------------------------------
 vzoel_client = None
 vzoel_emoji = None
 _voice_client: Optional["PyTgCalls"] = None
@@ -125,12 +136,10 @@ _capabilities: Optional[Dict[str, object]] = None
 _silence_file: Optional[Path] = None
 
 
+# --- Helpers --------------------------------------------------------------------
 def _clean_error_text(raw: BaseException) -> str:
-    text = str(raw).strip()
-    if not text:
-        text = raw.__class__.__name__
-    first_line = text.splitlines()[0]
-    return first_line[:120]
+    text = str(raw).strip() or raw.__class__.__name__
+    return text.splitlines()[0][:160]
 
 
 def _format_method_label(method: str) -> str:
@@ -138,11 +147,31 @@ def _format_method_label(method: str) -> str:
         "modern-mediastream": "MediaStream Silent Join",
         "modern-direct": "Direct Play (No Stream)",
         "legacy-input-stream": "Legacy InputStream",
+        "legacy-audio-piped": "Legacy AudioPiped",
         "leave-call": "leave_call",
-        "leave-current": "leave_current_group_call",
         "leave-legacy": "leave_group_call",
     }
     return mapping.get(method, method.replace("-", " ").title())
+
+
+def _ensure_silence_track() -> Optional[Path]:
+    global _silence_file
+    if _silence_file and _silence_file.exists():
+        return _silence_file
+
+    try:
+        temp_dir = Path(tempfile.gettempdir())
+        candidate = temp_dir / "vzoel_voice_silence.wav"
+        if not candidate.exists():
+            with wave.open(candidate.as_posix(), "wb") as handle:
+                handle.setnchannels(1)
+                handle.setsampwidth(2)
+                handle.setframerate(48000)
+                handle.writeframes(b"\x00\x00" * 48000)
+        _silence_file = candidate
+        return candidate
+    except Exception:
+        return None
 
 
 def _detect_capabilities() -> Dict[str, object]:
@@ -156,11 +185,11 @@ def _detect_capabilities() -> Dict[str, object]:
         "has_media_stream": bool(MediaStream),
         "media_stream_cls": MediaStream,
         "input_stream_cls": LegacyInputStream,
+        "audio_piped_cls": LegacyAudioPiped,
         "stream_type_cls": LegacyStreamType,
         "has_play": bool(PyTgCalls and hasattr(PyTgCalls, "play")),
         "has_leave_call": bool(PyTgCalls and hasattr(PyTgCalls, "leave_call")),
-        "has_leave_current": bool(PyTgCalls and hasattr(PyTgCalls, "leave_current_group_call")),
-        "has_leave_legacy": bool(PyTgCalls and hasattr(PyTgCalls, "leave_group_call")),
+        "has_legacy_leave": bool(PyTgCalls and hasattr(PyTgCalls, "leave_group_call")),
     }
 
     _capabilities = capabilities
@@ -168,39 +197,14 @@ def _detect_capabilities() -> Dict[str, object]:
 
 
 async def _ensure_runtime_state() -> None:
-    """Lazily create locks once the event loop is running."""
     global _voice_client_lock, _state_lock
-
     if _voice_client_lock is None:
         _voice_client_lock = asyncio.Lock()
     if _state_lock is None:
         _state_lock = asyncio.Lock()
 
 
-def _ensure_silence_track() -> Optional[Path]:
-    """Create a one-second silent PCM track for MediaStream joins."""
-    global _silence_file
-
-    if _silence_file and _silence_file.exists():
-        return _silence_file
-
-    try:
-        temp_dir = Path(tempfile.gettempdir())
-        candidate = temp_dir / "vzoel_vc_silence.wav"
-        if not candidate.exists():
-            with wave.open(candidate.as_posix(), "wb") as handle:
-                handle.setnchannels(1)
-                handle.setsampwidth(2)
-                handle.setframerate(48000)
-                handle.writeframes(b"\x00\x00" * 48000)
-        _silence_file = candidate
-        return candidate
-    except Exception:
-        return None
-
-
 async def _ensure_voice_client(telethon_client) -> Optional["PyTgCalls"]:
-    """Ensure PyTgCalls client is available and started."""
     await _ensure_runtime_state()
 
     capabilities = _detect_capabilities()
@@ -218,7 +222,6 @@ async def _ensure_voice_client(telethon_client) -> Optional["PyTgCalls"]:
             except Exception:
                 _voice_client = None
                 raise
-
     return _voice_client
 
 
@@ -232,23 +235,17 @@ async def _format_group_title(event) -> str:
 
 
 async def _attempt_join(chat_id: int, voice_client: "PyTgCalls") -> str:
-    """Try multiple join strategies until one succeeds."""
-
     attempts: List[AttemptError] = []
     capabilities = _detect_capabilities()
+    config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
 
-    # Method 1: Modern MediaStream silent join
+    # Method 1 – use MediaStream to provide a silent join on PyTgCalls 2.x
     if capabilities["has_media_stream"] and capabilities["media_stream_cls"]:
-        silence = _ensure_silence_track()
-        if silence is not None:
-            try:
-                config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
-            except Exception:
-                config = None
-
+        silence_path = _ensure_silence_track()
+        if silence_path is not None:
             try:
                 media_stream = capabilities["media_stream_cls"](  # type: ignore[misc]
-                    silence.as_posix(),
+                    silence_path.as_posix(),
                     audio_flags=capabilities["media_stream_cls"].Flags.IGNORE,  # type: ignore[attr-defined]
                     video_flags=capabilities["media_stream_cls"].Flags.IGNORE,  # type: ignore[attr-defined]
                 )
@@ -259,12 +256,8 @@ async def _attempt_join(chat_id: int, voice_client: "PyTgCalls") -> str:
             except Exception as exc:
                 attempts.append(AttemptError("modern-mediastream", _clean_error_text(exc)))
 
-    # Method 2: Direct play without stream (works on PyTgCalls >=2.0)
+    # Method 2 – direct play with no stream (PyTgCalls >=2.0)
     if capabilities["has_play"]:
-        try:
-            config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
-        except Exception:
-            config = None
         try:
             await voice_client.play(chat_id, stream=None, config=config)
             return "modern-direct"
@@ -273,10 +266,9 @@ async def _attempt_join(chat_id: int, voice_client: "PyTgCalls") -> str:
         except Exception as exc:
             attempts.append(AttemptError("modern-direct", _clean_error_text(exc)))
 
-    # Method 3: Legacy InputStream join
+    # Method 3 – legacy InputStream join (PyTgCalls 1.x)
     legacy_stream_cls = capabilities.get("input_stream_cls")
-    legacy_join = getattr(voice_client, "join_group_call", None)
-    if legacy_stream_cls and callable(legacy_join):
+    if legacy_stream_cls and hasattr(voice_client, "join_group_call"):
         kwargs: Dict[str, object] = {}
         stream_type_cls = capabilities.get("stream_type_cls")
         if stream_type_cls:
@@ -286,12 +278,33 @@ async def _attempt_join(chat_id: int, voice_client: "PyTgCalls") -> str:
                 pass
         try:
             legacy_stream = legacy_stream_cls()  # type: ignore[call-arg]
-            await legacy_join(chat_id, legacy_stream, **kwargs)
+            await voice_client.join_group_call(chat_id, legacy_stream, **kwargs)  # type: ignore[attr-defined]
             return "legacy-input-stream"
         except NoActiveGroupCall:
             raise
         except Exception as exc:
             attempts.append(AttemptError("legacy-input-stream", _clean_error_text(exc)))
+
+    # Method 4 – legacy AudioPiped join with silent track
+    audio_piped_cls = capabilities.get("audio_piped_cls")
+    if audio_piped_cls and hasattr(voice_client, "join_group_call"):
+        silence_path = _ensure_silence_track()
+        if silence_path is not None:
+            try:
+                silent_pipe = audio_piped_cls(silence_path.as_posix())  # type: ignore[call-arg]
+                kwargs: Dict[str, object] = {}
+                stream_type_cls = capabilities.get("stream_type_cls")
+                if stream_type_cls:
+                    try:
+                        kwargs["stream_type"] = stream_type_cls().local_stream  # type: ignore[attr-defined]
+                    except Exception:
+                        pass
+                await voice_client.join_group_call(chat_id, silent_pipe, **kwargs)  # type: ignore[attr-defined]
+                return "legacy-audio-piped"
+            except NoActiveGroupCall:
+                raise
+            except Exception as exc:
+                attempts.append(AttemptError("legacy-audio-piped", _clean_error_text(exc)))
 
     raise VoiceJoinError(attempts)
 
@@ -309,19 +322,9 @@ async def _attempt_leave(chat_id: int, voice_client: "PyTgCalls") -> str:
         except Exception as exc:
             attempts.append(AttemptError("leave-call", _clean_error_text(exc)))
 
-    leave_current = getattr(voice_client, "leave_current_group_call", None)
-    if callable(leave_current):
+    if capabilities["has_legacy_leave"] and hasattr(voice_client, "leave_group_call"):
         try:
-            await leave_current(chat_id)
-            return "leave-current"
-        except (NotInCallError, NoActiveGroupCall):
-            raise
-        except Exception as exc:
-            attempts.append(AttemptError("leave-current", _clean_error_text(exc)))
-
-    if capabilities["has_leave_legacy"]:
-        try:
-            await voice_client.leave_group_call(chat_id)
+            await voice_client.leave_group_call(chat_id)  # type: ignore[attr-defined]
             return "leave-legacy"
         except (NotInCallError, NoActiveGroupCall):
             raise
@@ -331,15 +334,15 @@ async def _attempt_leave(chat_id: int, voice_client: "PyTgCalls") -> str:
     raise VoiceLeaveError(attempts or [AttemptError("leave", "No leave method available")])
 
 
+# --- Plugin bootstrap ------------------------------------------------------------
 async def vzoel_init(client, emoji_handler):
-    """Plugin initialization from plugin loader."""
     global vzoel_client, vzoel_emoji
-
     vzoel_client = client
     vzoel_emoji = emoji_handler
     await _ensure_runtime_state()
 
 
+# --- Command handlers ------------------------------------------------------------
 @events.register(events.NewMessage(pattern=r"\.(?:jvc|joinvc|vcjoin)(?:\s|$)"))
 async def join_voice_chat_handler(event):
     if not event.out:
@@ -508,15 +511,11 @@ async def leave_voice_chat_handler(event):
     except NotInCallError:
         async with _state_lock:  # type: ignore[arg-type]
             _active_calls.pop(event.chat_id, None)
-        response = (
-            f"{get_emoji('kuning')} Not in voice chat\n\nVZOEL USERBOT"
-        )
+        response = f"{get_emoji('kuning')} Not in voice chat\n\nVZOEL USERBOT"
     except NoActiveGroupCall:
         async with _state_lock:  # type: ignore[arg-type]
             _active_calls.pop(event.chat_id, None)
-        response = (
-            f"{get_emoji('kuning')} Voice chat already closed\n\nVZOEL USERBOT"
-        )
+        response = f"{get_emoji('kuning')} Voice chat already closed\n\nVZOEL USERBOT"
     except VoiceLeaveError as exc:
         detail_lines = [
             f"{get_emoji('merah')} LEAVE FAILED\n",
