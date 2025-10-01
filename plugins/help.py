@@ -61,9 +61,9 @@ def get_plugin_commands(plugin_name):
 
     # Music & VC commands
     if plugin_name == 'music':
-        return ['.play', '.song', '.pause', '.resume', '.stop', '.queue']
+        return ['.play', '.song']
     if plugin_name == 'vc':
-        return ['.jvc', '.lvc', '.startvc', '.vcinfo']
+        return ['.jvc', '.lvc']
 
     try:
         plugin_path = f"plugins/{plugin_name}.py"
