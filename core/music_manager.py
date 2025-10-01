@@ -13,6 +13,7 @@ import os
 import time
 from typing import Dict, Optional, List
 from pathlib import Path
+from config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -108,8 +109,10 @@ class MusicManager:
                 'quiet': True,
                 'no_warnings': True,
                 'extract_flat': False,
-                'cookiefile': 'cookies.txt',
             }
+
+            if Config.YOUTUBE_COOKIES:
+                ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 # Search YouTube
@@ -153,8 +156,9 @@ class MusicManager:
                     }],
                     'quiet': True,
                     'no_warnings': True,
-                    'cookiefile': 'cookies.txt',
                 }
+                if Config.YOUTUBE_COOKIES:
+                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
                 extensions = ['mp3', 'm4a', 'webm', 'opus']
             else:
                 ydl_opts = {
@@ -164,8 +168,9 @@ class MusicManager:
                     'merge_output_format': 'mp4',
                     'quiet': True,
                     'no_warnings': True,
-                    'cookiefile': 'cookies.txt',
                 }
+                if Config.YOUTUBE_COOKIES:
+                    ydl_opts['cookiefile'] = Config.YOUTUBE_COOKIES
                 extensions = ['mp4', 'mkv', 'webm']
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:

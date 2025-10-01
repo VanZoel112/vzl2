@@ -66,7 +66,7 @@ class Config:
     # Music System Configuration
     MUSIC_DOWNLOAD_PATH: str = os.getenv("MUSIC_DOWNLOAD_PATH", "downloads/musik")
     MUSIC_COOLDOWN: int = int(os.getenv("MUSIC_COOLDOWN", "3"))
-    YOUTUBE_COOKIES_FILE: Optional[str] = os.getenv("YOUTUBE_COOKIES_FILE", "cookies.txt")
+    YOUTUBE_COOKIES: Optional[str] = os.getenv("YOUTUBE_COOKIES", None)
 
     # Vzoel Fox's Branding
     VZOEL_VERSION: str = "v2.0.0-lutpan"
@@ -305,6 +305,9 @@ LOAD_UNOFFICIAL_PLUGINS=false
 # Security Settings
 GCAST_BLACKLIST=[]
 LOCKED_USERS_GLOBAL=[]
+
+# Music System
+YOUTUBE_COOKIES=cookies.txt
 
 # Database
 DATABASE_URL=sqlite:///vzl2.db
