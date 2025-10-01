@@ -1,13 +1,24 @@
 """
 Vzoel Fox's Lutpan - Payment Plugin
-Payment gateway and QR code management
+Payment gateway and QR code management with multi-method support
 
 Commands:
 - .getfileid - Extract file_id from image (reply to image)
 - .setgetqr - Store QR code for quick display
 - .getqr - Display stored payment QR code
-- .setget <info> - Set payment information
-- .get - Show payment information
+- .setget <info> - Set payment information (supports multiple methods)
+- .get - Show all payment methods with checklist mapping
+
+Multi-Method Examples:
+1. Double newline separator:
+   .setget Bank: BCA
+   Account: 123
+
+   E-Wallet: Dana
+   Number: 081234567890
+
+2. Pipe separator:
+   .setget Bank: BCA | E-Wallet: Dana | Crypto: USDT
 
 Author: Vzoel Fox's
 Contact: @VZLfxs
@@ -265,7 +276,7 @@ CONTACT: @VZLfxs"""
 
 @events.register(events.NewMessage(pattern=r'\.setget (.+)'))
 async def set_payment_info_handler(event):
-    """Set payment gateway information"""
+    """Set payment gateway information (supports multiple methods)"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         global vzoel_client, payment_manager
 
@@ -284,27 +295,63 @@ VZOEL FOX'S LUTPAN"""
 
         await safe_edit_premium(event, processing_msg)
 
-        # Parse info (simple key:value format)
-        payment_info = {'raw_text': info_text}
+        # Parse payment methods (support multiple methods separated by newlines or |)
+        payment_methods = []
 
-        # Try to parse structured format
-        if '\n' in info_text:
-            for line in info_text.split('\n'):
+        # Split by newline or pipe separator
+        if '\n\n' in info_text:
+            # Multiple methods separated by double newline
+            raw_methods = info_text.split('\n\n')
+        elif '|' in info_text:
+            # Multiple methods separated by pipe
+            raw_methods = info_text.split('|')
+        else:
+            # Single method
+            raw_methods = [info_text]
+
+        for method_text in raw_methods:
+            method_text = method_text.strip()
+            if not method_text:
+                continue
+
+            method_info = {'raw_text': method_text}
+
+            # Parse key:value pairs
+            for line in method_text.split('\n'):
                 if ':' in line:
                     key, value = line.split(':', 1)
-                    payment_info[key.strip().lower()] = value.strip()
+                    key_clean = key.strip().lower()
+                    method_info[key_clean] = value.strip()
 
-        # Save info
+                    # Detect payment type
+                    if key_clean in ['bank', 'e-wallet', 'ewallet', 'payment', 'type']:
+                        method_info['payment_type'] = value.strip()
+
+            payment_methods.append(method_info)
+
+        # Save all methods
+        payment_info = {
+            'methods': payment_methods,
+            'count': len(payment_methods),
+            'raw_text': info_text
+        }
+
         success = payment_manager.set_payment_info(payment_info)
 
         if success:
-            response = f"""{get_emoji('centang')} PAYMENT INFO SAVED
+            # Build checklist display
+            checklist = ""
+            for i, method in enumerate(payment_methods, 1):
+                payment_type = method.get('payment_type', method.get('bank', method.get('e-wallet', 'Payment Method')))
+                checklist += f"{get_emoji('centang')} {i}. {payment_type}\n"
 
-{get_emoji('aktif')} Information stored successfully
-{get_emoji('telegram')} Use .get to display payment info
+            response = f"""{get_emoji('centang')} PAYMENT METHODS SAVED
 
-{get_emoji('biru')} STORED DATA:
-{info_text[:200]}{'...' if len(info_text) > 200 else ''}
+{get_emoji('aktif')} Total Methods: {len(payment_methods)}
+
+{get_emoji('biru')} SAVED METHODS:
+{checklist}
+{get_emoji('telegram')} Use .get to display all payment info
 
 VZOEL FOX'S LUTPAN Payment System
 CONTACT: @VZLfxs"""
@@ -323,7 +370,7 @@ VZOEL FOX'S LUTPAN"""
 
 @events.register(events.NewMessage(pattern=r'\.get'))
 async def get_payment_info_handler(event):
-    """Display payment information"""
+    """Display payment information with checklist mapping"""
     if event.is_private or event.sender_id == (await event.client.get_me()).id:
         global vzoel_client, payment_manager
 
@@ -345,19 +392,43 @@ VZOEL FOX'S LUTPAN"""
         stats = payment_manager.get_stats()
 
         if info:
-            # Build response
+            # Build response with checklist mapping
             response = f"""{get_emoji('utama')} PAYMENT INFORMATION
 
 """
-            # Show structured data if available
-            raw_text = info.get('raw_text', '')
-            if raw_text:
-                response += f"{raw_text}\n\n"
+            # Show multiple methods if available
+            methods = info.get('methods', [])
+
+            if methods:
+                # Checklist mapping header
+                response += f"{get_emoji('biru')} AVAILABLE PAYMENT METHODS:\n\n"
+
+                # Display each method with checklist
+                for i, method in enumerate(methods, 1):
+                    payment_type = method.get('payment_type', method.get('bank', method.get('e-wallet', f'Method {i}')))
+                    response += f"{get_emoji('centang')} {i}. {payment_type}\n"
+
+                    # Show details for each method
+                    raw_text = method.get('raw_text', '')
+                    if raw_text:
+                        # Indent method details
+                        for line in raw_text.split('\n'):
+                            if line.strip():
+                                response += f"   {line}\n"
+                    response += "\n"
+
+            else:
+                # Fallback to raw text if no structured methods
+                raw_text = info.get('raw_text', '')
+                if raw_text:
+                    response += f"{raw_text}\n\n"
 
             response += f"""{get_emoji('telegram')} QUICK ACTIONS:
 • .getqr - Show QR code ({stats['qr_codes_count']} stored)
 • .setget - Update payment info
 • .setgetqr - Add QR code
+
+{get_emoji('aktif')} Total Payment Methods: {len(methods) if methods else 1}
 
 VZOEL FOX'S LUTPAN Payment System
 CONTACT: @VZLfxs"""
@@ -367,14 +438,22 @@ CONTACT: @VZLfxs"""
 
 {get_emoji('telegram')} Use .setget to configure payment details
 
-{get_emoji('aktif')} EXAMPLE:
+{get_emoji('aktif')} SINGLE METHOD EXAMPLE:
 .setget Bank: BCA
 Account: 1234567890
 Name: Vzoel Fox's
 
-{get_emoji('biru')} OR MULTILINE:
-.setget Payment Gateway: Dana/Gopay/OVO
+{get_emoji('biru')} MULTIPLE METHODS EXAMPLE:
+.setget Bank: BCA
+Account: 1234567890
+Name: Vzoel Fox's
+
+E-Wallet: Dana
 Number: 081234567890
+Name: Vzoel Fox's
+
+{get_emoji('centang')} OR USE PIPE SEPARATOR:
+.setget Bank: BCA | E-Wallet: Dana | Crypto: USDT
 
 VZOEL FOX'S LUTPAN Payment System
 CONTACT: @VZLfxs"""
