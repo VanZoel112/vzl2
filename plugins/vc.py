@@ -1,170 +1,272 @@
 """
-VZOEL ASSISTANT - Voice Chat Plugin
-Userbot voice chat with PyTgCalls GroupCallFactory
+VZOEL ASSISTANT - Voice Chat Plugin (PyTgCalls 2.x Compatible)
+Stealth join/leave helpers for Telegram voice chats with premium emoji output.
 
 Commands:
-- .jvc - Join voice chat
-- .lvc - Leave voice chat
+- .jvc / .joinvc     - Join voice chat silently
+- .lvc / .leavevc    - Leave voice chat
+- .stopvc            - Alias for leave
+- .vcstatus          - Show runtime status
 
 ~2025 by Vzoel Fox's Lutpan
 """
 
-from telethon import events
-import sys
-import os
 import asyncio
+import os
+import sys
+import time
+from typing import Dict, Optional
 
+from telethon import events
+from telethon.utils import get_display_name
+
+# Ensure project root is on sys.path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from plugins.emoji_template import get_emoji, safe_edit_premium
 
-# Try import PyTgCalls dengan GroupCallFactory
+# ===== PyTgCalls Runtime Detection =====
 try:
-    from pytgcalls import GroupCallFactory
-    from pytgcalls.mtproto_client_type import MTProtoClientType
-    PYTGCALLS_AVAILABLE = True
-except ImportError:
-    PYTGCALLS_AVAILABLE = False
-    GroupCallFactory = None
-    MTProtoClientType = None
+    from pytgcalls import PyTgCalls
+    from pytgcalls.types import GroupCallConfig
+    from pytgcalls.exceptions import (
+        NoActiveGroupCall,
+        NotInCallError,
+        PyTgCallsAlreadyRunning,
+    )
 
-# Global references
+    PYTGCALLS_AVAILABLE = True
+except ImportError:  # pragma: no cover - optional dependency
+    class NoActiveGroupCall(Exception):
+        """Placeholder when PyTgCalls is not installed."""
+
+    class NotInCallError(Exception):
+        """Placeholder when PyTgCalls is not installed."""
+
+    class PyTgCallsAlreadyRunning(Exception):
+        """Placeholder when PyTgCalls is not installed."""
+
+    PyTgCalls = None  # type: ignore
+    GroupCallConfig = None  # type: ignore
+    PYTGCALLS_AVAILABLE = False
+
+# ===== Global Runtime State =====
 vzoel_client = None
 vzoel_emoji = None
-group_call_factory = None
-active_calls = {}
+_voice_client: Optional["PyTgCalls"] = None
+_voice_client_lock: Optional[asyncio.Lock] = None
+_state_lock: Optional[asyncio.Lock] = None
+_active_calls: Dict[int, Dict[str, object]] = {}
+
+
+async def _ensure_runtime_state() -> None:
+    """Lazily create locks once the event loop is running."""
+    global _voice_client_lock, _state_lock
+
+    if _voice_client_lock is None:
+        _voice_client_lock = asyncio.Lock()
+    if _state_lock is None:
+        _state_lock = asyncio.Lock()
+
+
+async def _ensure_voice_client(telethon_client) -> Optional["PyTgCalls"]:
+    """Ensure PyTgCalls client is available and started."""
+    await _ensure_runtime_state()
+
+    if not PYTGCALLS_AVAILABLE or PyTgCalls is None:
+        return None
+
+    global _voice_client
+    async with _voice_client_lock:  # type: ignore[arg-type]
+        if _voice_client is None:
+            _voice_client = PyTgCalls(telethon_client)
+            try:
+                await _voice_client.start()
+            except PyTgCallsAlreadyRunning:  # type: ignore[attr-defined]
+                pass
+            except Exception:
+                _voice_client = None
+                raise
+
+    return _voice_client
+
+
+async def _format_group_title(event) -> str:
+    try:
+        chat = await event.get_chat()
+        title = get_display_name(chat)
+        return title or str(event.chat_id)
+    except Exception:
+        return str(event.chat_id)
 
 
 async def vzoel_init(client, emoji_handler):
-    """Plugin initialization"""
-    global vzoel_client, vzoel_emoji, group_call_factory
+    """Plugin initialization from plugin loader."""
+    global vzoel_client, vzoel_emoji
 
     vzoel_client = client
     vzoel_emoji = emoji_handler
+    await _ensure_runtime_state()
 
-    if PYTGCALLS_AVAILABLE:
-        try:
-            # Initialize GroupCallFactory dengan Telethon client
-            group_call_factory = GroupCallFactory(
-                client.client,
-                mtproto_backend=MTProtoClientType.TELETHON
+
+@events.register(events.NewMessage(pattern=r"\.(?:jvc|joinvc)(?:\s|$)"))
+async def join_voice_chat_handler(event):
+    if not event.out:
+        return
+
+    if event.is_private:
+        await safe_edit_premium(event, f"{get_emoji('kuning')} Only works in groups\n\nVZOEL ASSISTANT")
+        return
+
+    try:
+        voice_client = await _ensure_voice_client(event.client)
+    except Exception as exc:
+        message = (
+            f"{get_emoji('merah')} PyTgCalls failed\n\n"
+            f"{get_emoji('kuning')} Error: {str(exc)[:80]}\n\n"
+            f"VZOEL ASSISTANT"
+        )
+        await safe_edit_premium(event, message)
+        return
+
+    if voice_client is None:
+        await safe_edit_premium(
+            event,
+            f"{get_emoji('merah')} PyTgCalls not installed\n\n"
+            f"{get_emoji('telegram')} Install: pip install py-tgcalls\n\n"
+            f"VZOEL ASSISTANT",
+        )
+        return
+
+    await _ensure_runtime_state()
+    async with _state_lock:  # type: ignore[arg-type]
+        if event.chat_id in _active_calls:
+            await safe_edit_premium(
+                event,
+                f"{get_emoji('kuning')} Already connected\n\nVZOEL ASSISTANT",
             )
-            print(f"{get_emoji('utama')} VC Plugin loaded - GroupCallFactory ready")
-        except Exception as e:
-            print(f"{get_emoji('merah')} GroupCallFactory error: {e}")
-            group_call_factory = None
-    else:
-        print(f"{get_emoji('kuning')} PyTgCalls not installed")
-
-
-@events.register(events.NewMessage(pattern=r'\.jvc'))
-async def join_vc_handler(event):
-    """Join voice chat"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client, group_call_factory, active_calls
-
-        if event.is_private:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Only works in groups\n\nVZOEL ASSISTANT")
             return
 
-        if not PYTGCALLS_AVAILABLE or not group_call_factory:
-            await safe_edit_premium(event, f"{get_emoji('merah')} PyTgCalls not installed\n\n{get_emoji('telegram')} Install: pip install py-tgcalls\n\nVZOEL ASSISTANT")
-            return
+    processing_msg = (
+        f"{get_emoji('loading')} JOINING VOICE CHAT\n\n"
+        f"{get_emoji('proses')} Preparing silent session\n"
+        f"{get_emoji('telegram')} Please wait\n\n"
+        f"VZOEL ASSISTANT"
+    )
+    await safe_edit_premium(event, processing_msg)
 
-        chat_id = event.chat_id
-
-        if chat_id in active_calls:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Already in VC\n\nVZOEL ASSISTANT")
-            return
-
-        processing_msg = f"""{get_emoji('loading')} JOINING VOICE CHAT
-
-{get_emoji('proses')} Connecting with GroupCall
-{get_emoji('telegram')} Please wait
-
-VZOEL ASSISTANT"""
-        await safe_edit_premium(event, processing_msg)
-
+    try:
+        config = GroupCallConfig(auto_start=False) if GroupCallConfig else None
+        await voice_client.play(
+            event.chat_id,
+            stream=None,
+            config=config,
+        )
         try:
-            # Create group call dengan silent file
-            group_call = group_call_factory.get_file_group_call(
-                'http://duramecho.com/Misc/SilentCd/Silence01s.wav'
+            await voice_client.mute(event.chat_id)
+        except NotInCallError:  # type: ignore[attr-defined]
+            pass
+
+        title = await _format_group_title(event)
+        async with _state_lock:  # type: ignore[arg-type]
+            _active_calls[event.chat_id] = {
+                "title": title,
+                "joined_at": time.time(),
+            }
+
+        response = (
+            f"{get_emoji('centang')} JOINED VOICE CHAT\n\n"
+            f"{get_emoji('aktif')} Connected to: {title}\n"
+            f"{get_emoji('telegram')} Muted for stealth\n\n"
+            f"VZOEL ASSISTANT\n"
+            f"~2025 by Vzoel Fox's Lutpan"
+        )
+    except NoActiveGroupCall:  # type: ignore[attr-defined]
+        response = (
+            f"{get_emoji('merah')} JOIN FAILED\n\n"
+            f"{get_emoji('kuning')} Start the voice chat first\n\n"
+            f"VZOEL ASSISTANT"
+        )
+    except Exception as exc:
+        response = (
+            f"{get_emoji('merah')} JOIN FAILED\n\n"
+            f"{get_emoji('kuning')} Error: {str(exc)[:80]}\n\n"
+            f"VZOEL ASSISTANT"
+        )
+
+    await safe_edit_premium(event, response)
+
+    if vzoel_client:
+        vzoel_client.increment_command_count()
+
+
+@events.register(events.NewMessage(pattern=r"\.(?:lvc|leavevc|stopvc)(?:\s|$)"))
+async def leave_voice_chat_handler(event):
+    if not event.out:
+        return
+
+    if event.is_private:
+        await safe_edit_premium(event, f"{get_emoji('kuning')} Only works in groups\n\nVZOEL ASSISTANT")
+        return
+
+    try:
+        voice_client = await _ensure_voice_client(event.client)
+    except Exception as exc:
+        await safe_edit_premium(
+            event,
+            f"{get_emoji('merah')} PyTgCalls failed\n\n{get_emoji('kuning')} Error: {str(exc)[:80]}\n\nVZOEL ASSISTANT",
+        )
+        return
+
+    if voice_client is None:
+        await safe_edit_premium(
+            event,
+            f"{get_emoji('merah')} PyTgCalls not installed\n\nVZOEL ASSISTANT",
+        )
+        return
+
+    await _ensure_runtime_state()
+    async with _state_lock:  # type: ignore[arg-type]
+        if event.chat_id not in _active_calls:
+            await safe_edit_premium(
+                event,
+                f"{get_emoji('kuning')} Not connected to VC\n\nVZOEL ASSISTANT",
             )
-
-            # Join group call
-            await group_call.start(chat_id)
-
-            # Store active call
-            active_calls[chat_id] = group_call
-
-            response = f"""{get_emoji('centang')} JOINED VOICE CHAT
-
-{get_emoji('aktif')} Connected successfully
-{get_emoji('telegram')} Ready for streaming
-
-VZOEL ASSISTANT
-~2025 by Vzoel Fox's Lutpan"""
-
-        except Exception as e:
-            response = f"""{get_emoji('merah')} JOIN FAILED
-
-{get_emoji('kuning')} Error: {str(e)[:80]}
-
-VZOEL ASSISTANT"""
-
-        await safe_edit_premium(event, response)
-
-        if vzoel_client:
-            vzoel_client.increment_command_count()
-
-
-@events.register(events.NewMessage(pattern=r'\.lvc'))
-async def leave_vc_handler(event):
-    """Leave voice chat"""
-    if event.is_private or event.sender_id == (await event.client.get_me()).id:
-        global vzoel_client, active_calls
-
-        if event.is_private:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Only works in groups\n\nVZOEL ASSISTANT")
             return
 
-        if not PYTGCALLS_AVAILABLE:
-            await safe_edit_premium(event, f"{get_emoji('merah')} PyTgCalls not installed\n\nVZOEL ASSISTANT")
-            return
+    processing_msg = (
+        f"{get_emoji('loading')} LEAVING VOICE CHAT\n\n"
+        f"{get_emoji('proses')} Disconnecting\n\n"
+        f"VZOEL ASSISTANT"
+    )
+    await safe_edit_premium(event, processing_msg)
 
-        chat_id = event.chat_id
+    try:
+        await voice_client.leave_call(event.chat_id)
+        async with _state_lock:  # type: ignore[arg-type]
+            _active_calls.pop(event.chat_id, None)
 
-        if chat_id not in active_calls:
-            await safe_edit_premium(event, f"{get_emoji('kuning')} Not in VC\n\nVZOEL ASSISTANT")
-            return
+        response = (
+            f"{get_emoji('centang')} LEFT VOICE CHAT\n\n"
+            f"{get_emoji('aktif')} Successfully disconnected\n\n"
+            f"VZOEL ASSISTANT\n"
+            f"~2025 by Vzoel Fox's Lutpan"
+        )
+    except NotInCallError:  # type: ignore[attr-defined]
+        async with _state_lock:  # type: ignore[arg-type]
+            _active_calls.pop(event.chat_id, None)
+        response = (
+            f"{get_emoji('kuning')} Not in voice chat\n\nVZOEL ASSISTANT"
+        )
+    except NoActiveGroupCall:  # type: ignore[attr-defined]
+        response = (
+            f"{get_emoji('kuning')} Voice chat already closed\n\nVZOEL ASSISTANT"
+        )
+    except Exception as exc:
+        response = (
+            f"{get_emoji('merah')} LEAVE FAILED\n\n"
+            f"{get_emoji('kuning')} Error: {str(exc)[:80]}\n\n"
+            f"VZOEL ASSISTANT"
+        )
 
-        processing_msg = f"""{get_emoji('loading')} LEAVING VOICE CHAT
-
-{get_emoji('proses')} Disconnecting
-
-VZOEL ASSISTANT"""
-        await safe_edit_premium(event, processing_msg)
-
-        try:
-            group_call = active_calls[chat_id]
-            await group_call.stop()
-            del active_calls[chat_id]
-
-            response = f"""{get_emoji('centang')} LEFT VOICE CHAT
-
-{get_emoji('aktif')} Disconnected
-
-VZOEL ASSISTANT
-~2025 by Vzoel Fox's Lutpan"""
-
-        except Exception as e:
-            response = f"""{get_emoji('merah')} LEAVE FAILED
-
-{get_emoji('kuning')} Error: {str(e)[:80]}
-
-VZOEL ASSISTANT"""
-
-        await safe_edit_premium(event, response)
-
-        if vzoel_client:
-            vzoel_client.increment_command_count()
+    await safe
