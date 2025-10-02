@@ -154,4 +154,4 @@ async def my_status_handler(event):
 
 ---
 
-**🦊 Created by VzoelFox's Team**
+**🦊 Created by VzoelFox's t.me/VZLfxs**
