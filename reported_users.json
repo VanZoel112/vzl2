@@ -10,5 +10,17 @@
         "reason": "Spam"
       }
     ]
+  },
+  "6760826007": {
+    "username": "@mya_68",
+    "first_name": "Miya X \u1d0d\u0274\u1d21\u1d0b",
+    "last_name": "",
+    "reports": [
+      {
+        "timestamp": "2025-10-03T04:33:49.922342",
+        "chat_id": -1001999857761,
+        "reason": "Spam"
+      }
+    ]
   }
 }
